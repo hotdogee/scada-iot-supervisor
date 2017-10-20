@@ -44,5 +44,8 @@
       "secure": false
     }
   },
-  "mongodb": "mongodb://localhost:27017/scada-iot"
+  "mongodb": "mongodb://localhost:27017/scada-iot",
+  "supervisor" : {
+    "url": "http://localhost:8081"
+  }
 }
