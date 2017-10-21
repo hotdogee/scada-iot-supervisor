@@ -118,7 +118,7 @@ let schema = {
   }
 }
 
-const ajv = new Ajv({ allErrors: true })
+const ajv = new Ajv({ allErrors: true, $data: true })
 require('ajv-keywords')(ajv)
 ajv.addKeyword('coerce', {
   type: 'string',

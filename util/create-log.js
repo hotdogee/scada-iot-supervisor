@@ -69,7 +69,7 @@ supervisor.authenticate({
 function getMessageExample() {
   return {
  "name": "Geo9",
- "logTime": new Date("2017-10-07T07:16:56.741Z"),
+ "logTime": "2017-10-21T09:16:56.741Z",
  "reads": [
   {
    "name": "九號井口",
@@ -78,7 +78,8 @@ function getMessageExample() {
     {
      "name": "溫度",
      "unit": "°C",
-     "value": 175.1509246826172
+     "value": 175.1509246826172,
+     "time": "2017-10-21T10:16:56.741Z"
     }
    ]
   }
