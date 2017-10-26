@@ -41,79 +41,101 @@ const buckets = {
   '10s': 10 * 1000
 }
 let bulkOps = {}
-for (b in buckets) {
+for (let b in buckets) {
   bulkOps[b] = []
 }
+let bulkOpsPromises = []
+
+// {"_id":{"$oid":"59897c0e6280a159550356e4"}}
 
 MongoClient.connect(config.get('mongodb')).then(db => {
+  for (let b in buckets) {
+    db.collection(`logs.${b}`).createIndex(
+      { "name": 1, "logTime": 1 },
+      { background: false },
+      function(err, results) {
+        console.log(results)
+      }
+    )
+  }
   const logs = db.collection('logs')
-  logs.find({ reads: { $exists: true }} ).each(async (err, doc) => {
-    if (doc) {
-      // Got a document
-      // console.log((++index) + " key: " + typeof doc.logTime)
-      // console.log((++index) + " key: " + doc._id)
-      // console.log(JSON.stringify(doc, null, 2))
-      // build update
-      let updateOne = {
+  logs.find().sort({'logTime': 1}).forEach((doc) => {
+    // Got a document
+    // console.log((++index) + " key: " + typeof doc.logTime)
+    // console.log((++index) + " key: " + doc._id)
+    // console.log(JSON.stringify(doc, null, 2))
+    // build update
+    const updateOne = {
+      updateOne: {
+        filter: { name: doc.name, logTime: doc.logTime },
+        update: {
+          $set: { name: doc.name, logTime: doc.logTime },
+          $inc: { count: 1 },
+          $min: {},
+          $max: {}
+        },
+        upsert: true
+      }
+    }
+    _.forEach(doc.reads, rtu => {
+      _.forEach(rtu.reads, reg => {
+        if (!rtu || ! reg || !rtu.name || !reg.name) {
+          console.log(doc._id)
+        } else {
+          const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
+          updateOne.updateOne.update.$inc[`reads.${key}.count`] = 1
+          updateOne.updateOne.update.$inc[`reads.${key}.total`] = reg.value
+          updateOne.updateOne.update.$min[`reads.${key}.min`] = reg.value
+          updateOne.updateOne.update.$max[`reads.${key}.max`] = reg.value
+        }
+      })
+    })
+    for (let b in buckets) {
+      const logTime = new Date(doc.logTime - doc.logTime % buckets[b])
+      const query = { name: doc.name, logTime: logTime }
+      const bupdateOne = {
         updateOne: {
-          filter: { name: doc.name, logTime: doc.logTime },
+          filter: query,
           update: {
-            $push: { logs: doc._id },
-            $set: { name: doc.name, logTime: doc.logTime },
-            $inc: {},
-            $min: {},
-            $max: {}
+            $set: query,
+            $inc: updateOne.updateOne.update.$inc,
+            $min: updateOne.updateOne.update.$min,
+            $max: updateOne.updateOne.update.$max
           },
           upsert: true
         }
       }
-      _.forEach(doc.reads, rtu => {
-        _.forEach(rtu.reads, reg => {
-          const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
-          updateOne.updateOne.update.$inc[`${key}.count`] = 1
-          updateOne.updateOne.update.$inc[`${key}.total`] = reg.value
-          updateOne.updateOne.update.$min[`${key}.min`] = reg.value
-          updateOne.updateOne.update.$max[`${key}.max`] = reg.value
-        })
-      })
-      for (b in buckets) {
-        let logTime = new Date(doc.logTime - doc.logTime % buckets[b])
-        let query = { name: doc.name, logTime: logTime }
-        let bupdateOne = {
-          updateOne: {
-            filter: query,
-            update: {
-              $push: { logs: doc._id },
-              $set: query,
-              $inc: updateOne.updateOne.update.$inc,
-              $min: updateOne.updateOne.update.$min,
-              $max: updateOne.updateOne.update.$max
-            },
-            upsert: true
-          }
-        }
-        bulkOps[b].push(bupdateOne)
-        if (bulkOps[b].length >= opsPerBatch) {
-          var result = db.collection(`logs.${b}`).bulkWrite(bulkOps[b])
+      bulkOps[b].push(bupdateOne)
+      if (bulkOps[b].length >= opsPerBatch) {
+        const promise = db.collection(`logs.${b}`).bulkWrite(bulkOps[b], {ordered: true}).then((result) => {
           if (b == '10s') {
-            result.then(result => {
+            if (result.writeErrors) {
               console.log(JSON.stringify(result.writeErrors, null, 2))
-              finishedBatches++
-              console.log(`finished: ${finishedBatches * opsPerBatch}`)
-            })
+            }
+            finishedBatches++
+            console.log(`finished: ${finishedBatches * opsPerBatch}`)
           }
-          bulkOps[b] = []
-        }
+        })
+        bulkOpsPromises.push(promise)
+        bulkOps[b] = []
       }
-    } else {
-      for (b in buckets) {
-        var result = await db.collection(`logs.${b}`).bulkWrite(bulkOps[b])
-        if (b == '10s') {
-          console.log(JSON.stringify(result.writeErrors, null, 2))
-        }
-      }
-      db.close()
-      // return false
     }
+  }, async (err) => {
+    for (b in buckets) {
+      const promise = await db.collection(`logs.${b}`).bulkWrite(bulkOps[b], {ordered: true}).then((result) => {
+        if (b == '10s') {
+          if (result.writeErrors) {
+            console.log(JSON.stringify(result.writeErrors, null, 2))
+          }
+          console.log(`finished: ${finishedBatches * opsPerBatch + bulkOps[b].length}`)
+        }
+      })
+      bulkOpsPromises.push(promise)
+    }
+    Primise.all(bulkOpsPromises).then(results => {
+      console.log('All done')
+      db.close()
+    })
+    // return false
   })
 });
