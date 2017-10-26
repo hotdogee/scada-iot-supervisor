@@ -132,7 +132,7 @@ MongoClient.connect(config.get('mongodb')).then(db => {
       })
       bulkOpsPromises.push(promise)
     }
-    Primise.all(bulkOpsPromises).then(results => {
+    Promise.all(bulkOpsPromises).then(results => {
       console.log('All done')
       db.close()
     })
