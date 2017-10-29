@@ -1,3 +1,4 @@
+require('dotenv').config()
 const MongoClient = require('mongodb').MongoClient
 const config = require('config')
 const _ = require('lodash')
@@ -35,12 +36,16 @@ const buckets = {
   '1m': 60 * 1000,
   '30s': 30 * 1000,
   '20s': 20 * 1000,
-  '10s': 10 * 1000
+  '10s': 10 * 1000,
+  'all': 1
 }
 
-MongoClient.connect(config.get('mongodb')).then(async db => {
+
+const mongodb = process.env.MONGODB || config.get('mongodb')
+logger.info(`Using: ${mongodb}`)
+MongoClient.connect(mongodb).then(async db => {
   for (b in buckets) {
-    let reply = await db.collection(`logs.${b}`).drop()
+    let reply = await db.collection(`logs.sanitized.${b}`).drop()
     logger.info(reply)
   }
   db.close()

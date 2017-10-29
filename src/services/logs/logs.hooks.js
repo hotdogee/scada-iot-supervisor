@@ -88,7 +88,8 @@ const buckets = {
   '1m': 60 * 1000,
   '30s': 30 * 1000,
   '20s': 20 * 1000,
-  '10s': 10 * 1000
+  '10s': 10 * 1000,
+  'all': 1
 }
 
 function upsertRollup(options = {}) {
@@ -172,7 +173,7 @@ function handleChart(options = {}) {
       // range in seconds
       let range = (end - start)
       // get bucket
-      let bucket = undefined // no bucket
+      let bucket = 'all' // no bucket
       for (b in buckets) {
         if (range / buckets[b] > canvasSize) {
           bucket = b
@@ -187,7 +188,7 @@ function handleChart(options = {}) {
         }
       }
       if (bucket) {
-        const collection = context.service.db.collection(`logs.${bucket}`)
+        const collection = context.service.db.collection(`logs.sanitized.${bucket}`)
         let result = {}
         let docs = await collection.find(query).sort({'logTime': 1}).toArray()
         _.forEach(docs, doc => {
@@ -205,7 +206,12 @@ function handleChart(options = {}) {
             result[key].push(point)
           })
         })
-        context.result = { bucket, start, end, data: result }
+        // sort keys
+        const headerRe = /^M(\d+)-([^-]+)-([^-]+)\(([^\(\)]*)\)$/
+        const sortedResult = _.sortBy(Object.keys(result), [k => {
+          return parseInt(headerRe.exec(k)[1])
+        }]).reduce((r, k) => (r[k] = result[k], r), {})
+        context.result = { bucket, start, end, data: sortedResult }
       } else {
         const collection = context.service.db.collection(`logs`)
         let result = {}
@@ -232,7 +238,12 @@ function handleChart(options = {}) {
             })
           })
         })
-        context.result = { bucket: null, start, end, data: result }
+        // sort keys
+        const headerRe = /^M(\d+)-([^-]+)-([^-]+)\(([^\(\)]*)\)$/
+        const sortedResult = _.sortBy(Object.keys(result), [k => {
+          return parseInt(headerRe.exec(k)[1])
+        }]).reduce((r, k) => (r[k] = result[k], r), {})
+        context.result = { bucket: null, start, end, data: sortedResult }
       }
     }
   }

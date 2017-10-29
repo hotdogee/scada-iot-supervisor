@@ -80,4 +80,9 @@ MongoClient.connect(config.get('mongodb')).then(db => {
       })
     }
   })
-});
+})
+
+// TODO: 三相功率>32000 -> 0
+// TODO: 溫度單位°C -> ℃
+// TODO: 修正質量流率
+// TODO: 一開始錯誤特高溫度
