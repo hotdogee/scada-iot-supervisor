@@ -40,7 +40,7 @@ const buckets = {
   '30s': 30 * 1000,
   '20s': 20 * 1000,
   '10s': 10 * 1000,
-  'all': 1
+  '1ms': 1
 }
 let bulkOps = {}
 for (let b in buckets) {
@@ -62,8 +62,10 @@ MongoClient.connect(mongodb).then(db => {
       }
     )
   }
+  // mongo
+  // db.logs.find({},{logTime: 1}).sort({logTime:-1}).limit(1).pretty()
   const logs = db.collection('logs')
-  logs.find().sort({'logTime': 1}).forEach((doc) => {
+  logs.find({ logTime: { $lte: new Date('2017-10-30T17:18:55.613Z') } }).sort({ logTime: 1 }).forEach((doc) => {
     // Got a document
     // console.log((++index) + " key: " + typeof doc.logTime)
     // console.log((++index) + " key: " + doc._id)
@@ -101,6 +103,9 @@ MongoClient.connect(mongodb).then(db => {
         } else if (reg.value != null) {
           if (reg.unit === '°C') { // 溫度單位°C -> ℃
             reg.unit = '℃'
+          }
+          if (rtu.addr === 9) { // M9 moved to M25
+            reg.addr = 25
           }
           const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
           updateOne.updateOne.update.$inc[`reads.${key}.count`] = 1

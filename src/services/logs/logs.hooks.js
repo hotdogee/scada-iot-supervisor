@@ -89,7 +89,7 @@ const buckets = {
   '30s': 30 * 1000,
   '20s': 20 * 1000,
   '10s': 10 * 1000,
-  'all': 1
+  '1ms': 1
 }
 
 function upsertRollup(options = {}) {
@@ -99,22 +99,27 @@ function upsertRollup(options = {}) {
     const options = { upsert: true }
     // build update
     let update = {
-      $push: { logs: data._id },
-      $set: {
-        name: data.name,
-        logTime: data.logTime
-      },
-      $inc: {},
+      $set: { name: data.name, logTime: data.logTime },
+      $inc: { count: 1 },
       $min: {},
       $max: {}
     }
     _.forEach(data.reads, rtu => {
       _.forEach(rtu.reads, reg => {
-        const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
-        update.$inc[`reads.${key}.count`] = 1
-        update.$inc[`reads.${key}.total`] = reg.value
-        update.$min[`reads.${key}.min`] = reg.value
-        update.$max[`reads.${key}.max`] = reg.value
+        if (!rtu || ! reg || !rtu.name || !reg.name) {
+          console.log(data._id)
+        } else if (reg.value > 30000 && (reg.unit === '' || reg.unit === 'kW')) {
+          // Ignore 三相功率 and 三相功因 > 30000
+        } else if (reg.value != null) {
+          if (reg.unit === '°C') { // 溫度單位°C -> ℃
+            reg.unit = '℃'
+          }
+          const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
+          update.$inc[`reads.${key}.count`] = 1
+          update.$inc[`reads.${key}.total`] = reg.value
+          update.$min[`reads.${key}.min`] = reg.value
+          update.$max[`reads.${key}.max`] = reg.value
+        }
       })
     })
     for (b in buckets) {
@@ -122,7 +127,7 @@ function upsertRollup(options = {}) {
       let query = { name: data.name, logTime: logTime }
       let bupdate = Object.assign({}, update)
       bupdate.$set = query
-      db.collection(`logs.${b}`).updateOne(query, bupdate, options)
+      db.collection(`logs.sanitized.${b}`).updateOne(query, bupdate, options)
     }
   }
 }
