@@ -45,8 +45,14 @@ const mongodb = process.env.MONGODB || config.get('mongodb')
 logger.info(`Using: ${mongodb}`)
 MongoClient.connect(mongodb).then(async db => {
   for (let b in buckets) {
-    let reply = await db.collection(`logs.sanitized.${b}`).drop()
-    logger.info(reply)
+    db.collection(`logs.sanitized.${b}`).createIndex(
+      { "logTime": 1 },
+      { background: false },
+      function(err, results) {
+        logger.info(results)
+      }
+    )
   }
-  db.close()
+  logger.info('All done')
+  // db.close()
 })

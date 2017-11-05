@@ -65,7 +65,7 @@ MongoClient.connect(mongodb).then(db => {
   // mongo
   // db.logs.find({},{logTime: 1}).sort({logTime:-1}).limit(1).pretty()
   const logs = db.collection('logs')
-  logs.find({ logTime: { $lte: new Date('2017-10-30T17:18:55.613Z') } }).sort({ logTime: 1 }).forEach((doc) => {
+  logs.find({ logTime: { $lte: new Date('2017-10-30T21:30:15.863Z') } }).sort({ logTime: 1 }).forEach((doc) => {
     // Got a document
     // console.log((++index) + " key: " + typeof doc.logTime)
     // console.log((++index) + " key: " + doc._id)
@@ -105,7 +105,7 @@ MongoClient.connect(mongodb).then(db => {
             reg.unit = '℃'
           }
           if (rtu.addr === 9) { // M9 moved to M25
-            reg.addr = 25
+            rtu.addr = 25
           }
           const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
           updateOne.updateOne.update.$inc[`reads.${key}.count`] = 1
@@ -168,4 +168,26 @@ MongoClient.connect(mongodb).then(db => {
       db.close()
     })
   })
-});
+})
+
+// TODO: 2017/11/2 8AM 前的流量要-2 tph
+
+// 782332 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: { $and: [ { value: { $gt: 30000 } }, {$or: [ { unit: "" }, { unit: "kW" } ]} ] } }}}}).count()
+// 1896 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: { $and: [ { value: { $gt: 30000 } }, {$and: [ { unit: { $ne: '' } }, { unit: { $ne: 'kW' } } ]} ] } }}}}).count()
+// 1896 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: { $and: [ { value: { $gt: 30000 } }, { $or: [ { unit: 'kg' }, { unit: 'm3' } ] } ] } }}}}).pretty().count()
+// 84003 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}},{reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}}).pretty()
+// 10170 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}},{reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}}).pretty()
+// 9155 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'bar' } }, { value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}},{reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'bar' } }, { value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}}).pretty()
+// 0 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'bar' } }, { unit: { $ne: 'm3/h' } }, { value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}},{reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'bar' } }, { unit: { $ne: 'm3/h' } }, { value: { $lt: 0 } }, { value: { $ne: -1 } }]} }}}}).pretty()
+// 73936 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'bar' } }, { unit: { $ne: 'm3/h' } }, { value: { $lt: 0 } }]} }}}},{reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'bar' } }, { unit: { $ne: 'm3/h' } }, { value: { $lt: 0 } }]} }}}}).pretty()
+// 0 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'Hz' } }, { unit: { $ne: 'bar' } }, { unit: { $ne: 'm3/h' } }, { value: { $lt: 0 } }]} }}}}, {reads: {$elemMatch: { reads: { $elemMatch: {$and: [{ unit: { $ne: 'Hz' } }, { unit: { $ne: 'bar' } }, { unit: { $ne: 'm3/h' } }, { value: { $lt: 0 } }]} }}}}).pretty()
+// 22666 = db.logs.find({reads: {$elemMatch: { reads: { $elemMatch: {unit: "°C"} }}}}).pretty()
+// 65384 = db.logs.find({ reads: { $elemMatch: { reads: { $elemMatch: { name: "質量流率", time: { $lt: new Date('2017-10-19T11:00:50.000Z') } } } } } }, { reads: { $elemMatch: { reads: { $elemMatch: { name: "質量流率", time: { $lt: new Date('2017-10-19T11:00:50.000Z') } } } } } }).pretty()
+// 1896 = db.logs.find({ reads: { $elemMatch: { reads: { $elemMatch: { unit: "kg/h", time: { $lt: new Date('2017-10-19T11:00:50.000Z') } } } } } }).sort({logTime:1}).limit(1).pretty()
+// ISODate("2017-09-20T07:44:51.560Z")
+// ISODate("2017-09-20T05:59:56.096Z")
+// 1895 = db.logs.find({ reads: { $elemMatch: { reads: { $elemMatch: { unit: "t/h", time: { $lt: new Date('2017-09-20T07:44:51.560Z') } } } } } }).count()
+// 1896 = db.logs.find({ reads: { $elemMatch: { reads: { $elemMatch: { unit: "t/h", time: { $lte: new Date('2017-09-20T07:44:51.560Z') } } } } } }).count()
+// 1896 = db.logs.find({ reads: { $elemMatch: { reads: { $elemMatch: { unit: "t/h", time: { $lt: new Date('2017-09-20T07:44:52.560Z') } } } } } }).count()
+//  = db.logs.find({ logTime: { $and: [{ $gt: new Date() }, { $lt: new Date() }]}, reads: { $elemMatch: { addr: 13, reads: { $elemMatch: { name: '壓力', value: { $gt: 8 } } } } } }).count()
+//  = db.logs.find().count()

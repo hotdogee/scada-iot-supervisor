@@ -110,6 +110,10 @@ function upsertRollup(options = {}) {
           console.log(data._id)
         } else if (reg.value > 30000 && (reg.unit === '' || reg.unit === 'kW')) {
           // Ignore 三相功率 and 三相功因 > 30000
+        } else if (reg.name === '溫度' && reg.value > 700) {
+          // Ignore 溫度 > 300
+        } else if (reg.value < 0 && (reg.unit === 'Hz' || reg.unit === 'bar' || reg.unit === 'm3/h')) {
+          // Ignore Hz, bar, m3/h < 0
         } else if (reg.value != null) {
           if (reg.unit === '°C') { // 溫度單位°C -> ℃
             reg.unit = '℃'
@@ -194,22 +198,89 @@ function handleChart(options = {}) {
       }
       if (bucket) {
         const collection = context.service.db.collection(`logs.sanitized.${bucket}`)
-        let result = {}
-        let docs = await collection.find(query).sort({'logTime': 1}).toArray()
+        const result = {}
+        const docs = await collection.find(query).sort({'logTime': 1}).toArray()
         _.forEach(docs, doc => {
-          let x = doc.logTime.getTime()
+          const x = doc.logTime.getTime()
           _.forEach(doc.reads, (stat, key) => {
             if (!result[key]) {
               result[key] = []
             }
-            let point = {
+            stat.avg = stat.total / stat.count
+            const point = {
               x: x,
-              y: stat.total / stat.count,
+              y: stat.avg,
               low: stat.min,
               high: stat.max
             }
             result[key].push(point)
           })
+          // calculate extra series
+          const m63kW = doc.reads['M63-發電機1-三相功率(kW)']
+          const m13bar = doc.reads['M13-渦輪1前-壓力(bar)']
+          const m14bar = doc.reads['M14-渦輪1後-壓力(bar)']
+          const m25tph = doc.reads['M25-主排水管-質量流率(t/h)']
+          let key = ''
+          // M100-功率壓力-計算(kW/bar)
+          //  = M63(kW)/(M13(bar)-M14(bar))
+          // if (m63kW && m13bar && m14bar) {
+          //   key = 'M100-功率壓力-計算(kW/bar)'
+          //   if (!result[key]) {
+          //     result[key] = []
+          //   }
+          //   const point = {
+          //     x: x,
+          //     y: m63kW.avg / (m13bar.avg - m14bar.avg),
+          //     low: m63kW.min / (m13bar.min - m14bar.min),
+          //     high: m63kW.max / (m13bar.max - m14bar.max)
+          //   }
+          //   result[key].push(point)
+          // }
+          // M101-功率壓力平方-計算(kW/bar2)
+          //  = M63(kW)/(M13(bar)-M14(bar))^2
+          if (m63kW && m13bar && m14bar) {
+            key = 'M101-功率/壓力平方-計算(kW/bar2)'
+            if (!result[key]) {
+              result[key] = []
+            }
+            const point = {
+              x: x,
+              y: m63kW.avg / Math.pow(m13bar.avg - m14bar.avg, 2),
+              low: m63kW.min / Math.pow(m13bar.min - m14bar.min, 2),
+              high: m63kW.max / Math.pow(m13bar.max - m14bar.max, 2)
+            }
+            result[key].push(point)
+          }
+          // M102-功率流量四次方-計算(kW/bar4)
+          //  = M25(t/h)/(M13(bar)-M14(bar))
+          // if (m63kW && m25tph) {
+          //   key = 'M102-功率流量四次方-計算(kW/tph4)'
+          //   if (!result[key]) {
+          //     result[key] = []
+          //   }
+          //   const point = {
+          //     x: x,
+          //     y: Math.pow(m63kW.avg, 0.25) / m25tph.avg,
+          //     low: Math.pow(m63kW.min, 0.25) / m25tph.min,
+          //     high: Math.pow(m63kW.max, 0.25) / m25tph.max
+          //   }
+          //   result[key].push(point)
+          // }
+          // M103-流量壓力根-計算(kW/bar0.5)
+          //  = M25(t/h)/(M13(bar)-M14(bar))^0.5
+          if (m25tph && m13bar && m14bar) {
+            key = 'M103-流量/壓力根-計算(tph/bar0.5)'
+            if (!result[key]) {
+              result[key] = []
+            }
+            const point = {
+              x: x,
+              y: m25tph.avg / Math.pow(m13bar.avg - m14bar.avg, 0.5),
+              low: m25tph.min / Math.pow(m13bar.min - m14bar.min, 0.5),
+              high: m25tph.max / Math.pow(m13bar.max - m14bar.max, 0.5)
+            }
+            result[key].push(point)
+          }
         })
         // sort keys
         const headerRe = /^M(\d+)-([^-]+)-([^-]+)\(([^\(\)]*)\)$/
