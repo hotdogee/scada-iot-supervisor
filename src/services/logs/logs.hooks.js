@@ -110,8 +110,8 @@ function upsertRollup(options = {}) {
           console.log(data._id)
         } else if (reg.value > 30000 && (reg.unit === '' || reg.unit === 'kW')) {
           // Ignore 三相功率 and 三相功因 > 30000
-        } else if (reg.name === '溫度' && reg.value > 700) {
-          // Ignore 溫度 > 300
+        } else if (reg.name === '溫度' && (reg.value > 700 || reg.value < -30)) {
+          // Ignore 溫度 > 700
         } else if (reg.value < 0 && (reg.unit === 'Hz' || reg.unit === 'bar' || reg.unit === 'm3/h')) {
           // Ignore Hz, bar, m3/h < 0
         } else if (reg.value != null) {

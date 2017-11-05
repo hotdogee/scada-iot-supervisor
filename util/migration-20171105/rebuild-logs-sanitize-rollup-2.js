@@ -24,24 +24,7 @@ let index = 0
 let opsPerBatch = 1000
 let finishedOps = 0
 
-const buckets = {
-  '1d': 60 * 60 * 24 * 1000,
-  '12h': 60 * 60 * 12 * 1000,
-  '6h': 60 * 60 * 6 * 1000,
-  '3h': 60 * 60 * 3 * 1000,
-  '2h': 60 * 60 * 2 * 1000,
-  '1h': 60 * 60 * 1000,
-  '30m': 60 * 30 * 1000,
-  '20m': 60 * 20 * 1000,
-  '10m': 60 * 10 * 1000,
-  '5m': 60 * 5 * 1000,
-  '2m': 60 * 2 * 1000,
-  '1m': 60 * 1000,
-  '30s': 30 * 1000,
-  '20s': 20 * 1000,
-  '10s': 10 * 1000,
-  '1ms': 1
-}
+const buckets = require('../lib/buckets')
 let bulkOps = {}
 for (let b in buckets) {
   bulkOps[b] = []
@@ -49,25 +32,33 @@ for (let b in buckets) {
 let bulkOpsPromises = []
 
 // {"_id":{"$oid":"59897c0e6280a159550356e4"}}
-
+// 1. Fix gps -2
+// 2. Ignore Hz == -1
+// 3. Ignore Temp > 700
+// remove log.sanitized in target date range and rebuild using new rules
 const mongodb = process.env.MONGODB || config.get('mongodb')
 logger.info(`Using: ${mongodb}`)
-MongoClient.connect(mongodb).then(db => {
+MongoClient.connect(mongodb).then(async db => {
+  const from = new Date('2017-11-03T02:28:23.000Z') // 2017-11-03 10:28:23.427
+  const to = new Date('2017-11-03T02:28:24.000Z') // 2017-11-03 10:28:23.427
+  // we need to remove all logs starting and ending at the largest bucket times
+  const bucketSize = buckets[Object.keys(buckets)[0]]
+  const fromBucket = new Date(from - from % bucketSize)
+  const toBucket = new Date(to - to % bucketSize + bucketSize)
+  const logTimeFilter = { $and: [{ logTime: { $gte: fromBucket } }, { logTime: { $lt: toBucket } }] }
+
+  const deleteManyPromises = []
   for (let b in buckets) {
-    db.collection(`logs.sanitized.${b}`).createIndex(
-      { "name": 1, "logTime": 1 },
-      { background: false },
-      function(err, results) {
-        console.log(results)
-      }
-    )
+    const promise = db.collection(`logs.sanitized.${b}`).deleteMany(logTimeFilter)
+      .then(logger.info(`Deleted logs.sanitized.${b} from ${fromBucket} to ${toBucket}`))
+    deleteManyPromises.push(promise)
   }
+  const deleteResults = await Promise.all(bulkOpsPromises)
+  console.log('Detele all done')
   // mongo
-  const from = new Date('2017-10-30T21:30:15.863Z')
-  const to = new Date('2017-10-30T21:30:15.863Z')
   // db.logs.find({},{logTime: 1}).sort({logTime:-1}).limit(1).pretty()
   const logs = db.collection('logs')
-  logs.find({ $or: [{ logTime: { $gte: from } }, { logTime: { $lte: to } }] }).sort({ logTime: 1 }).forEach((doc) => {
+  logs.find(logTimeFilter).sort({ logTime: 1 }).forEach((doc) => {
     // Got a document
     // console.log((++index) + " key: " + typeof doc.logTime)
     // console.log((++index) + " key: " + doc._id)
@@ -92,8 +83,8 @@ MongoClient.connect(mongodb).then(db => {
           console.log(doc._id)
         } else if (reg.value > 30000 && (reg.unit === '' || reg.unit === 'kW')) {
           // Ignore 三相功率 and 三相功因 > 30000
-        } else if (reg.name === '溫度' && reg.value > 300) {
-          // Ignore 溫度 > 300
+        } else if (reg.name === '溫度' && (reg.value > 400 || reg.value < -50)) {
+          // Ignore 溫度 > 400 or < -50
         } else if (reg.value < 0 && (reg.unit === 'Hz' || reg.unit === 'bar' || reg.unit === 'm3/h')) {
           // Ignore Hz, bar, m3/h < 0
         } else if (reg.unit === 't/h' && reg.time <= new Date('2017-09-20T07:44:52.560Z')) {
@@ -102,6 +93,9 @@ MongoClient.connect(mongodb).then(db => {
           // Bad sensor 移除錯誤 M13壓力
         } else if ((rtu.addr === 10 || rtu.addr === 14) && reg.name === '溫度' &&  reg.time <= new Date('2017-08-10T04:09:26.329Z')) {
           // Bad sensor 移除錯誤 M10溫度 M14溫度
+        } else if (rtu.addr === 13 && reg.name === '溫度' && reg.time >= new Date('2017-11-03T02:28:08.000Z') && reg.time <= new Date('2017-11-04T11:16:40.000Z')) {
+          // Bad sensor 移除錯誤 M13溫度  2017-11-03T02:28:08.898Z ~ 2017-11-04T11:16:39.079Z
+          // 2017-11-03T02:28:08.898Z 2017-11-03 10:28:08.898
         } else if (reg.value != null) {
           if (reg.unit === '°C') { // 溫度單位°C -> ℃
             reg.unit = '℃'
