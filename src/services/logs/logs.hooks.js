@@ -220,6 +220,24 @@ function handleChart(options = {}) {
           const m13bar = doc.reads['M13-渦輪1前-壓力(bar)']
           const m14bar = doc.reads['M14-渦輪1後-壓力(bar)']
           const m25tph = doc.reads['M25-主排水管-質量流率(t/h)']
+          const m64hz = doc.reads['M64-發電機1-頻率(Hz)']
+          const turbineRadius = 0.215 // m
+          const nozzleAngle = 30 / 180 * Math.PI // radians
+          const formulas = {
+            'M104-出噴嘴速度-計算(m/s)': (stat) => {
+              if (m63kW && m25tph && m64hz) {
+                const omega = 2 * Math.PI * m64hz[stat]
+                const torque = m63kW[stat] * 1000 / omega
+                const force = torque / turbineRadius
+                const kgs = m25tph[stat] * 1000 / 3600
+                const turbineSpeed = turbineRadius * omega
+                const v2 = (force / (2 * kgs) + turbineSpeed) / Math.cos(nozzleAngle)
+                // const v2 = ((m63kW[stat] * 1000) / (m64hz[stat] * m25tph[stat] * 2 * Math.PI * 0.215 * 2  * 1000 / 3600) + 0.215 * 2 * Math.PI * m64hz[stat]) / Math.cos(30 / 180 * Math.PI)
+                // m63kW[stat] / (m64hz[stat] * m25tph[stat]) + m64hz[stat]
+                return v2
+              }
+            }
+          }
           let key = ''
           // M100-功率壓力-計算(kW/bar)
           //  = M63(kW)/(M13(bar)-M14(bar))
@@ -280,6 +298,62 @@ function handleChart(options = {}) {
               high: m25tph.max / Math.pow(m13bar.max - m14bar.max, 0.5)
             }
             result[key].push(point)
+          }
+          // M104-出噴嘴速度-計算(m/s)
+          if (m63kW && m25tph && m64hz) {
+            key = 'M104-出噴嘴速度-計算(m/s)'
+            if (!result[key]) {
+              result[key] = []
+            }
+            const point = {
+              x: x,
+              y: formulas[key]('avg'),
+              low: formulas[key]('min'),
+              high: formulas[key]('max')
+            }
+            result[key].push(point)
+            // M105-速度壓力根-計算(ms/bar0.5)
+            if (m13bar && m14bar) {
+              key = 'M105-速度壓力根-計算(ms/bar0.5)'
+              if (!result[key]) {
+                result[key] = []
+              }
+              const point = {
+                x: x,
+                y: formulas['M104-出噴嘴速度-計算(m/s)']('avg') / Math.pow(m13bar.avg - m14bar.avg, 0.5),
+                low: formulas['M104-出噴嘴速度-計算(m/s)']('min') / Math.pow(m13bar.min - m14bar.min, 0.5),
+                high: formulas['M104-出噴嘴速度-計算(m/s)']('max') / Math.pow(m13bar.max - m14bar.max, 0.5)
+              }
+              result[key].push(point)
+            }
+            // // M106-速度壓力-計算(ms/bar)
+            // if (m13bar && m14bar) {
+            //   key = 'M106-速度壓力-計算(ms/bar)'
+            //   if (!result[key]) {
+            //     result[key] = []
+            //   }
+            //   const point = {
+            //     x: x,
+            //     y: formulas['M104-出噴嘴速度-計算(m/s)']('avg') / Math.pow(m13bar.avg - m14bar.avg, 1),
+            //     low: formulas['M104-出噴嘴速度-計算(m/s)']('min') / Math.pow(m13bar.min - m14bar.min, 1),
+            //     high: formulas['M104-出噴嘴速度-計算(m/s)']('max') / Math.pow(m13bar.max - m14bar.max, 1)
+            //   }
+            //   result[key].push(point)
+            // }
+            // // M107-速度壓力平方-計算(ms/bar2)
+            // if (m13bar && m14bar) {
+            //   key = 'M107-速度壓力平方-計算(ms/bar2)'
+            //   if (!result[key]) {
+            //     result[key] = []
+            //   }
+            //   const point = {
+            //     x: x,
+            //     y: formulas['M104-出噴嘴速度-計算(m/s)']('avg') / Math.pow(m13bar.avg - m14bar.avg, 2),
+            //     low: formulas['M104-出噴嘴速度-計算(m/s)']('min') / Math.pow(m13bar.min - m14bar.min, 2),
+            //     high: formulas['M104-出噴嘴速度-計算(m/s)']('max') / Math.pow(m13bar.max - m14bar.max, 2)
+            //   }
+            //   result[key].push(point)
+            // }
           }
         })
         // sort keys

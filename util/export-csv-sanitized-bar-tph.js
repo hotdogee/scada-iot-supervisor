@@ -12,7 +12,7 @@ const logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)({
         // setup console logging with timestamps
-        level: 'debug',
+        level: 'info',
         timestamp: function() {
           return (new Date()).toISOString()
         },
@@ -26,42 +26,35 @@ const logger = new (winston.Logger)({
 
 
 // cross-env MONGODB=mongodb://localhost:27017/scada-iot-20171105 node .\util\export-csv-sanitized.js
-const outdir = 'csv'
+const outdir = 'csv-bar-tph'
 // output to csv dir one file each day
 const mongodb = process.env.MONGODB || config.get('mongodb')
 logger.info(`Using: ${mongodb}`)
 MongoClient.connect(mongodb).then(async db => {
-  // intervel
-  const intervel = 60 * 60 * 24 * 1000 // 1d
-  const timezoneOffset = -60 * new Date().getTimezoneOffset() * 1000
   // get start and end
-  const bucket = '1ms'
+  const bucket = '10m'
   const logs = db.collection(`logs.sanitized.${bucket}`)
-  const firstLogTime = (await logs.find().sort({ logTime: 1 }).limit(1).next()).logTime
-  const lastLogTime = (await logs.find().sort({ logTime: -1 }).limit(1).next()).logTime
+  const firstLogTime = new Date('2017-10-19')
+  const lastLogTime = new Date('2017-11-03')
+  // intervel
+  const intervel = lastLogTime - firstLogTime
   // get csv fields
-  let fields = (await db.collection(`logs.sanitized.1d`).aggregate([
-    { $project: {
-      kv: { $objectToArray: "$reads" }
-    }},
-    { $unwind: "$kv"},
-    { $group: {
-      _id: "$kv.k"
-    }},
-    { $sort : { _id : 1 } },
-    { $group: {
-      _id: null,
-      fields: {
-        $push: "$_id"
-      }
-    }},
-  ]).next()).fields
+  //				
+  let fields = [
+    'M13-渦輪1前-壓力(bar)',
+    'M13-渦輪1前-溫度(℃)',
+    'M14-渦輪1後-壓力(bar)',
+    'M14-渦輪1後-溫度(℃)',
+    'M25-主排水管-密度(g/cm3)',
+    'M25-主排水管-質量流率(t/h)',
+    'M63-發電機1-三相功率(kW)'
+  ]
   // sort fields
   const headerRe = /^M(\d+)-([^-]+)-([^-]+)\(([^\(\)]*)\)$/
   const fieldNames = _.sortBy(fields, [k => {
     return parseInt(headerRe.exec(k)[1])
   }])
-  fields = _.map(fieldNames, key => `reads.${key}.total`)
+  fields = _.map(fieldNames, key => `reads.${key}`)
   // add logTime to front
   fields.unshift('logTime')
   fieldNames.unshift('logTime')
@@ -71,16 +64,28 @@ MongoClient.connect(mongodb).then(async db => {
   for (let fromTime = start; fromTime < lastLogTime; fromTime += intervel) {
     const from = new Date(fromTime)
     const to = new Date(fromTime + intervel)
-    const data = await logs.find({ $and: [{ logTime: { $gte: from } }, { logTime: { $lt: to } }] }).sort({ logTime: 1 }).toArray()
-    const csv = json2csv({
-      data, fields, fieldNames, withBOM: true
+    const data = await logs.find({ $and: [{ logTime: { $gte: from } }, { logTime: { $lt: to } }] })
+      .project(fields.reduce((r, k) => (r[k] = 1, r), {})).sort({ logTime: 1 }).toArray()
+    logger.debug(data.length, data[0])
+    const avgData = _.map(data, doc => {
+      _.forEach(doc.reads, (read, key) => {
+        doc.reads[key] = read.total / read.count
+      })
+      return doc
     })
+    logger.debug(avgData.length, avgData[0])
+    const csv = json2csv({
+      data: avgData, fields, fieldNames, withBOM: true
+    })
+    logger.debug(csv)
     // build filename
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-    const filename = from.toLocaleDateString('zh-TW', options).replace(/-/g,'')
-    const filepath = path.resolve(outdir, `logs-${filename}.csv`)
+    const fromDate = from.toLocaleDateString('zh-TW', options).replace(/-/g,'')
+    const toDate = to.toLocaleDateString('zh-TW', options).replace(/-/g,'')
+    const fileName = `logs-${bucket}-${fromDate}-${toDate}.csv`
+    const filepath = path.resolve(outdir, fileName)
     fs.writeFileSync(filepath, csv)
-    logger.info(path.join(outdir, `logs-${filename}.csv`))
+    logger.info(path.join(outdir, fileName))
   }
   db.close()
 })

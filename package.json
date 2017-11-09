@@ -25,6 +25,7 @@
     "test": "npm run eslint && npm run mocha",
     "eslint": "eslint src/. test/. --config .eslintrc.json",
     "start": "node src/",
+    "local": "cross-env MONGODB=mongodb://localhost:27017/scada-iot-20171107 node src/",
     "mocha": "mocha test/ --recursive"
   },
   "dependencies": {
@@ -58,6 +59,7 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
+    "cross-env": "^5.1.1",
     "eslint": "^4.3.0",
     "mocha": "^3.4.2",
     "request": "^2.81.0",
