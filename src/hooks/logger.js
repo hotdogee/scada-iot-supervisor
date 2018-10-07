@@ -18,22 +18,30 @@ const logger = new (winston.Logger)({
 
 module.exports = function () {
   return function (hook) {
-    let message = `${hook.type}: ${hook.path} - Method: ${hook.method}`;
+    let message = `${hook.type}: ${hook.path} - Method: ${hook.method}`
 
     if (hook.type === 'error') {
-      message += `: ${hook.error.message}`;
+      if (hook.error) {
+        if (hook.error.name) {
+          message += `: ${hook.error.name}`
+        }
+        if (hook.error.message) {
+          message += `: ${hook.error.message}`
+        }
+        if (hook.data && hook.data.name) {
+          message += `: ${hook.data.name}`
+        }
+      }
+      logger.error(message)
+    }
+    else {
+      logger.info(message)
     }
 
-    logger.info(message);
-    logger.debug('hook.data', hook.data);
-    logger.debug('hook.params', hook.params);
-
+    logger.debug('hook.data', hook.data)
+    logger.debug('hook.params', hook.params)
     if (hook.result) {
-      logger.debug('hook.result', hook.result);
-    }
-
-    if (hook.error) {
-      logger.error(hook.error);
+      logger.debug('hook.result', hook.result)
     }
   };
 };

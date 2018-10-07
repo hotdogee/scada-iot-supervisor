@@ -217,9 +217,12 @@ function handleChart(options = {}) {
           })
           // calculate extra series
           const m63kW = doc.reads['M63-發電機1-三相功率(kW)']
-          const m13bar = doc.reads['M13-渦輪1前-壓力(bar)']
-          const m14bar = doc.reads['M14-渦輪1後-壓力(bar)']
-          const m25tph = doc.reads['M25-主排水管-質量流率(t/h)']
+          // const m13bar = doc.reads['M13-渦輪1前-壓力(bar)']
+          // const m14bar = doc.reads['M14-渦輪1後-壓力(bar)']
+          // const m25tph = doc.reads['M25-主排水管-質量流率(t/h)']
+          const m13bar = doc.reads['M5-渦輪2前-壓力(bar)']
+          const m14bar = doc.reads['M6-渦輪2後-壓力(bar)']
+          const m25tph = doc.reads['M26-排水管2-流量(m3/h)']
           const m64hz = doc.reads['M64-發電機1-頻率(Hz)']
           const turbineRadius = 0.215 // m
           const nozzleAngle = 30 / 180 * Math.PI // radians
