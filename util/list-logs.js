@@ -29,6 +29,7 @@ localStorage.initSync();
 localStorage.setItem = localStorage.setItemSync
 localStorage.getItem = localStorage.getItemSync
 
+logger.info(`Connecting to feathers server: ${config.get('supervisor.url')}`)
 const socket = io(config.get('supervisor.url'))
 
 const supervisor = feathers()
@@ -60,8 +61,11 @@ supervisor.authenticate({
       // }
     }
   }
+  let start = new Date()
   logs.find(params).then(results => {
+    let elapsed = new Date() - start
     logger.info('Logs: ', results)
+    logger.info(`Elapsed: ${elapsed} ms`)
     process.exit()
   }).catch(err => {
     logger.error('logs.find:', err)

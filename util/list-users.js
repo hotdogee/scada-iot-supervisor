@@ -27,6 +27,7 @@ localStorage.initSync();
 localStorage.setItem = localStorage.setItemSync
 localStorage.getItem = localStorage.getItemSync
 
+logger.info(`Connecting to feathers server: ${config.get('supervisor.url')}`)
 const socket = io(config.get('supervisor.url'))
 
 const supervisor = feathers()
