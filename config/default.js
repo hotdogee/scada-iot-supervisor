@@ -44,7 +44,7 @@ module.exports = {
     // "url": "http://localhost:8081"
     url: 'https://scada2.hanl.in',
     options: {
-      path: '/api'
+      path: '/api/socket.io' // default: /socket.io
     }
   }
 }
