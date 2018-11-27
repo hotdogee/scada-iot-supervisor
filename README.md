@@ -4,26 +4,17 @@
 
 ## Endpoints
 
-https://scada.hanl.in - localhost:8080 - vue frontend
-https://api.scada.hanl.in - localhost:8081 - feathers backend
+https://scada.hanl.in - localhost:8083 - vue frontend
+https://scada.hanl.in/api - localhost:8081 - feathers backend
+https://scada.hanl.in/media - localhost:8085 - node-media-server
 https://line.scada.hanl.in - localhost:8082 - line webhook
 
-## Getting Started
+## PM2
 
-Getting up and running is as easy as 1, 2, 3.
+NODE_ENV=production pm2 start npm --name scada-iot-supervisor -- run start
 
-1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
-2. Install your dependencies
-
-    ```
-    cd path/to/scada-iot-supervisor; npm install
-    ```
-
-3. Start your app
-
-    ```
-    npm start
-    ```
+cd ../scada-iot-hmi
+NODE_ENV=production pm2 start /usr/bin/http-server --name scada-iot-hmi -- ./dist -p 8303 -d false
 
 ## Changelog
 
