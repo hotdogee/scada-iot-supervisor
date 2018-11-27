@@ -9,13 +9,16 @@ https://scada.hanl.in/api - localhost:8081 - feathers backend
 https://scada.hanl.in/media - localhost:8085 - node-media-server
 https://line.scada.hanl.in - localhost:8082 - line webhook
 
-## PM2
+## Setup server pm2
 
+cd scada-iot-supervisor
 NODE_ENV=production pm2 start npm --name scada-iot-supervisor -- run start
 
 cd ../scada-iot-hmi
 NODE_ENV=production pm2 start npm --name scada-iot-hmi -- run start
 NODE_ENV=production pm2 start /usr/bin/http-server --name scada-iot-hmi -- ./dist --push-state -c 60 -p 8303 -d false
+
+pm2 save
 
 ## Changelog
 
