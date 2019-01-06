@@ -11,10 +11,10 @@ const logger = new winston.Logger({
     new winston.transports.Console({
       // setup console logging with timestamps
       level: 'debug',
-      timestamp: function() {
+      timestamp: function () {
         return new Date().toISOString()
       },
-      formatter: function(options) {
+      formatter: function (options) {
         return (
           options.timestamp() +
           ' ' +
