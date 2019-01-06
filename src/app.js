@@ -40,9 +40,7 @@ app.use('/', feathers.static(app.get('public')));
 app.configure(hooks());
 app.configure(mongodb);
 app.configure(rest());
-app.configure(socketio({
-  path: '/api/'
-})); // socketio 2.0 now uses uws as default
+app.configure(socketio()) // socketio 2.0 now uses uws as default
 
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);

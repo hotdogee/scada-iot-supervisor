@@ -7,7 +7,7 @@ const auth = require('feathers-authentication-client')
 const io = require('socket.io-client')
 const config = require('config')
 const winston = require('winston')
-var logger = new winston.Logger({
+const logger = new winston.Logger({
   transports: [
     new winston.transports.Console({
       level: 'debug',

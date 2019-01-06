@@ -1,4 +1,4 @@
 module.exports = {
-  host: 'api.scada.hanl.in',
+  host: 'scada.hanl.in/api/',
   port: 8081
 }
