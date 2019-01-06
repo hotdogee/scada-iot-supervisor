@@ -7,7 +7,7 @@ const auth = require('feathers-authentication-client')
 const io = require('socket.io-client')
 const config = require('config')
 const winston = require('winston')
-var logger = new winston.Logger({
+const logger = new winston.Logger({
   transports: [
     new winston.transports.Console({
       level: 'debug',
@@ -49,20 +49,20 @@ const supervisor = feathers()
     })
   )
 
-var email = process.env.USERNAME || 'user@example.com'
-var password = process.env.PASSWORD || 'random!password'
-console.log(`User ${email}, Password ${password}`)
+const email = process.env.USERNAME || 'user@example.com'
+const password = process.env.PASSWORD || 'random!password'
+logger.info(`User ${email}, Password ${password}`)
 
 ;(async function (supervisor) {
   try {
     const token = await supervisor.authenticate({
       strategy: 'local',
-      email: email,
-      password: password
+      email,
+      password
     })
-    console.log('User is logged in:', token)
+    logger.info('User is logged in:', token)
   } catch (error) {
-    console.error('Error occurred:', error)
+    logger.error('Error occurred:', error)
   } finally {
     process.exit()
   }

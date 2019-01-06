@@ -42,7 +42,7 @@ module.exports = {
   mongodb: 'mongodb://localhost:27017/scada-iot',
   supervisor: {
     // "url": "http://localhost:8081"
-    url: 'https://scada2.hanl.in',
+    url: 'https://scada.hanl.in',
     options: {
       path: '/api/socket.io' // default: /socket.io
     }
