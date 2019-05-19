@@ -106,6 +106,15 @@ MongoClient.connect(mongodb).then(async db => {
         } else if (rtu.addr === 21 && reg.unit === '℃' &&
           new Date('2018-03-20T02:21:48.983Z') <= reg.time && reg.time <= new Date('2018-04-05T06:47:44.966Z')) {
           // Bad sensor 移除錯誤 M21溫度  2018-03-20T02:21:48.983Z ~ 2018-04-05T06:47:44.966Z
+        } else if (rtu.addr === 21 &&
+          new Date('2018-10-23T02:06:32.786Z') <= reg.time) {
+          // Sensor Removed M21-尾水箱  2018-10-23T02:06:32.786Z ~
+        } else if (rtu.addr === 10 &&
+          new Date('2018-10-18T01:18:38.924Z') <= reg.time) {
+          // Sensor Removed M10-上貨櫃前  2018-10-18T01:18:38.924Z ~
+        } else if (rtu.addr === 11 &&
+          new Date('2018-11-22T00:50:41.104Z') <= reg.time) {
+          // Sensor Removed M11-三桶前  2018-11-22T00:50:41.104Z ~
         } else if ([50, 51, 60, 61].includes(rtu.addr) && reg.unit === '℃' && 100 < reg.value) {
           // Ignore 軸心溫度 > 100
         } else if (Array.isArray(reg.value)) {
