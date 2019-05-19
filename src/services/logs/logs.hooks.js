@@ -110,10 +110,14 @@ function upsertRollup(options = {}) {
           console.log(data._id)
         } else if (reg.value > 30000 && (reg.unit === '' || reg.unit === 'kW')) {
           // Ignore 三相功率 and 三相功因 > 30000
-        } else if (reg.name === '溫度' && (reg.value > 700 || reg.value < -30)) {
-          // Ignore 溫度 > 700
+        } else if (reg.unit === '℃' && (reg.value > 700 || reg.value < -30)) {
+          // Ignore ℃ > 700
+        } else if (reg.unit === 'm3/h' && (reg.value > 50 || reg.value < -30)) {
+          // Ignore m3/h > 50
         } else if (reg.value < 0 && (reg.unit === 'Hz' || reg.unit === 'bar' || reg.unit === 'm3/h')) {
           // Ignore Hz, bar, m3/h < 0
+        } else if (Array.isArray(reg.value)) {
+          // Ignore arrays
         } else if (reg.value != null) {
           if (reg.unit === '°C') { // 溫度單位°C -> ℃
             reg.unit = '℃'
@@ -179,7 +183,7 @@ function handleChart(options = {}) {
           }
         })).data[0].logTime
       }
-      // range in seconds
+      // range in ms
       let range = (end - start)
       // get bucket
       let bucket = 'all' // no bucket
@@ -373,7 +377,7 @@ function handleChart(options = {}) {
           let x = doc.logTime.getTime()
           _.forEach(doc.reads, rtu => {
             _.forEach(rtu.reads, reg => {
-              if (!rtu || ! reg || !rtu.name || !reg.name) {
+              if (!rtu || ! reg || !rtu.name || !reg.name || Array.isArray(reg.value)) {
                 // console.log(doc._id)
               } else {
                 const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
