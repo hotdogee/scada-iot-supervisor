@@ -121,6 +121,15 @@ function upsertRollup(options = {}) {
         } else if (reg.value != null) {
           if (reg.unit === '°C') { // 溫度單位°C -> ℃
             reg.unit = '℃'
+          } else if (reg.unit === 'W') {
+            reg.unit = 'kW'
+            reg.value /= 1000
+          } else if (reg.unit === 'var') {
+            reg.unit = 'kvar'
+            reg.value /= 1000
+          } else if (reg.unit === 'VA') {
+            reg.unit = 'kVA'
+            reg.value /= 1000
           }
           const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
           update.$inc[`reads.${key}.count`] = 1
