@@ -114,30 +114,34 @@ function upsertRollup(options = {}) {
           // Ignore ℃ > 400, < 0
         } else if ([50, 51, 60, 61].includes(rtu.addr) && reg.unit === '℃' && 100 < reg.value) {
           // Ignore 軸心溫度 > 100
-        } else if (reg.unit === 'm3/h' && (reg.value > 50 || reg.value < -30)) {
-          // Ignore m3/h > 50
-        } else if (reg.value < 0 && (reg.unit === 'Hz' || reg.unit === 'bar' || reg.unit === 'm3/h')) {
-          // Ignore Hz, bar, m3/h < 0
+        } else if (reg.unit === 'm3/h' && (reg.value < 0 || 50 < reg.value)) {
+          // Ignore m3/h < 0, > 50
+        } else if (reg.unit === 'bar' && reg.value < 0.5) {
+          // Ignore bar < 0.5
+        } else if (reg.unit === 'Hz' && reg.value < 0) {
+          // Ignore Hz < 0
         } else if (Array.isArray(reg.value)) {
           // Ignore arrays
         } else if (reg.value != null) {
+          let unit = reg.unit
+          let value = reg.value
           if (reg.unit === '°C') { // 溫度單位°C -> ℃
-            reg.unit = '℃'
+            unit = '℃'
           } else if (reg.unit === 'W') {
-            reg.unit = 'kW'
-            reg.value /= 1000
+            unit = 'kW'
+            value /= 1000
           } else if (reg.unit === 'var') {
-            reg.unit = 'kvar'
-            reg.value /= 1000
+            unit = 'kvar'
+            value /= 1000
           } else if (reg.unit === 'VA') {
-            reg.unit = 'kVA'
-            reg.value /= 1000
+            unit = 'kVA'
+            value /= 1000
           }
-          const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
+          const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${unit})`
           update.$inc[`reads.${key}.count`] = 1
-          update.$inc[`reads.${key}.total`] = reg.value
-          update.$min[`reads.${key}.min`] = reg.value
-          update.$max[`reads.${key}.max`] = reg.value
+          update.$inc[`reads.${key}.total`] = value
+          update.$min[`reads.${key}.min`] = value
+          update.$max[`reads.${key}.max`] = value
         }
       })
     })
