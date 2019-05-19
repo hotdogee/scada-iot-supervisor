@@ -61,15 +61,23 @@ MongoClient.connect(mongodb).then(async db => {
     // // logger.info(`addr72_73: '${count}', '${start}', '${end}', '${JSON.stringify(addr72_73)}'`)
     // logger.info(`addr72_73: '${JSON.stringify(start)}', '${JSON.stringify(end)}', '${JSON.stringify(addr72_73)}'`)
 
-    // COUNT FREQ wrong unit = '%'
-    const freqpercent = { reads: { $elemMatch: { reads: { $elemMatch: { name : '頻率', unit: '%' } } } } }
-    const start = await logs.find(freqpercent).sort({ logTime: 1 }).limit(1).toArray()
-    // "logTime":"2019-05-08T01:54:58.784Z"
-    const end = await logs.find(freqpercent).sort({ logTime: -1 }).limit(1).toArray()
-    // "logTime":"2019-05-08T10:14:08.803Z"
-    const count = await logs.find(freqpercent).count()
+    // // COUNT FREQ wrong unit = '%'
+    // const freqpercent = { reads: { $elemMatch: { reads: { $elemMatch: { name : '頻率', unit: '%' } } } } }
+    // const start = await logs.find(freqpercent).sort({ logTime: 1 }).limit(1).toArray()
+    // // "logTime":"2019-05-08T01:54:58.784Z"
+    // const end = await logs.find(freqpercent).sort({ logTime: -1 }).limit(1).toArray()
+    // // "logTime":"2019-05-08T10:14:08.803Z"
+    // const count = await logs.find(freqpercent).count()
+    // // addr72_73 '16987'
+    // logger.info(`freqpercent: '${JSON.stringify(count)}', '${JSON.stringify(start)}', '${JSON.stringify(end)}', '${JSON.stringify(freqpercent)}'`)
+
+    // GET
+    // { 'reads.M2-手動���閥前-溫度(℃)': {$exists: true}}
+    // { 'logTime': ISODate("2017-11-02T16:29:18.192Z") }
+    const badName = { logTime: new Date('2017-11-02T16:29:18.192Z') }
+    const item = await logs.find(badName).toArray()
     // addr72_73 '16987'
-    logger.info(`freqpercent: '${JSON.stringify(count)}', '${JSON.stringify(start)}', '${JSON.stringify(end)}', '${JSON.stringify(freqpercent)}'`)
+    logger.info(`badName: '${JSON.stringify(item)}', '${JSON.stringify(badName)}'`)
   } catch (error) {
     logger.error(error)
   } finally {
