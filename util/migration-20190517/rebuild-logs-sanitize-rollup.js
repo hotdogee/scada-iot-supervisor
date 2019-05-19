@@ -1,3 +1,5 @@
+// cross-env MONGODB=mongodb://localhost:27017/scada-iot-20190514 node .\util\migration-20190517\rebuild-logs-sanitize-rollup.js
+// cross-env MONGODB=mongodb://localhost:27017/scada-iot-20190519 node .\util\migration-20190517\rebuild-logs-sanitize-rollup.js
 require('dotenv').config()
 const MongoClient = require('mongodb').MongoClient
 const config = require('config')
