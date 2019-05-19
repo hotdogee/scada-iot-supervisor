@@ -86,8 +86,8 @@ MongoClient.connect(mongodb).then(async db => {
         } else if (reg.unit === '℃' && (reg.value < 0 || 400 < reg.value)) {
           // '4489312' '{reads: {$elemMatch: { reads: { $elemMatch: {unit: '℃', value: { $gt: 400 }} }}}}'
           // Ignore 溫度 > 300
-        } else if (reg.unit === 'm3/h' && (reg.value < 0 || 60 < reg.value)) {
-          // Ignore m3/h < 0, > 60
+        } else if (reg.unit === 'm3/h' && (reg.value < 0 || 50 < reg.value)) {
+          // Ignore m3/h < 0, > 50
         } else if (reg.unit === 'bar' && reg.value < 0.5) {
           // Ignore bar < 0.5
         } else if (reg.unit === 'Hz' && reg.value < 0) {
@@ -108,6 +108,8 @@ MongoClient.connect(mongodb).then(async db => {
           // Bad sensor 移除錯誤 M21溫度  2018-03-20T02:21:48.983Z ~ 2018-04-05T06:47:44.966Z
         } else if ([50, 51, 60, 61].includes(rtu.addr) && reg.unit === '℃' && 100 < reg.value) {
           // Ignore 軸心溫度 > 100
+        } else if (Array.isArray(reg.value)) {
+          // Ignore arrays
         } else if (reg.value != null) {
           // if (reg.unit === '°C') { // 溫度單位°C -> ℃
           //   reg.unit = '℃'
@@ -125,8 +127,14 @@ MongoClient.connect(mongodb).then(async db => {
             reg.unit = 'kVA'
             reg.value /= 1000
           }
-          // { 'reads.M2-手動���閥前-溫度(℃)': {$exists: true}}
+          // { 'reads.M2-手動���閥前-溫度(℃)': {$exists: true} }
           // { 'logTime': ISODate("2017-11-02T16:29:18.192Z") }
+          // { 'reads.M6-渦輪2後-溫度(undefined)': {$exists: true} }
+          // { $and: [{ logTime: { $gte: ISODate("2018-03-16T16:42:39.312Z") } }, { logTime: { $lt: ISODate("2018-03-16T16:42:39.312Z") } }], 'reads.M6-渦輪2後-溫度(undefined)': {$exists: true},  }
+          // { 'logTime': ISODate("2018-03-16T16:42:39.312Z") }
+          // { 'reads.M10-���貨櫃前-壓力(bar)': {$exists: true} }
+          // M6-渦輪2後-溫度(undefined)
+          // M10-���貨櫃前-壓力(bar)
           const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
           bulkOp.updateOne.update.$inc[`reads.${key}.count`] = 1
           bulkOp.updateOne.update.$inc[`reads.${key}.total`] = reg.value
