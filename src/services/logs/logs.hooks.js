@@ -110,8 +110,10 @@ function upsertRollup(options = {}) {
           console.log(data._id)
         } else if (reg.value > 30000 && (reg.unit === '' || reg.unit === 'kW')) {
           // Ignore 三相功率 and 三相功因 > 30000
-        } else if (reg.unit === '℃' && (reg.value > 700 || reg.value < -30)) {
-          // Ignore ℃ > 700
+        } else if (reg.unit === '℃' && (reg.value < 0 || 400 < reg.value)) {
+          // Ignore ℃ > 400, < 0
+        } else if ([50, 51, 60, 61].includes(rtu.addr) && reg.unit === '℃' && 100 < reg.value) {
+          // Ignore 軸心溫度 > 100
         } else if (reg.unit === 'm3/h' && (reg.value > 50 || reg.value < -30)) {
           // Ignore m3/h > 50
         } else if (reg.value < 0 && (reg.unit === 'Hz' || reg.unit === 'bar' || reg.unit === 'm3/h')) {

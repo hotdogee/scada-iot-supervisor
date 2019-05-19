@@ -83,22 +83,31 @@ MongoClient.connect(mongodb).then(async db => {
           console.log(doc._id)
         } else if ((reg.unit === '' || reg.unit === 'kW') && 30000 < reg.value) {
           // Ignore 三相功率 and 三相功因 > 30000
-        } else if (reg.unit === '℃' && (reg.value < -300 || 400 < reg.value)) {
+        } else if (reg.unit === '℃' && (reg.value < 0 || 400 < reg.value)) {
           // '4489312' '{reads: {$elemMatch: { reads: { $elemMatch: {unit: '℃', value: { $gt: 400 }} }}}}'
           // Ignore 溫度 > 300
         } else if (reg.unit === 'm3/h' && (reg.value < 0 || 60 < reg.value)) {
           // Ignore m3/h < 0, > 60
-        } else if ((reg.unit === 'Hz' || reg.unit === 'bar') && reg.value < 0) {
-          // Ignore Hz, bar, m3/h < 0
+        } else if (reg.unit === 'bar' && reg.value < 0.5) {
+          // Ignore bar < 0.5
+        } else if (reg.unit === 'Hz' && reg.value < 0) {
+          // Ignore Hz < 0
         } else if (reg.unit === 't/h' && reg.time <= new Date('2017-09-20T07:44:52.560Z')) {
           // Ignore gpe data when we had an incorrect installation
         } else if (reg.unit === 'bar' && rtu.addr === 13 &&
           new Date('2017-08-08T15:40:22.634Z') <= reg.time && reg.time <= new Date('2017-08-10T08:00:23.344Z')) {
           // Bad sensor 移除錯誤 M13壓力
-        } else if ((rtu.addr === 10 || rtu.addr === 14) && reg.unit === '℃' &&  reg.time <= new Date('2017-08-10T04:09:26.329Z')) {
+        } else if ((rtu.addr === 10 || rtu.addr === 14) && reg.unit === '℃' &&
+          reg.time <= new Date('2017-08-10T04:09:26.329Z')) {
           // Bad sensor 移除錯誤 M10溫度 M14溫度
-        } else if (rtu.addr === 13 && reg.unit === '℃' && reg.time >= new Date('2017-11-03T02:28:22.000Z') && reg.time <= new Date('2017-11-04T11:16:40.000Z')) {
+        } else if (rtu.addr === 13 && reg.unit === '℃' &&
+          new Date('2017-11-03T02:28:22.000Z') <= reg.time && reg.time <= new Date('2017-11-04T11:16:40.000Z')) {
           // Bad sensor 移除錯誤 M13溫度  2017-11-03T02:28:23.427Z ~ 2017-11-04T11:16:39.079Z
+        } else if (rtu.addr === 21 && reg.unit === '℃' &&
+          new Date('2018-03-20T02:21:48.983Z') <= reg.time && reg.time <= new Date('2018-04-05T06:47:44.966Z')) {
+          // Bad sensor 移除錯誤 M21溫度  2018-03-20T02:21:48.983Z ~ 2018-04-05T06:47:44.966Z
+        } else if ([50, 51, 60, 61].includes(rtu.addr) && reg.unit === '℃' && 100 < reg.value) {
+          // Ignore 軸心溫度 > 100
         } else if (reg.value != null) {
           // if (reg.unit === '°C') { // 溫度單位°C -> ℃
           //   reg.unit = '℃'
@@ -106,7 +115,18 @@ MongoClient.connect(mongodb).then(async db => {
           if (rtu.addr === 9) { // M9 moved to M25
             // '517513' '{"reads":{"$elemMatch":{"addr":9}}}'
             rtu.addr = 25
+          } else if (reg.unit === 'W') {
+            reg.unit = 'kW'
+            reg.value /= 1000
+          } else if (reg.unit === 'var') {
+            reg.unit = 'kvar'
+            reg.value /= 1000
+          } else if (reg.unit === 'VA') {
+            reg.unit = 'kVA'
+            reg.value /= 1000
           }
+          // { 'reads.M2-手動���閥前-溫度(℃)': {$exists: true}}
+          // { 'logTime': ISODate("2017-11-02T16:29:18.192Z") }
           const key = `M${rtu.addr}-${rtu.name}-${reg.name}(${reg.unit})`
           bulkOp.updateOne.update.$inc[`reads.${key}.count`] = 1
           bulkOp.updateOne.update.$inc[`reads.${key}.total`] = reg.value
