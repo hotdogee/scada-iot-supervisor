@@ -155,6 +155,13 @@ function upsertRollup(options = {}) {
   }
 }
 
+function twoPlaces(point) {
+  point.y = Math.round(point.y * 100) / 100
+  point.low = Math.round(point.low * 100) / 100
+  point.high = Math.round(point.high * 100) / 100
+  return point
+}
+
 function handleChart(options = {}) {
   return async context => {
     const params = context.params
@@ -232,7 +239,7 @@ function handleChart(options = {}) {
               low: stat.min,
               high: stat.max
             }
-            result[key].push(point)
+            result[key].push(twoPlaces(point))
           })
           // calculate extra series
           const m63kW = doc.reads['M63-發電機1-三相功率(kW)']
@@ -289,7 +296,7 @@ function handleChart(options = {}) {
               low: m63kW.min / Math.pow(m13bar.min - m14bar.min, 2),
               high: m63kW.max / Math.pow(m13bar.max - m14bar.max, 2)
             }
-            result[key].push(point)
+            result[key].push(twoPlaces(point))
           }
           // M102-功率流量四次方-計算(kW/bar4)
           //  = M25(t/h)/(M13(bar)-M14(bar))
@@ -319,7 +326,7 @@ function handleChart(options = {}) {
               low: m25tph.min / Math.pow(m13bar.min - m14bar.min, 0.5),
               high: m25tph.max / Math.pow(m13bar.max - m14bar.max, 0.5)
             }
-            result[key].push(point)
+            result[key].push(twoPlaces(point))
           }
           // M104-出噴嘴速度-計算(m/s)
           if (m63kW && m25tph && m64hz) {
@@ -346,7 +353,7 @@ function handleChart(options = {}) {
                 low: formulas['M104-出噴嘴速度-計算(m/s)']('min') / Math.pow(m13bar.min - m14bar.min, 0.5),
                 high: formulas['M104-出噴嘴速度-計算(m/s)']('max') / Math.pow(m13bar.max - m14bar.max, 0.5)
               }
-              result[key].push(point)
+              result[key].push(twoPlaces(point))
             }
             // // M106-速度壓力-計算(ms/bar)
             // if (m13bar && m14bar) {
@@ -405,7 +412,7 @@ function handleChart(options = {}) {
                   low: reg.value,
                   high: reg.value
                 }
-                result[key].push(point)
+                result[key].push(twoPlaces(point))
               }
             })
           })
