@@ -1,8 +1,8 @@
-// Initializes the `users` service on path `/users`
+// Initializes the `images` service on path `/images`
 const createService = require('feathers-mongodb')
-const hooks = require('./users.hooks')
+const hooks = require('./images.hooks')
 // !<DEFAULT> code: imports
-// let $jsonSchema = require('./users.mongo')
+// let $jsonSchema = require('./images.mongo')
 // !end
 // !code: init // !end
 
@@ -14,16 +14,16 @@ let moduleExports = function (app) {
 
   // Initialize our service with any options it requires
   // !<DEFAULT> code: extend
-  app.use('/users', createService(options))
+  app.use('/images', createService(options))
   // !end
 
   // Get our initialized service so that we can register hooks
-  const service = app.service('users')
+  const service = app.service('images')
 
   // eslint-disable-next-line no-unused-vars
   let promise = mongoClient
     .then(db => {
-      return db.createCollection('users', {
+      return db.createCollection('images', {
         // !<DEFAULT> code: create_collection
         // validator: { $jsonSchema: $jsonSchema },
         // validationLevel: 'strict', // The MongoDB default

@@ -1,13 +1,19 @@
-const users = require('./users/users.service.js');
-const logs = require('./logs/logs.service.js');
-const plcs = require('./plcs/plcs.service.js');
-const rtus = require('./rtus/rtus.service.js');
-const rtuModels = require('./rtu-models/rtu-models.service.js');
-module.exports = function () {
-  const app = this; // eslint-disable-line no-unused-vars
-  app.configure(users);
-  app.configure(logs);
-  app.configure(plcs);
-  app.configure(rtus);
-  app.configure(rtuModels);
-};
+// Configure the Feathers services. (Can be re-generated.)
+const images = require('./images/images.service')
+const users = require('./users/users.service')
+
+// !code: imports // !end
+// !code: init // !end
+
+// eslint-disable-next-line no-unused-vars
+const moduleExports = function (app) {
+  app.configure(images)
+  app.configure(users)
+  // !code: func_return // !end
+}
+
+// !code: exports // !end
+module.exports = moduleExports
+
+// !code: funcs // !end
+// !code: end // !end

@@ -1,0 +1,61 @@
+{
+  "options": {
+    "ver": "1.0.0",
+    "inspectConflicts": false,
+    "semicolons": false,
+    "freeze": [],
+    "ts": false
+  },
+  "app": {
+    "environmentsAllowingSeedData": "test",
+    "seedData": true,
+    "name": "scada-iot-supervisor",
+    "description": "Project scada-iot-supervisor",
+    "src": "src",
+    "packager": "npm@>= 3.0.0",
+    "providers": [
+      "rest",
+      "socketio"
+    ]
+  },
+  "services": {
+    "users": {
+      "name": "users",
+      "nameSingular": "user",
+      "subFolder": "",
+      "fileName": "users",
+      "adapter": "mongodb",
+      "path": "/users",
+      "isAuthEntity": true,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "images": {
+      "name": "images",
+      "nameSingular": "image",
+      "subFolder": "",
+      "fileName": "images",
+      "adapter": "mongodb",
+      "path": "/images",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    }
+  },
+  "hooks": {},
+  "authentication": {
+    "strategies": [
+      "local",
+      "google",
+      "facebook"
+    ],
+    "entity": "users"
+  },
+  "connections": {
+    "mongodb": {
+      "database": "mongodb",
+      "adapter": "mongodb",
+      "connectionString": "mongodb://localhost:27017/scada-iot"
+    }
+  }
+}

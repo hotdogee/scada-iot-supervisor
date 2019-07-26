@@ -1,11 +1,6 @@
-// Hooks for service `users`. (Can be re-generated.)
+// Hooks for service `images`. (Can be re-generated.)
 const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
-// eslint-disable-next-line no-unused-vars
-const {
-  hashPassword,
-  protect
-} = require('@feathersjs/authentication-local').hooks
 const { ObjectID } = require('mongodb')
 // !code: imports // !end
 
@@ -20,7 +15,7 @@ const {
   validateCreate,
   validateUpdate,
   validatePatch
-} = require('./users.validate')
+} = require('./images.validate')
 /* eslint-enables no-unused-vars */
 // !end
 // !<DEFAULT> code: foreign_keys
@@ -32,30 +27,22 @@ const foreignKeys = []
 let moduleExports = {
   before: {
     // Your hooks should include:
-    //   find  : authenticate('jwt'), mongoKeys(ObjectID, foreignKeys)
-    //   get   : authenticate('jwt')
-    //   create: hashPassword()
-    //   update: hashPassword(), authenticate('jwt')
-    //   patch : hashPassword(), authenticate('jwt')
-    //   remove: authenticate('jwt')
+    //   all   : authenticate('jwt')
+    //   find  : mongoKeys(ObjectID, foreignKeys)
     // !<DEFAULT> code: before
-    all: [],
-    find: [authenticate('jwt'), mongoKeys(ObjectID, foreignKeys)],
-    get: [authenticate('jwt')],
-    create: [hashPassword()],
-    update: [hashPassword(), authenticate('jwt')],
-    patch: [hashPassword(), authenticate('jwt')],
-    remove: [authenticate('jwt')]
+    all: [authenticate('jwt')],
+    find: [mongoKeys(ObjectID, foreignKeys)],
+    get: [],
+    create: [],
+    update: [],
+    patch: [],
+    remove: []
     // !end
   },
 
   after: {
-    // Your hooks should include:
-    //   all   : protect('password') // Must always be the last hook
     // !<DEFAULT> code: after
-    all: [
-      protect('password') // Must always be the last hook
-    ],
+    all: [],
     find: [],
     get: [],
     create: [],

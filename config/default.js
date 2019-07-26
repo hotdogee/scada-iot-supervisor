@@ -1,36 +1,109 @@
+require('dotenv').config()
+
 module.exports = {
-  host: 'localhost',
-  port: 8081,
+  host: process.env.HOST || 'localhost',
+  port: process.env.PORT || '8681',
+  prefixPath: process.env.PREFIX_PATH || '',
   public: '../public/',
   paginate: {
-    default: 50,
-    max: 1000
+    default: 10,
+    max: 50
+  },
+  tests: {
+    environmentsAllowingSeedData: ['test']
   },
   authentication: {
-    secret: '8bded4c6c914cac7482dcaab4cb18028988374dafe4e1b57ed81c61a1f806889b4cb72ddc603489992db9b3de77fd2b7d7fb589eb9ab0a9713794f872694a9ff1022d5e420a926269d472173ec05b35514336f3e04b5b52f4a19451d68717e44495cdc90882d05d93b94ca866510969578bd405068810d613d9aaa892a8d44355727fb6ad9b66639d36bee3f4fd637aa108007e502c4dc68f2c63bcd326feb6480e18f520b5d538b55f5dc309ea9db73df5092587181a0ed241ac36ef3dae4d40aa884efd3caff27cc7aa3a17f2bda074f3e794f2cf61e9df89a56348c299dffcd03660e13f5b80d2cc2e516c9a7189ec9ca46e4cb944467d0212d0c39',
-    strategies: ['jwt', 'local'],
-    path: '/authentication',
+    entity: '\\user',
+    // entityId: '_id',
     service: 'users',
-    jwt: {
+    secret:
+      'e889da34fa082aac28663a15c32d634fdee607145490cab32e8a6e7343bbc78845f94d1ce451dbaba4ab20b07fdee28392c34bbe68c6ba4b3030d2c6c4cfa26102be1d6cd91a142c16c9b07fffead08ba04b60a3afa058e694b524c7dece4b4559958b716ba8b9abc24593fa57a767a1cbb8936ae7613544995b17741135c5f75cec4db9005fe295badcbc728579a6ab6a9595365804926396d3ebe520ff7c1cd7512a153efbedfb7b07ac319da11c67e4e6d05017cf6ba0b04bd2bd4ec917d87113a802c3aa8dc4575acde42bdffad357178c388d62886dc01ce8e5bc8e0d0ed04c57da6a6ce52aa82cf0d396de0f29268dcf83e46acbbb2107bda65d8748b8',
+    authStrategies: ['jwt', 'ecdsa', 'local'],
+    path: '/authentication',
+    jwtOptions: {
       header: {
-        type: 'access'
+        typ: 'access'
       },
-      audience: 'https://yourdomain.com',
-      subject: 'anonymous',
-      issuer: 'feathers',
+      // audience: 'api',
+      // subject: 'access', // subject is now set to userId
+      issuer: 'infans.io',
       algorithm: 'HS256',
-      expiresIn: '999d'
+      expiresIn: '30m' // expiresIn: '10s'
     },
     local: {
-      entity: 'user',
-      usernameField: 'email',
-      passwordField: 'password'
+      usernameField: 'accounts.value',
+      passwordField: '\\password'
     },
-    google: {
-      clientID: 'your google client id',
-      clientSecret: 'your google client secret',
-      successRedirect: '/',
-      scope: ['profile openid email']
+    oauth: {
+      redirect: process.env.UI_URL || '/',
+      defaults: {
+        // default
+        path: process.env.OAUTH_PATH || '/oauth',
+        // default
+        host:
+          process.env.OAUTH_HOST ||
+          `${process.env.HOST || 'localhost'}:${process.env.PORT || '8681'}`,
+        protocol:
+          process.env.OAUTH_PROTOCOL || process.env.NODE_ENV === 'production'
+            ? 'https'
+            : 'http' // transport: 'session'
+      },
+      google: {
+        key: process.env.GOOGLE_CLIENT_ID || 'your google client id',
+        secret: process.env.GOOGLE_CLIENT_SECRET || 'your google client secret',
+        scope: ['profile openid email'],
+        nonce: true,
+        custom_params: {
+          access_type: 'offline'
+        },
+        profileUrl: 'https://openidconnect.googleapis.com/v1/userinfo' // callback: 'http://localhost:6001/oauth/google/authenticate',
+        // redirect_uri: 'http://localhost:6001/oauth/google/callback'
+        // redirect_uri: 'https://dev2.infans.io/api/oauth/google/callback'
+      },
+      facebook: {
+        key: process.env.FACEBOOK_CLIENT_ID || 'your facebook client id',
+        secret:
+          process.env.FACEBOOK_CLIENT_SECRET || 'your facebook client secret',
+        scope: ['public_profile', 'email'],
+        profileUrl:
+          'https://graph.facebook.com/me?fields=id,email,first_name,last_name,short_name,name,middle_name,name_format,picture,permissions' // profileFields: [
+        //   'id',
+        //   'first_name',
+        //   'last_name',
+        //   'email',
+        //   'gender',
+        //   'birthday',
+        //   'picture',
+        //   'middle_name',
+        //   'name_format',
+        //   'name',
+        //   'short_name',
+        //   'permissions'
+        // ]
+        // redirect_uri: 'http://localhost:6001/oauth/facebook/callback'
+        // redirect_uri: 'https://dev2.infans.io/api/oauth/facebook/callback'
+      },
+      line: {
+        authorize_url: 'https://access.line.me/oauth2/v2.1/authorize',
+        access_url: 'https://api.line.me/oauth2/v2.1/token',
+        oauth: 2,
+        state: true,
+        scope_delimiter: ' ',
+        key: process.env.LINE_CLIENT_ID || 'your line client id',
+        secret: process.env.LINE_CLIENT_SECRET || 'your line client secret',
+        scope: ['profile openid email'],
+        nonce: true,
+        profileUrl: 'https://api.line.me/v2/profile' // redirect_uri: 'http://localhost:6001/oauth/line/callback'
+        // redirect_uri: 'https://dev2.infans.io/api/oauth/line/callback'
+      },
+      twitter: {
+        key: process.env.TWITTER_CLIENT_ID || 'your twitter client id',
+        secret:
+          process.env.TWITTER_CLIENT_SECRET || 'your twitter client secret',
+        profileUrl:
+          'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true&skip_status=true&include_entities=false' // redirect_uri: 'http://localhost:6001/oauth/twitter/callback'
+        // redirect_uri: 'https://dev2.infans.io/api/oauth/twitter/callback'
+      }
     },
     cookie: {
       enabled: true,
@@ -39,12 +112,10 @@ module.exports = {
       secure: false
     }
   },
-  mongodb: 'mongodb://localhost:27017/scada-iot',
-  supervisor: {
-    // "url": "http://localhost:8081"
-    url: 'https://scada.hanl.in',
-    options: {
-      path: '/api/socket.io' // default: /socket.io
-    }
-  }
+  vapid: {
+    subject: 'VAPID_SUBJECT',
+    private: 'VAPID_PRIVATE',
+    public: 'VAPID_PUBLIC'
+  },
+  mongodb: 'MONGODB'
 }
