@@ -1,8 +1,8 @@
 {
   "name": "scada-iot-supervisor",
-  "description": "Project scada-iot-supervisor",
+  "description": "SCADA/IoT Supervisor System",
   "version": "0.1.0",
-  "homepage": "",
+  "homepage": "https://scada.hanl.in",
   "main": "src",
   "keywords": [
     "feathers"
