@@ -42,13 +42,13 @@ const formatConsole = format((info, opts = {}) => {
   const padding = (info.padding && info.padding[info.level]) || ''
   if (stringifiedRest !== '{}') {
     const rest = inspect(JSON.parse(stringifiedRest), false, 2, true)
-    info[MESSAGE] = `${localISOTime} ${label}${level} ${padding} ${
-      info.message
-    } ${rest} ${ms}`
+    info[
+      MESSAGE
+    ] = `${localISOTime} ${label}${level} ${padding} ${info.message} ${rest} ${ms}`
   } else {
-    info[MESSAGE] = `${localISOTime} ${label}${level} ${padding} ${
-      info.message
-    } ${ms}`
+    info[
+      MESSAGE
+    ] = `${localISOTime} ${label}${level} ${padding} ${info.message} ${ms}`
   }
 
   return info

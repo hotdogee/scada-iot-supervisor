@@ -73,9 +73,7 @@ module.exports = async function (app) {
             const deleted = await service._remove(null)
             const result = await service._create(fakeData[name])
             console.log(
-              `Seeded service ${name} on path ${path} deleting ${
-                deleted.length
-              } records, adding ${result.length}.`
+              `Seeded service ${name} on path ${path} deleting ${deleted.length} records, adding ${result.length}.`
             )
             // !end
           } catch (err) {
