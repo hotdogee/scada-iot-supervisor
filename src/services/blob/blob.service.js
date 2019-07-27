@@ -45,8 +45,9 @@ const moduleExports = function (app) {
     ]),
     // transfer the received file to feathers
     function (req, res, next) {
-      console.log('req.files', req.files)
-      req.feathers.file = req.files.blob[0]
+      app.info('req.files', req.files)
+      app.info('req.body', req.body)
+      req.feathers.file = req.files ? req.files.file[0] : ''
       next()
     },
     createService(options)

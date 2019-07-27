@@ -80,41 +80,6 @@ module.exports = {
       name: 'feathers-jwt',
       httpOnly: false,
       secure: false
-    },
-    strategies: ['jwt', 'local'],
-    jwt: {
-      header: {
-        typ: 'access'
-      },
-      audience: 'api',
-      subject: 'access',
-      issuer: 'feathers',
-      algorithm: 'HS256',
-      expiresIn: '30m'
-    },
-    google: {
-      clientID: 'your google client id',
-      clientSecret: 'your google client secret',
-      successRedirect: '/',
-      scope: ['profile openid email']
-    },
-    facebook: {
-      clientID: 'your facebook client id',
-      clientSecret: 'your facebook client secret',
-      successRedirect: '/',
-      scope: ['public_profile', 'email'],
-      profileFields: [
-        'id',
-        'displayName',
-        'first_name',
-        'last_name',
-        'email',
-        'gender',
-        'profileUrl',
-        'birthday',
-        'picture',
-        'permissions'
-      ]
     }
   },
   vapid: {

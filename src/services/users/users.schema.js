@@ -8,11 +8,17 @@ const schema = {
   title: 'Users',
   description: 'Users database.',
   // !end
-  // !code: schema_definitions // !end
+  // !code: schema_definitions
+  fakeRecords: 20,
+  // !end
 
   // Required fields.
   required: [
-    // !code: schema_required // !end
+    // !code: schema_required
+    'accounts',
+    'password',
+    'locale'
+    // !end
   ],
   // Fields with unique values.
   uniqueItemProperties: [
@@ -21,7 +27,74 @@ const schema = {
 
   // Fields in the model.
   properties: {
-    // !code: schema_properties // !end
+    // !code: schema_properties
+    _id: { type: 'ID' },
+    accountSelected: { type: 'number' },
+    accounts: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['type', 'value'],
+        properties: {
+          type: {
+            type: 'string',
+            enum: ['email', 'mobile', 'nationalId', 'passportId']
+          },
+          value: { type: 'string' },
+          verificationId: { type: 'ID' }
+        }
+      }
+    },
+    password: {
+      type: 'string',
+      minLength: 8,
+      chance: { hash: { length: 60 } }
+    },
+    tfa: {},
+    authorizationSelected: { type: 'number' },
+    authorizations: {
+      type: 'array',
+      maxItems: 100,
+      items: {
+        type: 'object',
+        required: ['role', 'org'],
+        properties: {
+          role: {
+            type: 'string',
+            faker: { fk: 'roles:random' }
+          },
+          org: {
+            type: 'string',
+            faker: { fk: 'orgs:random' }
+          },
+          patientId: {
+            type: 'number'
+            // faker: { fk: 'orgs:random' }
+          }
+        }
+      }
+    },
+    locale: { type: 'string' },
+    avatar: {
+      type: 'ID'
+      /*, faker: { fk: 'images:random' } */
+    },
+    fullName: {
+      type: 'string',
+      minLength: 2,
+      maxLength: 15,
+      faker: 'name.findName'
+    },
+    displayName: {
+      type: 'string',
+      minLength: 2,
+      maxLength: 30,
+      faker: 'internet.userName'
+    },
+    birthday: { type: 'string', format: 'date-time', faker: 'date.past' },
+    created: { type: 'string', format: 'date-time', default: Date.now },
+    updated: { type: 'string', format: 'date-time', default: Date.now }
+    // !end
     // !<DEFAULT> code: schema_more
   }
   // !end
