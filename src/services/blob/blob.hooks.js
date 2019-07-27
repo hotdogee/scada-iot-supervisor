@@ -1,7 +1,9 @@
 // Hooks for service `blob`. (Can be re-generated.)
 const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
-// !code: imports // !end
+// !code: imports
+const dauria = require('dauria')
+// !end
 
 // !<DEFAULT> code: used
 // eslint-disable-next-line no-unused-vars
@@ -28,7 +30,7 @@ const moduleExports = {
     all: [authenticate('jwt')],
     find: [],
     get: [],
-    create: [],
+    create: [fileToUri],
     update: [],
     patch: [],
     remove: []
@@ -40,7 +42,9 @@ const moduleExports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [
+      removeUri
+    ],
     update: [],
     patch: [],
     remove: []
@@ -65,5 +69,20 @@ const moduleExports = {
 // !code: exports // !end
 module.exports = moduleExports
 
-// !code: funcs // !end
+// !code: funcs
+function fileToUri (context) {
+  if (!context.data.uri && context.params.file) {
+    // console.log(context.data)
+    const file = context.params.file
+    const uri = dauria.getBase64DataURI(file.buffer, file.mimetype)
+    context.data.uri = uri
+  }
+}
+
+function removeUri (context) {
+  if (context.result && context.result.uri) {
+    delete context.result.uri
+  }
+}
+// !end
 // !code: end // !end
