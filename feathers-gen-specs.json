@@ -40,6 +40,17 @@
       "isAuthEntity": false,
       "requiresAuth": true,
       "graphql": true
+    },
+    "blob": {
+      "name": "blob",
+      "nameSingular": "blob",
+      "subFolder": "",
+      "fileName": "blob",
+      "adapter": "generic",
+      "path": "/blob",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
     }
   },
   "hooks": {},

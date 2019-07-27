@@ -1,4 +1,5 @@
 // Configure the Feathers services. (Can be re-generated.)
+const blob = require('./blob/blob.service')
 const images = require('./images/images.service')
 const users = require('./users/users.service')
 
@@ -7,6 +8,7 @@ const users = require('./users/users.service')
 
 // eslint-disable-next-line no-unused-vars
 const moduleExports = function (app) {
+  app.configure(blob)
   app.configure(images)
   app.configure(users)
   // !code: func_return // !end

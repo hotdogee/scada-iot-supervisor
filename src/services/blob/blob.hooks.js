@@ -1,12 +1,11 @@
-// Hooks for service `images`. (Can be re-generated.)
+// Hooks for service `blob`. (Can be re-generated.)
 const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
-const { ObjectID } = require('mongodb')
 // !code: imports // !end
 
 // !<DEFAULT> code: used
 // eslint-disable-next-line no-unused-vars
-const { iff, mongoKeys } = commonHooks
+const { iff } = commonHooks
 /* eslint-disable no-unused-vars */
 const {
   create,
@@ -15,23 +14,19 @@ const {
   validateCreate,
   validateUpdate,
   validatePatch
-} = require('./images.validate')
+} = require('./blob.validate')
 /* eslint-enables no-unused-vars */
 // !end
-// !<DEFAULT> code: foreign_keys
-// eslint-disable-next-line no-unused-vars
-const foreignKeys = []
-// !end
+
 // !code: init // !end
 
 const moduleExports = {
   before: {
     // Your hooks should include:
     //   all   : authenticate('jwt')
-    //   find  : mongoKeys(ObjectID, foreignKeys)
     // !<DEFAULT> code: before
     all: [authenticate('jwt')],
-    find: [mongoKeys(ObjectID, foreignKeys)],
+    find: [],
     get: [],
     create: [],
     update: [],

@@ -29,7 +29,7 @@ const foreignKeys = []
 // !end
 // !code: init // !end
 
-let moduleExports = {
+const moduleExports = {
   before: {
     // Your hooks should include:
     //   find  : authenticate('jwt'), mongoKeys(ObjectID, foreignKeys)

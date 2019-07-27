@@ -11,7 +11,7 @@ const ajv = require('ajv')
 const ID = 'string'
 // !end
 
-let base = merge(
+const base = merge(
   {},
   // !<DEFAULT> code: base
   {
@@ -27,21 +27,21 @@ let base = merge(
 )
 // !code: base_change // !end
 
-let create = merge(
+const create = merge(
   {},
   // !<DEFAULT> code: create_more
   base
   // !end
 )
 
-let update = merge(
+const update = merge(
   {},
   // !<DEFAULT> code: update_more
   base
   // !end
 )
 
-let patch = merge(
+const patch = merge(
   {},
   // !<DEFAULT> code: patch_more
   base
@@ -50,25 +50,25 @@ let patch = merge(
 delete patch.required
 // !code: all_change // !end
 
-let validateCreate = options => {
+const validateCreate = (options) => {
   // !<DEFAULT> code: func_create
   return validateSchema(create, ajv, options)
   // !end
 }
 
-let validateUpdate = options => {
+const validateUpdate = (options) => {
   // !<DEFAULT> code: func_update
   return validateSchema(update, ajv, options)
   // !end
 }
 
-let validatePatch = options => {
+const validatePatch = (options) => {
   // !<DEFAULT> code: func_patch
   return validateSchema(patch, ajv, options)
   // !end
 }
 
-let quickValidate = (method, data, options) => {
+const quickValidate = (method, data, options) => {
   try {
     if (method === 'create') {
       validateCreate(options)({ type: 'before', method: 'create', data })
@@ -85,7 +85,7 @@ let quickValidate = (method, data, options) => {
 }
 // !code: validate_change // !end
 
-let moduleExports = {
+const moduleExports = {
   // !<DEFAULT> code: moduleExports
   create,
   update,

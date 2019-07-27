@@ -12,7 +12,7 @@ const DataTypes = Sequelize.DataTypes
 //   password:   { type: DataTypes.STRING, allowNull: false },
 //   googleId:   { type: DataTypes.STRING },
 //   facebookId: { type: DataTypes.STRING },
-let moduleExports = merge(
+const moduleExports = merge(
   {},
   // !<DEFAULT> code: sequelize_model
   {

@@ -1,5 +1,5 @@
 /* eslint quotes: 0 */
-// Validation definitions for validateSchema hook for service `images`. (Can be re-generated.)
+// Validation definitions for validateSchema hook for service `blob`. (Can be re-generated.)
 const { validateSchema } = require('feathers-hooks-common')
 const merge = require('lodash.merge')
 const ajv = require('ajv')
@@ -15,8 +15,8 @@ const base = merge(
   {},
   // !<DEFAULT> code: base
   {
-    title: 'Images',
-    description: 'Images database.',
+    title: 'Blob',
+    description: 'Blob database.',
     required: [],
     uniqueItemProperties: [],
     properties: {}

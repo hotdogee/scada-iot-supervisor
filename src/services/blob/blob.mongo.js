@@ -1,8 +1,6 @@
 /* eslint quotes: 0 */
-// Defines Mongoose model for service `images`. (Can be re-generated.)
+// Defines the MongoDB $jsonSchema for service `blob`. (Can be re-generated.)
 const merge = require('lodash.merge')
-// eslint-disable-next-line no-unused-vars
-const mongoose = require('mongoose')
 // !code: imports // !end
 // !code: init // !end
 
@@ -10,6 +8,13 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: model
   {
+    bsonType: 'object',
+    additionalProperties: false,
+    properties: {
+      _id: {
+        bsonType: 'objectId'
+      }
+    }
     // !end
     // !<DEFAULT> code: moduleExports
   }

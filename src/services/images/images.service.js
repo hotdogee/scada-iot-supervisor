@@ -2,14 +2,14 @@
 const createService = require('feathers-mongodb')
 const hooks = require('./images.hooks')
 // !<DEFAULT> code: imports
-// let $jsonSchema = require('./images.mongo')
+// const $jsonSchema = require('./images.mongo')
 // !end
 // !code: init // !end
 
-let moduleExports = function (app) {
-  let paginate = app.get('paginate')
-  let mongoClient = app.get('mongoClient')
-  let options = { paginate }
+const moduleExports = function (app) {
+  const paginate = app.get('paginate')
+  const mongoClient = app.get('mongoClient')
+  const options = { paginate }
   // !code: func_init // !end
 
   // Initialize our service with any options it requires
@@ -21,8 +21,8 @@ let moduleExports = function (app) {
   const service = app.service('images')
 
   // eslint-disable-next-line no-unused-vars
-  let promise = mongoClient
-    .then(db => {
+  const promise = mongoClient
+    .then((db) => {
       return db.createCollection('images', {
         // !<DEFAULT> code: create_collection
         // validator: { $jsonSchema: $jsonSchema },
@@ -31,7 +31,7 @@ let moduleExports = function (app) {
         // !end
       })
     })
-    .then(serviceModel => {
+    .then((serviceModel) => {
       service.Model = serviceModel
     })
 

@@ -7,7 +7,7 @@ const DataTypes = Sequelize.DataTypes
 // !code: imports // !end
 // !code: init // !end
 
-let moduleExports = merge(
+const moduleExports = merge(
   {},
   // !<DEFAULT> code: sequelize_model
   {

@@ -3,7 +3,7 @@
 // !code: init // !end
 
 // Define the model using JSON-schema
-let schema = {
+const schema = {
   // !<DEFAULT> code: schema_header
   title: 'Users',
   description: 'Users database.',
@@ -28,7 +28,7 @@ let schema = {
 }
 
 // Define optional, non-JSON-schema extensions.
-let extensions = {
+const extensions = {
   // GraphQL generation.
   graphql: {
     // !code: graphql_header
@@ -59,7 +59,7 @@ let extensions = {
 
 // !code: more // !end
 
-let moduleExports = {
+const moduleExports = {
   // !<DEFAULT> code: moduleExports
   schema,
   extensions

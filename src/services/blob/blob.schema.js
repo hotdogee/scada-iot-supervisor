@@ -1,12 +1,12 @@
-// Define the Feathers schema for service `images`. (Can be re-generated.)
+// Define the Feathers schema for service `blob`. (Can be re-generated.)
 // !code: imports // !end
 // !code: init // !end
 
 // Define the model using JSON-schema
 const schema = {
   // !<DEFAULT> code: schema_header
-  title: 'Images',
-  description: 'Images database.',
+  title: 'Blob',
+  description: 'Blob database.',
   // !end
   // !code: schema_definitions // !end
 
@@ -32,12 +32,12 @@ const extensions = {
   // GraphQL generation.
   graphql: {
     // !code: graphql_header
-    name: 'Image',
+    name: 'Blob',
     service: {
       sort: { _id: 1 }
     },
     // sql: {
-    //   sqlTable: 'Images',
+    //   sqlTable: 'Blob',
     //   uniqueKey: '_id',
     //   sqlColumn: {
     //     __authorId__: '__author_id__',

@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 // !code: imports // !end
 // !code: init // !end
 
-let moduleExports = merge(
+const moduleExports = merge(
   {},
   // !<DEFAULT> code: model
   {

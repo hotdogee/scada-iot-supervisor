@@ -31,5 +31,27 @@ This project uses a custom modification of @feathers-plus/cli to support:
 
 ```
 # Generate a new service with its model
-node ..\feathers-plus-cli g service
+node ..\..\feathers-plus-cli g service
 ```
+
+# Services
+
+## blob
+
+POST /blob
+{
+  type: 'image',
+  timestamp: new Date(),
+  metadata: {
+    name: 'cam1'
+  },
+  file: stream
+}
+
+## images
+
+POST /images
+body {
+  type: 'camera'
+  
+}

@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 module.exports = {
   mongodb: 'mongodb://no-connection-string-config-test',
   mysql: 'mysql://root:@no-connection-string-config-test',

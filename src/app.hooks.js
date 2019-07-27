@@ -14,7 +14,7 @@ const { iff } = commonHooks
 
 const moduleExports = {
   before: {
-    // !<DEFAULT> code: before
+    // !code: before
     all: [
       log(),
       // if accessToken is provided authenticate('jwt'), throws 401: NotAuthenticated

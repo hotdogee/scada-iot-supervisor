@@ -1,5 +1,5 @@
 /* eslint quotes: 0 */
-// Defines Mongoose model for service `images`. (Can be re-generated.)
+// Defines Mongoose model for service `blob`. (Can be re-generated.)
 const merge = require('lodash.merge')
 // eslint-disable-next-line no-unused-vars
 const mongoose = require('mongoose')

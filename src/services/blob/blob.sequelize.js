@@ -1,14 +1,15 @@
 /* eslint quotes: 0 */
-// Defines Mongoose model for service `images`. (Can be re-generated.)
+// Defines Sequelize model for service `blob`. (Can be re-generated.)
 const merge = require('lodash.merge')
+const Sequelize = require('sequelize')
 // eslint-disable-next-line no-unused-vars
-const mongoose = require('mongoose')
+const DataTypes = Sequelize.DataTypes
 // !code: imports // !end
 // !code: init // !end
 
 const moduleExports = merge(
   {},
-  // !<DEFAULT> code: model
+  // !<DEFAULT> code: sequelize_model
   {
     // !end
     // !<DEFAULT> code: moduleExports
