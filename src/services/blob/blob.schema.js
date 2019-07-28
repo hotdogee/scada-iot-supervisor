@@ -21,7 +21,13 @@ const schema = {
 
   // Fields in the model.
   properties: {
-    // !code: schema_properties // !end
+    // !code: schema_properties
+    _id: { type: 'string' },
+    userId: { type: 'ID', faker: { fk: 'users:random' } },
+    originalName: { type: 'string' },
+    updated: { type: 'string', format: 'date-time', default: Date.now },
+    created: { type: 'string', format: 'date-time', default: Date.now }
+    // !end
     // !<DEFAULT> code: schema_more
   }
   // !end

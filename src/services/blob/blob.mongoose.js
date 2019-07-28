@@ -10,6 +10,16 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: model
   {
+    userId: mongoose.Schema.Types.ObjectId,
+    originalName: String,
+    updated: {
+      type: Date,
+      default: Date.now
+    },
+    created: {
+      type: Date,
+      default: Date.now
+    }
     // !end
     // !<DEFAULT> code: moduleExports
   }

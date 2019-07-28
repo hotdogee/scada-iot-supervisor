@@ -12,7 +12,26 @@ const moduleExports = merge(
     additionalProperties: false,
     properties: {
       _id: {
+        bsonType: 'string'
+      },
+      userId: {
+        faker: {
+          fk: 'users:random'
+        },
         bsonType: 'objectId'
+      },
+      originalName: {
+        bsonType: 'string'
+      },
+      updated: {
+        format: 'date-time',
+        default: Date.now,
+        bsonType: 'string'
+      },
+      created: {
+        format: 'date-time',
+        default: Date.now,
+        bsonType: 'string'
       }
     }
     // !end

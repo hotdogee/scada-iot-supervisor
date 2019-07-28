@@ -26,7 +26,7 @@ const {
 // !end
 // !<DEFAULT> code: foreign_keys
 // eslint-disable-next-line no-unused-vars
-const foreignKeys = []
+const foreignKeys = ['userId']
 // !end
 // !code: init // !end
 
@@ -35,7 +35,7 @@ const moduleExports = {
     // Your hooks should include:
     //   all   : authenticate('jwt')
     //   find  : mongoKeys(ObjectID, foreignKeys)
-    // !<DEFAULT> code: before
+    // !code: before
     all: [authenticate('jwt')],
     find: [mongoKeys(ObjectID, foreignKeys)],
     get: [],
@@ -47,7 +47,7 @@ const moduleExports = {
   },
 
   after: {
-    // !<DEFAULT> code: after
+    // !code: after
     all: [],
     find: [],
     get: [],
@@ -146,7 +146,8 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
     })
     // compose data to store in mongodb
     context.data = {
-      _id: key
+      _id: key,
+      originalName
     }
     return context
   }

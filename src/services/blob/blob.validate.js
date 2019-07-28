@@ -19,7 +19,30 @@ const base = merge(
     description: 'Blob database.',
     required: [],
     uniqueItemProperties: [],
-    properties: {}
+    properties: {
+      _id: {
+        type: 'string'
+      },
+      userId: {
+        type: 'ID',
+        faker: {
+          fk: 'users:random'
+        }
+      },
+      originalName: {
+        type: 'string'
+      },
+      updated: {
+        type: 'string',
+        format: 'date-time',
+        default: Date.now
+      },
+      created: {
+        type: 'string',
+        format: 'date-time',
+        default: Date.now
+      }
+    }
     // !end
     // !<DEFAULT> code: base_more
   }

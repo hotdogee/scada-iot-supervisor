@@ -11,6 +11,20 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: sequelize_model
   {
+    userId: {
+      type: DataTypes.INTEGER
+    },
+    originalName: {
+      type: DataTypes.TEXT
+    },
+    updated: {
+      type: DataTypes.DATE,
+      defaultValue: Date.now
+    },
+    created: {
+      type: DataTypes.DATE,
+      defaultValue: Date.now
+    }
     // !end
     // !<DEFAULT> code: moduleExports
   }
