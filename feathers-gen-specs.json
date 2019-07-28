@@ -46,7 +46,7 @@
       "nameSingular": "blob",
       "subFolder": "",
       "fileName": "blob",
-      "adapter": "generic",
+      "adapter": "mongodb",
       "path": "/blob",
       "isAuthEntity": false,
       "requiresAuth": true,

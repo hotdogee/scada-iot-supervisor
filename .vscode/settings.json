@@ -26,5 +26,8 @@
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
   "editor.formatOnSave": true,
   "commitizen.showOutputChannel": "always",
-  "commitizen.subjectLength": 120
+  "commitizen.subjectLength": 120,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

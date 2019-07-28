@@ -2,11 +2,16 @@
 const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const { ObjectID } = require('mongodb')
-// !code: imports // !end
+// !code: imports
+// const crypto = require('crypto')
+const dauria = require('dauria')
+// const mimeTypes = require('mime-types')
+const fsBlobStore = require('fs-blob-store')
+// !end
 
-// !<DEFAULT> code: used
+// !code: used
 // eslint-disable-next-line no-unused-vars
-const { iff, mongoKeys } = commonHooks
+const { iff, mongoKeys, checkContext } = commonHooks
 /* eslint-disable no-unused-vars */
 const {
   create,
@@ -33,7 +38,7 @@ const moduleExports = {
     all: [authenticate('jwt')],
     find: [mongoKeys(ObjectID, foreignKeys)],
     get: [],
-    create: [],
+    create: [saveToBlobStore(), fileToUri],
     update: [],
     patch: [],
     remove: []
@@ -45,7 +50,7 @@ const moduleExports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [removeUri],
     update: [],
     patch: [],
     remove: []
@@ -70,5 +75,47 @@ const moduleExports = {
 // !code: exports // !end
 module.exports = moduleExports
 
-// !code: funcs // !end
+// !code: funcs
+function saveToBlobStore (store = fsBlobStore('./uploads')) {
+  // support three ways of receiving data
+  // 1. data.uri: data URI of the blob
+  // 2. data.buffer: raw data buffer of the blob
+  //    data.contentType: MIME type
+  // 3. multipart/form-data.file: single file upload
+  return async (context) => {
+    const {
+      app,
+      data: { uri, buffer, contentType, originalName },
+      params: { provider, file }
+    } = context
+    // check type === before, method === create
+    checkContext(context, 'before', ['create'], 'saveToBlobStore')
+    // send image data to blob service
+    app.service('blob').create(
+      {
+        uri,
+        buffer,
+        contentType,
+        originalName
+      },
+      { file }
+    )
+  }
+}
+
+function fileToUri (context) {
+  if (!context.data.uri && context.params.file) {
+    // console.log(context.data)
+    const file = context.params.file
+    const uri = dauria.getBase64DataURI(file.buffer, file.mimetype)
+    context.data.uri = uri
+  }
+}
+
+function removeUri (context) {
+  if (context.result && context.result.uri) {
+    delete context.result.uri
+  }
+}
+// !end
 // !code: end // !end

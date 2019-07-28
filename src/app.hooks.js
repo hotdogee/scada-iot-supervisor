@@ -3,6 +3,7 @@ const commonHooks = require('feathers-hooks-common')
 // !code: imports
 const log = require('./hooks/log')
 const authorize = require('./hooks/authorize')
+/* eslint-disable no-unused-vars */
 const { authenticate } = require('@feathersjs/authentication').hooks
 // !end
 
@@ -22,7 +23,8 @@ const moduleExports = {
         ({ params, path, app }) =>
           params.provider &&
           `/${path}` !== app.get('authentication').path &&
-          Object.prototype.hasOwnProperty.call(params, 'authentication'),
+          Object.prototype.hasOwnProperty.call(params, 'authentication') &&
+          params.authentication,
         authenticate('jwt')
       ),
       // authorize() grants permissions accordingly for anonymous and authenticated users, throws 403: Forbidden

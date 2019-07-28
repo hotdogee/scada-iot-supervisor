@@ -1,24 +1,32 @@
-// Initializes the `blob` service on path `/blob`
-const createService = require('feathers-mongodb')
+// Initializes the `blob` service on path `/blob`. (Can be re-generated.)
+// !code: createService
+const createService = require('feathers-blob')
+// !end
 const hooks = require('./blob.hooks')
 // !code: imports
-// const $jsonSchema = require('./images.mongo')
 const multer = require('multer')
+const fsBlobStore = require('fs-blob-store')
 // !end
 // !code: init
 const multerMemory = multer()
+const Model = fsBlobStore('./uploads')
 // !end
 
 const moduleExports = function (app) {
   const paginate = app.get('paginate')
-  const mongoClient = app.get('mongoClient')
-  const options = { paginate }
   // !code: func_init // !end
+
+  const options = {
+    // !code: options_more
+    Model,
+    // !end
+    paginate
+  }
+  // !code: options_change // !end
 
   // Initialize our service with any options it requires
   // !code: extend
-  app.use(
-    '/blob',
+  app.use('/blob',
     // req.body = { data: { type: 'embryo', id: '1' } }
     // function (req, res, next) {
     //   console.log('req', req)
@@ -38,14 +46,14 @@ const moduleExports = function (app) {
     //     }
     //   ]
     // }
-    multerMemory.fields([{ name: 'file', maxCount: 1 }]),
-    // transfer req.files by multer to feathers params
+    multerMemory.fields([
+      { name: 'file', maxCount: 1 }
+    ]),
+    // transfer the received file to feathers
     function (req, res, next) {
       // app.info('req.files', req.files)
       // app.info('req.body', req.body)
-      if (req.files && Array.isArray(req.files.file)) {
-        req.feathers.file = req.files.file[0]
-      }
+      req.feathers.file = req.files ? req.files.file[0] : ''
       next()
     },
     createService(options)
@@ -55,25 +63,9 @@ const moduleExports = function (app) {
   // Get our initialized service so that we can register hooks
   const service = app.service('blob')
 
-  // eslint-disable-next-line no-unused-vars
-  const promise = mongoClient
-    .then((db) => {
-      return db.createCollection('blob', {
-        // !<DEFAULT> code: create_collection
-        // validator: { $jsonSchema: $jsonSchema },
-        // validationLevel: 'strict', // The MongoDB default
-        // validationAction: 'error', // The MongoDB default
-        // !end
-      })
-    })
-    .then((serviceModel) => {
-      service.Model = serviceModel
-    })
-
   service.hooks(hooks)
   // !code: func_return // !end
 }
-// !code: more // !end
 
 // !code: exports // !end
 module.exports = moduleExports

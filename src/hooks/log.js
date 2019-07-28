@@ -46,9 +46,9 @@ function safeError (context) {
 module.exports = function () {
   return (context) => {
     if (!context.error) {
-      logger.debug(`---HOOK---`, safeContext(context))
+      logger.debug(`---${context.type.toUpperCase()} ${context.method.toUpperCase()} ${context.path.toUpperCase()}---`, safeContext(context))
     } else {
-      logger.error('---HOOK---', safeError(context))
+      logger.error(`---${context.type.toUpperCase()} ${context.method.toUpperCase()} ${context.path.toUpperCase()}---`, safeError(context))
     }
   }
 }

@@ -21,7 +21,7 @@ function defineAbilitiesFor (params, data) {
   // eslint-disable-next-line no-unused-vars
   const { rules, can, cannot } = AbilityBuilder.extract()
   const { user, authentication = {} } = params
-  const { payload = {} } = authentication
+  const { payload = {} } = authentication || {}
   // const payload = {
   //   iat: 1561828929,
   //   exp: 1561830729,
@@ -30,6 +30,7 @@ function defineAbilitiesFor (params, data) {
   //   sub: '5d166b06ada0c3004e2f2319',
   //   jti: '90164fab-f2ac-4b27-b4d4-781b87f5f175'
   // }
+  can(['get', 'find', 'create', 'patch'], ['blob'])
   can(['get', 'find', 'create', 'patch'], ['images'])
   can('create', ['users', 'authentication', 'password-resets']) // , 'email-verifications', 'public-keys', 'emails'
   can('read', ['api-servers'])
