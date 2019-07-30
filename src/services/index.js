@@ -2,6 +2,7 @@
 const albums = require('./albums/albums.service')
 const blob = require('./blob/blob.service')
 const images = require('./images/images.service')
+const logs = require('./logs/logs.service')
 const users = require('./users/users.service')
 
 // !code: imports // !end
@@ -12,6 +13,7 @@ const moduleExports = function (app) {
   app.configure(albums)
   app.configure(blob)
   app.configure(images)
+  app.configure(logs)
   app.configure(users)
   // !code: func_return // !end
 }

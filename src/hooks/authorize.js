@@ -31,6 +31,7 @@ function defineAbilitiesFor (params, data) {
   //   sub: '5d166b06ada0c3004e2f2319',
   //   jti: '90164fab-f2ac-4b27-b4d4-781b87f5f175'
   // }
+  can(['get', 'find', 'create', 'patch'], ['logs'])
   can(['get', 'find', 'create', 'patch'], ['blob'])
   can(['get', 'find', 'create', 'patch'], ['images'])
   can(['get', 'find', 'create', 'patch'], ['albums'])

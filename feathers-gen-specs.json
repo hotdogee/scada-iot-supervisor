@@ -62,6 +62,17 @@
       "isAuthEntity": false,
       "requiresAuth": true,
       "graphql": true
+    },
+    "logs": {
+      "name": "logs",
+      "nameSingular": "log",
+      "subFolder": "",
+      "fileName": "logs",
+      "adapter": "mongodb",
+      "path": "/logs",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
     }
   },
   "hooks": {},
