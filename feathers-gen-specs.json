@@ -51,6 +51,17 @@
       "isAuthEntity": false,
       "requiresAuth": true,
       "graphql": true
+    },
+    "albums": {
+      "name": "albums",
+      "nameSingular": "album",
+      "subFolder": "",
+      "fileName": "albums",
+      "adapter": "mongodb",
+      "path": "/albums",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
     }
   },
   "hooks": {},
