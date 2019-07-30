@@ -9,8 +9,9 @@ const hooks = require('./albums.hooks')
 const moduleExports = function (app) {
   const paginate = app.get('paginate')
   const mongoClient = app.get('mongoClient')
-  const options = { paginate }
-  // !code: func_init // !end
+  // !<DEFAULT> code: func_init
+  const options = { paginate, whitelist: ['$client'], multi: false }
+  // !end
 
   // Initialize our service with any options it requires
   // !<DEFAULT> code: extend

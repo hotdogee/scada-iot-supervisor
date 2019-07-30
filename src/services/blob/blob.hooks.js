@@ -80,7 +80,7 @@ module.exports = moduleExports
 
 // !code: funcs
 function saveToBlobStore (store = fsBlobStore('./uploads')) {
-  // deduplication with key = `${hash}.${ext}`
+  // de-duplication with key = `${hash}.${ext}`
   // there are three ways of receiving blob data
   // 1. multipart/form-data.file: single file upload
   // 2. data.uri: data URI of the blob
@@ -117,7 +117,8 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
     try {
       const result = await service.get(key)
       app.info(`saveToBlobStore found existing blob: ${key}`)
-      return result
+      context.result = result
+      return context
     } catch (error) {
       app.info(`saveToBlobStore creating new blob: ${key}`)
     }

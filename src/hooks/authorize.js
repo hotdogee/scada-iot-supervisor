@@ -1,6 +1,7 @@
 // Use this hook to manipulate incoming or outgoing data.
 // For more information on hooks see: http://docs.feathersjs.com/api/hooks.html
 
+// const { omit } = require('lodash')
 const safeStringify = require('fast-safe-stringify')
 const { checkContext } = require('feathers-hooks-common')
 const { AbilityBuilder, Ability } = require('@casl/ability')
@@ -32,6 +33,7 @@ function defineAbilitiesFor (params, data) {
   // }
   can(['get', 'find', 'create', 'patch'], ['blob'])
   can(['get', 'find', 'create', 'patch'], ['images'])
+  can(['get', 'find', 'create', 'patch'], ['albums'])
   can('create', ['users', 'authentication', 'password-resets']) // , 'email-verifications', 'public-keys', 'emails'
   can('read', ['api-servers'])
   can('patch', ['email-verifications'])
@@ -147,6 +149,8 @@ module.exports = function (options = {}) {
     } else {
       // has id: get, update, patch, remove
       const p = Object.assign({}, params, { provider: null })
+      p.query = Object.assign({}, p.query)
+      delete p.query.$client
       const subject = await service._get(id, p)
 
       subject[TYPE_KEY] = path

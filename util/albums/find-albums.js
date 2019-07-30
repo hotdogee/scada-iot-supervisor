@@ -9,8 +9,13 @@ const api = feathers().configure(socketio(socket))
 
 ;(async () => {
   try {
-    const result = await api.service('blob').get('123123123123')
-    logger.info(result)
+    const result = await api.service('albums').find({
+      query: {
+        $limit: 0,
+        _id: '123123123123'
+      }
+    })
+    logger.info('albums.find', result)
   } catch (error) {
     logger.error(error)
   } finally {

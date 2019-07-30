@@ -16,6 +16,10 @@ const levelColors = {
   silly: 'magenta',
   custom: 'yellow'
 }
+// const logInfo = format((info, opts = {}) => {
+//   console.log('logInfo', info)
+//   return info
+// })
 const formatConsole = format((info, opts = {}) => {
   const stringifiedRest = jsonStringify(
     Object.assign({}, info, {
@@ -26,6 +30,18 @@ const formatConsole = format((info, opts = {}) => {
       splat: undefined
     })
   )
+  // console.log('stringifiedRest', info)
+  // console.log(
+  //   'stringifiedRest',
+  //   Object.assign({}, info, {
+  //     level: undefined,
+  //     message: undefined,
+  //     timestamp: undefined,
+  //     ms: undefined,
+  //     splat: undefined
+  //   })
+  // )
+  // console.log('stringifiedRest', stringifiedRest)
 
   const label = (info.label && `${info.label} `) || ''
   let colorize = colors['white']
@@ -41,7 +57,12 @@ const formatConsole = format((info, opts = {}) => {
   )
   const padding = (info.padding && info.padding[info.level]) || ''
   if (stringifiedRest !== '{}') {
-    const rest = inspect(JSON.parse(stringifiedRest), false, 2, true)
+    const rest = inspect(JSON.parse(stringifiedRest), {
+      compact: true,
+      depth: 5,
+      breakLength: 200,
+      colors: true
+    })
     info[
       MESSAGE
     ] = `${localISOTime} ${label}${level} ${padding} ${info.message} ${rest} ${ms}`
@@ -66,6 +87,7 @@ const moduleExports = createLogger({
   transports: [
     new transports.Console({
       format: format.combine(
+        // logInfo(),
         format.splat(),
         format.timestamp(),
         format.ms(),

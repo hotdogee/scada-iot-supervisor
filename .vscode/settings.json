@@ -29,5 +29,8 @@
   "commitizen.subjectLength": 120,
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "cSpell.words": [
+    "scada"
+  ]
 }

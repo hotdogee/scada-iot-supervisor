@@ -8,7 +8,7 @@ const service = process.env.API_URL + '/images'
 const req = fs.createReadStream(path.join(__dirname, '/cam1.jpg'))
 const formData = {
   timestamp: new Date().toJSON(),
-  'metadata[name]': 'cam1',
+  albumId: '5d40995997207574c0081863',
   file: req
 }
 request.post({ url: service, formData }, function (err, httpResponse, body) {

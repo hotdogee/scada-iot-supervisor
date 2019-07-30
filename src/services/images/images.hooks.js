@@ -8,14 +8,39 @@ const { ObjectID } = require('mongodb')
 const dauria = require('dauria')
 // const mimeTypes = require('mime-types')
 const fsBlobStore = require('fs-blob-store')
-const { omit } = require('lodash')
-const { timestamp, assertDate } = require('../../hooks/common')
+const { omit, sortBy } = require('lodash')
+const { timestamp, assertDateDefault } = require('../../hooks/common')
 /* eslint-enables no-unused-vars */
 // !end
 
 // !code: used
 /* eslint-disable no-unused-vars */
-const { iff, mongoKeys, checkContext } = commonHooks
+const {
+  FeathersError,
+  BadRequest,
+  NotAuthenticated,
+  PaymentError,
+  Forbidden,
+  NotFound,
+  MethodNotAllowed,
+  NotAcceptable,
+  Timeout,
+  Conflict,
+  LengthRequired,
+  Unprocessable,
+  TooManyRequests,
+  GeneralError,
+  NotImplemented,
+  BadGateway,
+  Unavailable
+} = require('@feathersjs/errors')
+const {
+  iff,
+  mongoKeys,
+  checkContext,
+  paramsFromClient,
+  paramsForServer
+} = commonHooks
 const {
   create,
   update,
@@ -37,30 +62,34 @@ const moduleExports = {
     // Your hooks should include:
     //   all   : authenticate('jwt')
     //   find  : mongoKeys(ObjectID, foreignKeys)
-    // !<DEFAULT> code: before
+    // !code: before
     all: [
       // authenticate('jwt')
     ],
     find: [mongoKeys(ObjectID, foreignKeys)],
     get: [],
     create: [
+      assertAlbum(),
       saveToBlobStore(),
-      assertDate('timestamp'),
+      assertDateDefault('timestamp'),
       timestamp('created'),
       timestamp('updated')
     ],
-    update: [assertDate('timestamp'), timestamp('updated')],
-    patch: [assertDate('timestamp'), timestamp('updated')],
+    update: [assertDateDefault('timestamp'), timestamp('updated')],
+    patch: [assertDateDefault('timestamp'), timestamp('updated')],
     remove: []
     // !end
   },
 
   after: {
-    // !<DEFAULT> code: after
+    // !code: after
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [
+      // addImageToAlbum()
+      assertAlbumLimit()
+    ],
     update: [],
     patch: [],
     remove: []
@@ -94,11 +123,11 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
   //    data.contentType: MIME type, string: 'image/jpeg'
   //    data.originalName: string
   return async (context) => {
+    // check type === before, method === create
+    checkContext(context, 'before', ['create'], 'saveToBlobStore')
     const { app, data, params } = context
     const { uri, buffer, contentType, originalName } = data
     const { file } = params
-    // check type === before, method === create
-    checkContext(context, 'before', ['create'], 'saveToBlobStore')
     // send image data to blob service and receive key
     const { _id: key } = await app.service('blob').create(
       {
@@ -119,35 +148,126 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
   }
 }
 
-function addToAlbum () {
-  // there are three ways of receiving blob data
-  // 1. multipart/form-data.file: single file upload
-  // 2. data.uri: data URI of the blob
-  // 3. data.buffer: raw data buffer of the blob
-  //    data.contentType: MIME type, string: 'image/jpeg'
-  //    data.originalName: string
+function assertAlbum () {
+  // check if album exists
   return async (context) => {
+    // check type === before, method === 'create', 'update', 'patch'
+    checkContext(
+      context,
+      'before',
+      ['create', 'update', 'patch'],
+      'assertAlbum'
+    )
     const { app, data, params } = context
-    const { uri, buffer, contentType, originalName } = data
-    const { file } = params
-    // check type === before, method === create
-    checkContext(context, 'before', ['create'], 'saveToBlobStore')
-    // send image data to blob service and receive key
-    const { _id: key } = await app.service('blob').create(
-      {
-        uri,
-        buffer,
-        contentType,
-        originalName
-      },
-      { file }
+    const { albumId } = data
+    if (!albumId) return context
+    // { total: 0, limit: 0, skip: 0, data: [] }
+    const {
+      total,
+      data: [album]
+    } = await app.service('albums').find({
+      query: {
+        _id: albumId
+      }
+    })
+    if (total === 0) {
+      throw new BadRequest({
+        message: `albumId not found`,
+        errors: {
+          albumId: `albumId not found`
+        }
+      })
+    } else {
+      params.album = album
+    }
+    return context
+  }
+}
+
+function assertAlbumLimit () {
+  // add imageId to album
+  return async (context) => {
+    // check type === after, method === 'create', 'update', 'patch'
+    checkContext(
+      context,
+      'after',
+      ['create', 'update', 'patch'],
+      'addImageToAlbum'
     )
-    // add blob key and remove fields from client
-    context.data = Object.assign(
-      omit(data, ['uri', 'buffer', 'contentType', 'originalName']),
-      { key }
+    const { app, service, params } = context
+    const { album } = params
+    if (!album) return context
+    const { _id: albumId, keep } = album
+    if (!keep) return context
+    // edge cases:
+    // total > page limit
+    // total - keep > page limit
+    // sort ascending
+    let { total, data: images } = await service.find({
+      albumId,
+      $sort: {
+        timestamp: 1
+      }
+    })
+    // in place sort descending, older images at end of array
+    // images.sort(
+    //   (a, b) =>
+    //     new Date(b.timestamp || b.updated) - new Date(a.timestamp || a.updated)
+    // )
+    app.debug(`before total ${total} ${keep}`)
+    if (total > keep) {
+      total -= (await Promise.all(
+        images.slice(0, total - keep).map(({ _id: imageId }) => {
+          service.remove(imageId)
+        })
+      )).length
+    }
+    app.debug(`after total ${total} ${keep}`)
+    while (total > keep) {
+      const result = await service.find({
+        albumId,
+        $sort: {
+          timestamp: 1
+        }
+      })
+      total = result.total
+      images = result.data
+      total -= (await Promise.all(
+        images.slice(0, total - keep).map(({ _id: imageId }) => {
+          service.remove(imageId)
+        })
+      )).length
+    }
+    return context
+  }
+}
+
+function addImageToAlbum () {
+  // add imageId to album
+  return async (context) => {
+    // check type === after, method === 'create', 'update', 'patch'
+    checkContext(
+      context,
+      'after',
+      ['create', 'update', 'patch'],
+      'addImageToAlbum'
     )
-    context.params = omit(params, ['file'])
+    const { app, params, result, id: imageId } = context
+    const { albumId } = params
+    if (!albumId) return context
+    // { total: 0, limit: 0, skip: 0, data: [] }
+    const image = {
+      imageId,
+      created: result.timestamp || result.updated
+    }
+    const album = await app.service('albums').patch(
+      albumId,
+      {},
+      paramsForServer({
+        image
+      })
+    )
+    app.debug('addImageToAlbum album', album)
     return context
   }
 }
