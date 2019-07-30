@@ -67,7 +67,10 @@ const moduleExports = {
       // authenticate('jwt')
     ],
     find: [mongoKeys(ObjectID, foreignKeys)],
-    get: [],
+    get: [
+      paramsFromClient('raw', 'width', 'height', 'format')
+      // handleRaw()
+    ],
     create: [
       assertAlbum(),
       saveToBlobStore(),
@@ -115,6 +118,19 @@ const moduleExports = {
 module.exports = moduleExports
 
 // !code: funcs
+function handleRaw () {
+  return async (context) => {
+    // check type === before, method === create
+    checkContext(context, 'before', ['get'], 'handleRaw')
+    const { app, params } = context
+    const { raw } = params
+    if (raw) {
+      app.debug(`handleRaw`, params)
+    }
+    return context
+  }
+}
+
 function saveToBlobStore (store = fsBlobStore('./uploads')) {
   // there are three ways of receiving blob data
   // 1. multipart/form-data.file: single file upload

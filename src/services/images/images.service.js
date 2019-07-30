@@ -3,10 +3,14 @@ const createService = require('feathers-mongodb')
 const hooks = require('./images.hooks')
 // !code: imports
 // const $jsonSchema = require('./images.mongo')
+const fs = require('fs')
+const path = require('path')
+const sharp = require('sharp')
 const multer = require('multer')
 // !end
 // !code: init
 const multerMemory = multer()
+const supportedImageFormats = new Set(['jpg', 'png', 'webp', 'tiff', 'jpeg'])
 // !end
 
 const moduleExports = function (app) {
@@ -48,7 +52,44 @@ const moduleExports = function (app) {
       }
       next()
     },
-    createService(options)
+    createService(options),
+    // handle raw views
+    // http://localhost:6001/images/5d409c9036a569744447825b?$client[raw]=1&$client[width]=600&$client[height]=700&$client[format]=webp
+    function (req, res, next) {
+      const { hook: context } = res
+      const { app, params, result } = context
+      const { raw, width, height, format } = params
+      const { key } = result
+      app.debug(`handleRaw ${typeof width}, ${width}`) // string
+      app.debug(`handleRaw ${typeof height}, ${height}`) // string
+      app.debug(`handleRaw ${typeof format}, ${format}`) // string
+      if (raw) {
+        app.debug(`handleRaw`, params)
+        const file = path.resolve('./uploads', key)
+        app.debug(`handleRaw ${typeof file}, ${file}`) // string
+        // parse params
+        const w = parseInt(width) || undefined
+        const h = parseInt(height) || undefined
+        const f = supportedImageFormats.has(format) ? format : undefined
+        if (w || h || f) {
+          let transform = sharp()
+          if (w || h) {
+            transform = transform.resize(w, h)
+          }
+          if (f) {
+            transform = transform.toFormat(f)
+          }
+          res.type(f || path.extname(key))
+          fs.createReadStream(file)
+            .pipe(transform)
+            .pipe(res)
+        } else {
+          res.sendFile(file)
+        }
+      } else {
+        next()
+      }
+    }
   )
   // !end
 
