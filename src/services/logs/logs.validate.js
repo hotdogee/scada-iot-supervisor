@@ -2,9 +2,21 @@
 // Validation definitions for validateSchema hook for service `logs`. (Can be re-generated.)
 const { validateSchema } = require('feathers-hooks-common')
 const merge = require('lodash.merge')
-const ajv = require('ajv')
-// !code: imports // !end
-// !code: init // !end
+const Ajv = require('ajv')
+// !code: imports
+// !end
+// !<DEFAULT> code: init
+const ajv = new Ajv()
+require('ajv-keywords')(ajv)
+ajv.addKeyword('coerce', {
+  type: 'string',
+  modifying: true,
+  validate: (fn, data, ps, path, parent, key) => {
+    parent[key] = fn(data)
+    return true
+  }
+})
+// !end
 
 // !<DEFAULT> code: set_id_type
 // eslint-disable-next-line no-unused-vars
@@ -19,7 +31,33 @@ const base = merge(
     description: 'Logs database.',
     required: [],
     uniqueItemProperties: [],
-    properties: {}
+    properties: {
+      logTime: {
+        instanceof: 'Date',
+        coerce: (data) => new Date(data),
+        type: 'string'
+      },
+      reads: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            reads: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  time: {
+                    instanceof: 'Date',
+                    coerce: (data) => new Date(data)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     // !end
     // !<DEFAULT> code: base_more
   }

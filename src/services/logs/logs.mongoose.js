@@ -10,6 +10,16 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: model
   {
+    logTime: String,
+    reads: [
+      {
+        reads: [
+          {
+            time: String
+          }
+        ]
+      }
+    ]
     // !end
     // !<DEFAULT> code: moduleExports
   }

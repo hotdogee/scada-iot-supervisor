@@ -11,6 +11,12 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: sequelize_model
   {
+    logTime: {
+      type: DataTypes.TEXT
+    },
+    reads: {
+      type: DataTypes.JSONB
+    }
     // !end
     // !<DEFAULT> code: moduleExports
   }

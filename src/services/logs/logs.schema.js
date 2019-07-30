@@ -21,7 +21,32 @@ const schema = {
 
   // Fields in the model.
   properties: {
-    // !code: schema_properties // !end
+    // !code: schema_properties
+    logTime: {
+      instanceof: 'Date',
+      coerce: (data) => new Date(data)
+    },
+    reads: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          reads: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                time: {
+                  instanceof: 'Date',
+                  coerce: (data) => new Date(data)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    // !end
     // !<DEFAULT> code: schema_more
   }
   // !end

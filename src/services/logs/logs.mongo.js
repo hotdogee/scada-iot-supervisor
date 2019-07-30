@@ -13,6 +13,31 @@ const moduleExports = merge(
     properties: {
       _id: {
         bsonType: 'objectId'
+      },
+      logTime: {
+        instanceof: 'Date',
+        coerce: (data) => new Date(data),
+        bsonType: 'string'
+      },
+      reads: {
+        items: {
+          type: 'object',
+          properties: {
+            reads: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  time: {
+                    instanceof: 'Date',
+                    coerce: (data) => new Date(data)
+                  }
+                }
+              }
+            }
+          }
+        },
+        bsonType: 'array'
       }
     }
     // !end
