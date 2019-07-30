@@ -3,6 +3,8 @@ const createService = require('feathers-mongodb')
 const hooks = require('./blob.hooks')
 // !code: imports
 // const $jsonSchema = require('./images.mongo')
+require('dotenv').config()
+const path = require('path')
 const multer = require('multer')
 // !end
 // !code: init
@@ -48,7 +50,20 @@ const moduleExports = function (app) {
       }
       next()
     },
-    createService(options)
+    createService(options),
+    // handle raw views
+    function (req, res, next) {
+      const { hook: context } = res
+      const { params, result } = context
+      const { raw } = params
+      const { key } = result
+      if (raw) {
+        const file = path.resolve(process.env.UPLOAD_PATH, key)
+        res.sendFile(file)
+      } else {
+        next()
+      }
+    }
   )
   // !end
 

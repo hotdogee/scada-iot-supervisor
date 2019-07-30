@@ -3,6 +3,7 @@ const createService = require('feathers-mongodb')
 const hooks = require('./images.hooks')
 // !code: imports
 // const $jsonSchema = require('./images.mongo')
+require('dotenv').config()
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
@@ -65,7 +66,7 @@ const moduleExports = function (app) {
       app.debug(`handleRaw ${typeof format}, ${format}`) // string
       if (raw) {
         app.debug(`handleRaw`, params)
-        const file = path.resolve('./uploads', key)
+        const file = path.resolve(process.env.UPLOAD_PATH, key)
         app.debug(`handleRaw ${typeof file}, ${file}`) // string
         // parse params
         const w = parseInt(width) || undefined

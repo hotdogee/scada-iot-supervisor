@@ -4,6 +4,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const { ObjectID } = require('mongodb')
 // !code: imports
 /* eslint-disable no-unused-vars */
+require('dotenv').config()
 const from = require('from2')
 const crypto = require('crypto')
 const dauria = require('dauria')
@@ -104,7 +105,7 @@ const moduleExports = {
 module.exports = moduleExports
 
 // !code: funcs
-function saveToBlobStore (store = fsBlobStore('./uploads')) {
+function saveToBlobStore (store = fsBlobStore(process.env.UPLOAD_PATH)) {
   // de-duplication with key = `${hash}.${ext}`
   // there are three ways of receiving blob data
   // 1. multipart/form-data.file: single file upload
