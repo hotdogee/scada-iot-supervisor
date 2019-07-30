@@ -15,7 +15,32 @@ const { timestamp } = require('../../hooks/common')
 
 // !code: used
 /* eslint-disable no-unused-vars */
-const { iff, mongoKeys, checkContext } = commonHooks
+const {
+  FeathersError,
+  BadRequest,
+  NotAuthenticated,
+  PaymentError,
+  Forbidden,
+  NotFound,
+  MethodNotAllowed,
+  NotAcceptable,
+  Timeout,
+  Conflict,
+  LengthRequired,
+  Unprocessable,
+  TooManyRequests,
+  GeneralError,
+  NotImplemented,
+  BadGateway,
+  Unavailable
+} = require('@feathersjs/errors')
+const {
+  iff,
+  mongoKeys,
+  checkContext,
+  paramsFromClient,
+  paramsForServer
+} = commonHooks
 const {
   create,
   update,
@@ -40,7 +65,7 @@ const moduleExports = {
     // !code: before
     all: [authenticate('jwt')],
     find: [mongoKeys(ObjectID, foreignKeys)],
-    get: [],
+    get: [paramsFromClient('raw')],
     create: [saveToBlobStore(), timestamp('created'), timestamp('updated')],
     update: [timestamp('updated')],
     patch: [timestamp('updated')],

@@ -4,6 +4,7 @@ const createService = require('feathers-blob')
 // !end
 const hooks = require('./blob.hooks')
 // !code: imports
+const path = require('path')
 const multer = require('multer')
 const fsBlobStore = require('fs-blob-store')
 // !end
@@ -26,7 +27,8 @@ const moduleExports = function (app) {
 
   // Initialize our service with any options it requires
   // !code: extend
-  app.use('/blob',
+  app.use(
+    '/blob',
     // req.body = { data: { type: 'embryo', id: '1' } }
     // function (req, res, next) {
     //   console.log('req', req)
@@ -46,9 +48,7 @@ const moduleExports = function (app) {
     //     }
     //   ]
     // }
-    multerMemory.fields([
-      { name: 'file', maxCount: 1 }
-    ]),
+    multerMemory.fields([{ name: 'file', maxCount: 1 }]),
     // transfer the received file to feathers
     function (req, res, next) {
       // app.info('req.files', req.files)
@@ -56,7 +56,20 @@ const moduleExports = function (app) {
       req.feathers.file = req.files ? req.files.file[0] : ''
       next()
     },
-    createService(options)
+    createService(options),
+    // handle raw views
+    function (req, res, next) {
+      const { hook: context } = res
+      const { params, result } = context
+      const { raw } = params
+      const { key } = result
+      if (raw) {
+        const file = path.resolve('./uploads', key)
+        res.sendFile(file)
+      } else {
+        next()
+      }
+    }
   )
   // !end
 
