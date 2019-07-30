@@ -1,18 +1,21 @@
 // Hooks for service `images`. (Can be re-generated.)
 const commonHooks = require('feathers-hooks-common')
-const { authenticate } = require('@feathersjs/authentication').hooks
+// const { authenticate } = require('@feathersjs/authentication').hooks
 const { ObjectID } = require('mongodb')
 // !code: imports
+/* eslint-disable no-unused-vars */
 // const crypto = require('crypto')
 const dauria = require('dauria')
 // const mimeTypes = require('mime-types')
 const fsBlobStore = require('fs-blob-store')
+const { omit } = require('lodash')
+const { timestamp, assertDate } = require('../../hooks/common')
+/* eslint-enables no-unused-vars */
 // !end
 
 // !code: used
-// eslint-disable-next-line no-unused-vars
-const { iff, mongoKeys, checkContext } = commonHooks
 /* eslint-disable no-unused-vars */
+const { iff, mongoKeys, checkContext } = commonHooks
 const {
   create,
   update,
@@ -35,12 +38,19 @@ const moduleExports = {
     //   all   : authenticate('jwt')
     //   find  : mongoKeys(ObjectID, foreignKeys)
     // !<DEFAULT> code: before
-    all: [authenticate('jwt')],
+    all: [
+      // authenticate('jwt')
+    ],
     find: [mongoKeys(ObjectID, foreignKeys)],
     get: [],
-    create: [saveToBlobStore(), fileToUri],
-    update: [],
-    patch: [],
+    create: [
+      saveToBlobStore(),
+      assertDate('timestamp'),
+      timestamp('created'),
+      timestamp('updated')
+    ],
+    update: [assertDate('timestamp'), timestamp('updated')],
+    patch: [assertDate('timestamp'), timestamp('updated')],
     remove: []
     // !end
   },
@@ -50,7 +60,7 @@ const moduleExports = {
     all: [],
     find: [],
     get: [],
-    create: [removeUri],
+    create: [],
     update: [],
     patch: [],
     remove: []
@@ -77,21 +87,20 @@ module.exports = moduleExports
 
 // !code: funcs
 function saveToBlobStore (store = fsBlobStore('./uploads')) {
-  // support three ways of receiving data
-  // 1. data.uri: data URI of the blob
-  // 2. data.buffer: raw data buffer of the blob
-  //    data.contentType: MIME type
-  // 3. multipart/form-data.file: single file upload
+  // there are three ways of receiving blob data
+  // 1. multipart/form-data.file: single file upload
+  // 2. data.uri: data URI of the blob
+  // 3. data.buffer: raw data buffer of the blob
+  //    data.contentType: MIME type, string: 'image/jpeg'
+  //    data.originalName: string
   return async (context) => {
-    const {
-      app,
-      data: { uri, buffer, contentType, originalName },
-      params: { provider, file }
-    } = context
+    const { app, data, params } = context
+    const { uri, buffer, contentType, originalName } = data
+    const { file } = params
     // check type === before, method === create
     checkContext(context, 'before', ['create'], 'saveToBlobStore')
-    // send image data to blob service
-    app.service('blob').create(
+    // send image data to blob service and receive key
+    const { _id: key } = await app.service('blob').create(
       {
         uri,
         buffer,
@@ -100,21 +109,46 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
       },
       { file }
     )
+    // add blob key and remove fields from client
+    context.data = Object.assign(
+      omit(data, ['uri', 'buffer', 'contentType', 'originalName']),
+      { key }
+    )
+    context.params = omit(params, ['file'])
+    return context
   }
 }
 
-function fileToUri (context) {
-  if (!context.data.uri && context.params.file) {
-    // console.log(context.data)
-    const file = context.params.file
-    const uri = dauria.getBase64DataURI(file.buffer, file.mimetype)
-    context.data.uri = uri
-  }
-}
-
-function removeUri (context) {
-  if (context.result && context.result.uri) {
-    delete context.result.uri
+function addToAlbum () {
+  // there are three ways of receiving blob data
+  // 1. multipart/form-data.file: single file upload
+  // 2. data.uri: data URI of the blob
+  // 3. data.buffer: raw data buffer of the blob
+  //    data.contentType: MIME type, string: 'image/jpeg'
+  //    data.originalName: string
+  return async (context) => {
+    const { app, data, params } = context
+    const { uri, buffer, contentType, originalName } = data
+    const { file } = params
+    // check type === before, method === create
+    checkContext(context, 'before', ['create'], 'saveToBlobStore')
+    // send image data to blob service and receive key
+    const { _id: key } = await app.service('blob').create(
+      {
+        uri,
+        buffer,
+        contentType,
+        originalName
+      },
+      { file }
+    )
+    // add blob key and remove fields from client
+    context.data = Object.assign(
+      omit(data, ['uri', 'buffer', 'contentType', 'originalName']),
+      { key }
+    )
+    context.params = omit(params, ['file'])
+    return context
   }
 }
 // !end

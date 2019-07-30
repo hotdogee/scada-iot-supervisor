@@ -3,17 +3,19 @@ const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const { ObjectID } = require('mongodb')
 // !code: imports
+/* eslint-disable no-unused-vars */
 const from = require('from2')
 const crypto = require('crypto')
 const dauria = require('dauria')
 const mimeTypes = require('mime-types')
 const fsBlobStore = require('fs-blob-store')
+const { timestamp } = require('../../hooks/common')
+/* eslint-enables no-unused-vars */
 // !end
 
 // !code: used
-// eslint-disable-next-line no-unused-vars
-const { iff, mongoKeys, checkContext } = commonHooks
 /* eslint-disable no-unused-vars */
+const { iff, mongoKeys, checkContext } = commonHooks
 const {
   create,
   update,
@@ -39,9 +41,9 @@ const moduleExports = {
     all: [authenticate('jwt')],
     find: [mongoKeys(ObjectID, foreignKeys)],
     get: [],
-    create: [saveToBlobStore(), fileToUri],
-    update: [],
-    patch: [],
+    create: [saveToBlobStore(), timestamp('created'), timestamp('updated')],
+    update: [timestamp('updated')],
+    patch: [timestamp('updated')],
     remove: []
     // !end
   },
@@ -51,7 +53,7 @@ const moduleExports = {
     all: [],
     find: [],
     get: [],
-    create: [removeUri],
+    create: [],
     update: [],
     patch: [],
     remove: []
@@ -78,6 +80,7 @@ module.exports = moduleExports
 
 // !code: funcs
 function saveToBlobStore (store = fsBlobStore('./uploads')) {
+  // deduplication with key = `${hash}.${ext}`
   // there are three ways of receiving blob data
   // 1. multipart/form-data.file: single file upload
   // 2. data.uri: data URI of the blob
@@ -95,7 +98,6 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
     checkContext(context, 'before', ['create'], 'saveToBlobStore')
     // convert file or uri to buffer and contentType
     if (file) {
-      const result = dauria.parseDataURI(uri)
       buffer = file.buffer
       contentType = file.mimetype
       originalName = file.originalname
@@ -150,21 +152,6 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
       originalName
     }
     return context
-  }
-}
-
-function fileToUri (context) {
-  if (!context.data.uri && context.params.file) {
-    // console.log(context.data)
-    const file = context.params.file
-    const uri = dauria.getBase64DataURI(file.buffer, file.mimetype)
-    context.data.uri = uri
-  }
-}
-
-function removeUri (context) {
-  if (context.result && context.result.uri) {
-    delete context.result.uri
   }
 }
 // !end
