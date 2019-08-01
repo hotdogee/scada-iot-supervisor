@@ -8,7 +8,7 @@ const hooks = require('./logs.hooks')
 
 const moduleExports = function (app) {
   const paginate = app.get('paginate')
-  const mongoClient = app.get('mongoClient')
+  const dbPromise = app.get('mongoClient')
   // !<DEFAULT> code: func_init
   const options = { paginate, whitelist: ['$client'], multi: false }
   // !end
@@ -22,8 +22,11 @@ const moduleExports = function (app) {
   const service = app.service('logs')
 
   // eslint-disable-next-line no-unused-vars
-  const promise = mongoClient
+  const promise = dbPromise
     .then((db) => {
+      // !code: handle_db
+      service.db = db
+      // !end
       return db.createCollection('logs', {
         // !<DEFAULT> code: create_collection
         // validator: { $jsonSchema: $jsonSchema },
@@ -32,8 +35,8 @@ const moduleExports = function (app) {
         // !end
       })
     })
-    .then((serviceModel) => {
-      service.Model = serviceModel
+    .then((collection) => {
+      service.Model = collection
     })
 
   service.hooks(hooks)

@@ -9,7 +9,7 @@ module.exports = function (app) {
   const config = app.get('mongodb')
   // !code: func_init // !end
 
-  const promise = MongoClient.connect(config, {
+  const dbPromise = MongoClient.connect(config, {
     useNewUrlParser: true
   })
     .then((client) => {
@@ -17,7 +17,6 @@ module.exports = function (app) {
       if (client.collection) {
         return client
       }
-
       const dbName = parseConnectionString(config, () => {})
       return client.db(dbName)
     })
@@ -26,7 +25,7 @@ module.exports = function (app) {
       logger.error(error)
     })
 
-  app.set('mongoClient', promise)
+  app.set('mongoClient', dbPromise)
   // !code: more // !end
 }
 // !code: funcs // !end

@@ -130,9 +130,9 @@ const buckets = {
 }
 
 function upsertRollup (options = {}) {
-  return (context) => {
+  return async (context) => {
     const data = context.result
-    const db = context.service.db
+    const db = await context.app.get('mongoClient')
     const options = { upsert: true }
     // build update
     const update = {
@@ -211,6 +211,7 @@ function handleChart (options = {}) {
   return async (context) => {
     const params = context.params
     const logs = context.service
+    const db = await context.app.get('mongoClient')
     const canvasSize = 500
     // raw bucket
     // 1688 logs per hour
@@ -270,9 +271,7 @@ function handleChart (options = {}) {
         }
       }
       if (bucket) {
-        const collection = context.service.db.collection(
-          `logs.sanitized.${bucket}`
-        )
+        const collection = db.collection(`logs.sanitized.${bucket}`)
         const result = {}
         const docs = await collection
           .find(query)
@@ -456,7 +455,7 @@ function handleChart (options = {}) {
         }, {})
         context.result = { bucket, start, end, data: sortedResult }
       } else {
-        const collection = context.service.db.collection(`logs`)
+        const collection = logs.Model // db.collection(`logs`)
         const result = {}
         const docs = await collection
           .find(query)
