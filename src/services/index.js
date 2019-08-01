@@ -13,8 +13,9 @@ const moduleExports = function (app) {
   app.configure(albums)
   app.configure(blob)
   app.configure(images)
-  app.configure(logs)
+  // app.configure(logs)
   app.configure(users)
+  app.set('serviceSetup', Promise.all([logs.call(app, app)]))
   // !code: func_return // !end
 }
 

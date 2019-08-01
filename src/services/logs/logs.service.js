@@ -6,11 +6,18 @@ const hooks = require('./logs.hooks')
 // !end
 // !code: init // !end
 
-const moduleExports = function (app) {
+const moduleExports = async function (app) {
   const paginate = app.get('paginate')
-  const dbPromise = app.get('mongoClient')
+  const db = await app.get('mongoClient')
+  const Model = await db.createCollection('logs', {
+    // !<DEFAULT> code: create_collection
+    // validator: { $jsonSchema: $jsonSchema },
+    // validationLevel: 'strict', // The MongoDB default
+    // validationAction: 'error', // The MongoDB default
+    // !end
+  })
   // !<DEFAULT> code: func_init
-  const options = { paginate, whitelist: ['$client'], multi: false }
+  const options = { Model, paginate, whitelist: ['$client'], multi: false }
   // !end
 
   // Initialize our service with any options it requires
@@ -20,24 +27,6 @@ const moduleExports = function (app) {
 
   // Get our initialized service so that we can register hooks
   const service = app.service('logs')
-
-  // eslint-disable-next-line no-unused-vars
-  const promise = dbPromise
-    .then((db) => {
-      // !code: handle_db
-      service.db = db
-      // !end
-      return db.createCollection('logs', {
-        // !<DEFAULT> code: create_collection
-        // validator: { $jsonSchema: $jsonSchema },
-        // validationLevel: 'strict', // The MongoDB default
-        // validationAction: 'error', // The MongoDB default
-        // !end
-      })
-    })
-    .then((collection) => {
-      service.Model = collection
-    })
 
   service.hooks(hooks)
   // !code: func_return // !end
