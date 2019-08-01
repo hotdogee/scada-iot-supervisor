@@ -4,13 +4,10 @@ const {
   JWTStrategy,
   AuthenticationBaseStrategy
 } = require('@feathersjs/authentication')
-// const oauth2 = require('@feathersjs/authentication-oauth2')
-// const GoogleStrategy = require('passport-google-oauth20')
-// const FacebookStrategy = require('passport-facebook')
+const { LocalStrategy } = require('@feathersjs/authentication-local')
 const { OAuthStrategy, setup } = require('@feathersjs/authentication-oauth')
 
 // !code: imports
-const { LocalStrategy } = require('@feathersjs/authentication-local')
 const debug = require('debug')('infans:auth')
 // const { verifyECDSA, savePublicKey } = require('./hooks/ecdsa')
 const { verify } = require('./lib/ecdsa')
@@ -937,24 +934,18 @@ const grantOauth = (settings = {}) => (app) => {
 // !end
 
 const moduleExports = function (app) {
-  // const config = app.get('authentication')
   const authentication = new ECDSAAuthenticationService(app)
-  // const authentication = new ECDSAAuthenticationService(app, 'authentication', {})
-  // this sets:
-  // app.set('defaultAuthentication', 'authentication');
-  // app.set('authentication', merge({}, app.get('authentication'), options));
   // !code: func_init // !end
 
   // Set up authentication with the secret
-  // app.configure(authentication(config))
-  // app.configure(jwt())
   authentication.register('jwt', new JWTStrategy())
-  authentication.register('local', new MultiAccountLocalStrategy())
   authentication.register('ecdsa', new ECDSAStrategy())
+  authentication.register('local', new MultiAccountLocalStrategy())
   authentication.register('google', new MultiAccountOAuthStrategy())
   authentication.register('facebook', new MultiAccountOAuthStrategy())
-  authentication.register('line', new MultiAccountOAuthStrategy())
   authentication.register('twitter', new MultiAccountOAuthStrategy())
+  authentication.register('line', new MultiAccountOAuthStrategy())
+
   // !code: loc_1
   // app.configure(
   //   local({
@@ -964,35 +955,11 @@ const moduleExports = function (app) {
   // )
   // app.configure(ecdsa())
   // !end
-
-  // app.configure(
-  //   oauth2(
-  //     Object.assign(
-  //       {
-  //         // !<DEFAULT> code: google_options
-  //         name: 'google',
-  //         Strategy: GoogleStrategy
-  //         // !end
-  //       },
-  //       config.google
-  //     )
-  //   )
-  // )
-
-  // app.configure(
-  //   oauth2(
-  //     Object.assign(
-  //       {
-  //         // !<DEFAULT> code: facebook_options
-  //         name: 'facebook',
-  //         Strategy: FacebookStrategy
-  //         // !end
-  //       },
-  //       config.facebook
-  //     )
-  //   )
-  // )
+  // !<DEFAULT> code: user_auth
   app.use('/authentication', authentication)
+  // !end
+  // !<DEFAULT> code: configure_auth
+
   app.configure(
     grantOauth()
     // expressOauth()
@@ -1006,6 +973,7 @@ const moduleExports = function (app) {
     //   }
     // }
   )
+  // !end
   // !code: loc_2
   // this sets:
   // app.set('grant', omit(app.get('authentication').oauth, 'redirect'))
