@@ -80,7 +80,9 @@
     "strategies": [
       "local",
       "google",
-      "facebook"
+      "facebook",
+      "twitter",
+      "line"
     ],
     "entity": "users"
   },
