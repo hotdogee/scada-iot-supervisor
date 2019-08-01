@@ -84,16 +84,19 @@ app.configure(middleware)
 app.configure(authentication)
 // Set up our services (see `services/index.js`)
 app.configure(services)
-// Set up event channels (see channels.js)
-app.configure(channels)
-// !code: config_middle // !end
+;(async () => {
+  await app.get('serviceSetup')
+  // Set up event channels (see channels.js)
+  app.configure(channels)
+  // !code: config_middle // !end
 
-// Configure a middleware for 404s and the error handler
-app.use(express.notFound())
-app.use(express.errorHandler({ logger }))
-// !code: config_end // !end
+  // Configure a middleware for 404s and the error handler
+  app.use(express.notFound())
+  app.use(express.errorHandler({ logger }))
+  // !code: config_end // !end
 
-app.hooks(appHooks)
+  app.hooks(appHooks)
+})()
 
 const moduleExports = app
 // !code: exports // !end
