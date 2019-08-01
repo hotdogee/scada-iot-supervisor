@@ -36,7 +36,7 @@
     "feathers": "node ../feathers-plus-cli"
   },
   "dependencies": {
-    "@casl/ability": "^3.1.2",
+    "@casl/ability": "^3.2.0",
     "@casl/mongoose": "^2.3.1",
     "@feathers-plus/test-utils": "^0.3.6",
     "@feathersjs/authentication": "^4.0.0-pre.5",
@@ -63,7 +63,7 @@
     "feathers-hooks-common": "^4.20.7",
     "feathers-logger": "^0.3.2",
     "feathers-mailer": "^3.0.1",
-    "feathers-mongodb": "^5.0.0",
+    "feathers-mongodb": "git+https://github.com/hotdogee/feathers-mongodb.git",
     "fs-blob-store": "^5.2.1",
     "helmet": "^3.20.0",
     "i18n": "^0.8.3",

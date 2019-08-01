@@ -79,3 +79,47 @@ body {
   type: 'camera'
   
 }
+
+# MongoDB
+
+```
+$ mongo
+use scada-iot
+db.logs.getIndexes()
+[
+        {
+                "v" : 2,
+                "key" : {
+                        "_id" : 1
+                },
+                "name" : "_id_",
+                "ns" : "scada-iot.logs"
+        },
+        {
+                "v" : 2,
+                "key" : {
+                        "logTime" : -1
+                },
+                "name" : "logTime_-1",
+                "background" : true,
+                "ns" : "scada-iot.logs"
+        },
+        {
+                "v" : 2,
+                "key" : {
+                        "name" : 1,
+                        "logTime" : -1
+                },
+                "name" : "name_1_logTime_-1",
+                "ns" : "scada-iot.logs",
+                "background" : true
+        }
+]
+db.logs.totalIndexSize()
+// scan, slow
+db.logs.countDocuments({})
+// metadata, fast
+db.logs.estimatedDocumentCount({})
+db.logs.find({logTime:{$gt:new Date("2017-08-08T20:39:30.088Z")}}).limit(10).count()
+db.logs.explain("executionStats").find({logTime:{$gt:new Date("2017-08-08T20:39:30.088Z")}}).hint("logTime_-1").limit(10).count()
+```

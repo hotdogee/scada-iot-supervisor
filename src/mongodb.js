@@ -10,8 +10,7 @@ module.exports = function (app) {
   // !code: func_init // !end
 
   const promise = MongoClient.connect(config, {
-    useNewUrlParser: true,
-    useCreateIndex: true
+    useNewUrlParser: true
   })
     .then((client) => {
       // For mongodb <= 2.2
