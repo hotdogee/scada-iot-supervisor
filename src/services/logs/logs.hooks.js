@@ -275,6 +275,18 @@ function handleChart (options = {}) {
       if (bucket) {
         const collection = db.collection(`logs.sanitized.${bucket}`)
         const result = {}
+        const total = (await db
+          .collection('logs.sanitized.1d')
+          .aggregate([
+            { $match: query },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: '$count' }
+              }
+            }
+          ])
+          .toArray())[0].count
         const docs = await collection
           .find(query)
           .sort({ logTime: 1 })
@@ -455,7 +467,7 @@ function handleChart (options = {}) {
           r[k] = result[k]
           return r
         }, {})
-        context.result = { bucket, start, end, data: sortedResult }
+        context.result = { bucket, start, end, total, data: sortedResult }
       } else {
         const collection = logs.Model // db.collection(`logs`)
         const result = {}
@@ -501,7 +513,13 @@ function handleChart (options = {}) {
           r[k] = result[k]
           return r
         }, {})
-        context.result = { bucket: null, start, end, data: sortedResult }
+        context.result = {
+          bucket: null,
+          start,
+          end,
+          total: docs.length,
+          data: sortedResult
+        }
       }
     }
   }
@@ -521,4 +539,6 @@ function convertDate (options = {}) {
   }
 }
 // !end
-// !code: end // !end
+// !code: end
+
+// !end

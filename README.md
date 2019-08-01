@@ -82,7 +82,7 @@ body {
 
 # MongoDB
 
-```
+```js
 $ mongo
 use scada-iot
 db.logs.getIndexes()
@@ -118,8 +118,76 @@ db.logs.getIndexes()
 db.logs.totalIndexSize()
 // scan, slow
 db.logs.countDocuments({})
+db.logs.explain("executionStats").countDocuments({
+  logTime: {
+    $gt: new Date('2017-08-07T20:39:30.088Z'),
+    $lt: new Date('2019-07-30T23:48:15.223Z')
+  }
+})
 // metadata, fast
 db.logs.estimatedDocumentCount({})
 db.logs.find({logTime:{$gt:new Date("2017-08-08T20:39:30.088Z")}}).limit(10).count()
 db.logs.explain("executionStats").find({logTime:{$gt:new Date("2017-08-08T20:39:30.088Z")}}).hint("logTime_-1").limit(10).count()
+```
+
+
+```js
+const app = require('./src/app')
+query = {
+  logTime: {
+    $gt: new Date('2017-08-07T20:39:30.088Z'),
+    $lt: new Date('2019-07-30T23:48:15.223Z')
+  }
+}
+// this runs 10s
+(async () => {
+  const start = new Date()
+  console.log(await app.service('logs').Model.countDocuments(query))
+  console.log(`runtime: ${new Date() - start}ms`)
+})()
+// this runs 7s
+// > 20691179
+// runtime: 6937ms
+(async () => {
+  const start = new Date()
+  console.log(await app.service('logs').Model.find(query).count())
+  console.log(`runtime: ${new Date() - start}ms`)
+})()
+// this runs 10s
+(async () => {
+  const start = new Date()
+  console.log(await app.service('logs').Model.aggregate([
+    { $match: query },
+    { $count: 'total' }
+  ]).toArray())
+  console.log(`runtime: ${new Date() - start}ms`)
+})()
+// this runs 10s
+(async () => {
+  const start = new Date()
+  console.log(await app.service('logs').Model.aggregate([
+    { $match: query },
+    { "$group": {
+        "_id": null,
+        "count": { "$sum": 1 }
+      }}
+  ]).toArray())
+  console.log(`runtime: ${new Date() - start}ms`)
+})()
+// this runs 5ms
+// > [ { _id: null, count: 20712866 } ]
+// runtime: 5ms
+(async () => {
+  const start = new Date()
+  const db = await app.get('mongoClient')
+  const count = (await db.collection('logs.sanitized.1d').aggregate([
+    { $match: query },
+    { "$group": {
+        "_id": null,
+        "count": { "$sum": "$count" }
+      }}
+  ]).toArray())[0].count
+  console.log(count)
+  console.log(`runtime: ${new Date() - start}ms`)
+})()
 ```
