@@ -7,7 +7,7 @@ const Ajv = require('ajv')
 // !end
 // !<DEFAULT> code: init
 const ajv = new Ajv()
-require('ajv-keywords')(ajv)
+require('ajv-keywords/keywords/instanceof')(ajv)
 ajv.addKeyword('coerce', {
   type: 'string',
   modifying: true,
