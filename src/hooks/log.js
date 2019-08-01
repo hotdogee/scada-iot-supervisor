@@ -5,8 +5,6 @@ const logger = require('../logger')
 const pick = require('lodash.pick')
 const merge = require('lodash.merge')
 const safeStringify = require('fast-safe-stringify')
-// const util = require('util')
-// const serializeError = require('serialize-error')
 
 function safePick (o, ...k) {
   return JSON.parse(safeStringify(pick(o, ...k)))
@@ -46,9 +44,15 @@ function safeError (context) {
 module.exports = function () {
   return (context) => {
     if (!context.error) {
-      logger.debug(`---${context.type.toUpperCase()} ${context.method.toUpperCase()} ${context.path.toUpperCase()}---`, safeContext(context))
+      logger.debug(
+        `---${context.type.toUpperCase()} ${context.method.toUpperCase()} ${context.path.toUpperCase()}---`,
+        safeContext(context)
+      )
     } else {
-      logger.error(`---${context.type.toUpperCase()} ${context.method.toUpperCase()} ${context.path.toUpperCase()}---`, safeError(context))
+      logger.error(
+        `---${context.type.toUpperCase()} ${context.method.toUpperCase()} ${context.path.toUpperCase()}---`,
+        safeError(context)
+      )
     }
   }
 }

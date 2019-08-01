@@ -16,6 +16,50 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: sequelize_model
   {
+    accountSelected: {
+      type: DataTypes.REAL
+    },
+    accounts: {
+      type: DataTypes.JSONB,
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    tfa: {
+      type: DataTypes.TEXT
+    },
+    authorizationSelected: {
+      type: DataTypes.REAL
+    },
+    authorizations: {
+      type: DataTypes.JSONB
+    },
+    locale: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    avatar: {
+      type: DataTypes.INTEGER
+    },
+    fullName: {
+      type: DataTypes.STRING
+    },
+    displayName: {
+      type: DataTypes.STRING
+    },
+    birthday: {
+      type: DataTypes.DATE
+    },
+    created: {
+      type: DataTypes.DATE,
+      defaultValue: Date.now
+    },
+    updated: {
+      type: DataTypes.DATE,
+      defaultValue: Date.now
+    }
     // !end
     // !<DEFAULT> code: moduleExports
   }

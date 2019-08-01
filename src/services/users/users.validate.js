@@ -2,9 +2,20 @@
 // Validation definitions for validateSchema hook for service `users`. (Can be re-generated.)
 const { validateSchema } = require('feathers-hooks-common')
 const merge = require('lodash.merge')
-const ajv = require('ajv')
+const Ajv = require('ajv')
 // !code: imports // !end
-// !code: init // !end
+// !<DEFAULT> code: init
+const ajv = new Ajv()
+require('ajv-keywords/keywords/instanceof')(ajv)
+ajv.addKeyword('coerce', {
+  type: 'string',
+  modifying: true,
+  validate: (fn, data, ps, path, parent, key) => {
+    parent[key] = fn(data)
+    return true
+  }
+})
+// !end
 
 // !<DEFAULT> code: set_id_type
 // eslint-disable-next-line no-unused-vars
@@ -17,9 +28,109 @@ const base = merge(
   {
     title: 'Users',
     description: 'Users database.',
-    required: [],
+    fakeRecords: 20,
+    required: ['accounts', 'password', 'locale'],
     uniqueItemProperties: [],
-    properties: {}
+    properties: {
+      _id: {
+        type: 'ID'
+      },
+      accountSelected: {
+        type: 'number'
+      },
+      accounts: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['type', 'value'],
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['email', 'mobile', 'nationalId', 'passportId']
+            },
+            value: {
+              type: 'string'
+            },
+            verificationId: {
+              type: 'ID'
+            }
+          }
+        }
+      },
+      password: {
+        type: 'string',
+        minLength: 8,
+        chance: {
+          hash: {
+            length: 60
+          }
+        }
+      },
+      tfa: {
+        type: 'string'
+      },
+      authorizationSelected: {
+        type: 'number'
+      },
+      authorizations: {
+        type: 'array',
+        maxItems: 100,
+        items: {
+          type: 'object',
+          required: ['role', 'org'],
+          properties: {
+            role: {
+              type: 'string',
+              faker: {
+                fk: 'roles:random'
+              }
+            },
+            org: {
+              type: 'string',
+              faker: {
+                fk: 'orgs:random'
+              }
+            },
+            patientId: {
+              type: 'number'
+            }
+          }
+        }
+      },
+      locale: {
+        type: 'string'
+      },
+      avatar: {
+        type: 'ID'
+      },
+      fullName: {
+        type: 'string',
+        minLength: 2,
+        maxLength: 15,
+        faker: 'name.findName'
+      },
+      displayName: {
+        type: 'string',
+        minLength: 2,
+        maxLength: 30,
+        faker: 'internet.userName'
+      },
+      birthday: {
+        type: 'string',
+        format: 'date-time',
+        faker: 'date.past'
+      },
+      created: {
+        type: 'string',
+        format: 'date-time',
+        default: Date.now
+      },
+      updated: {
+        type: 'string',
+        format: 'date-time',
+        default: Date.now
+      }
+    }
     // !end
     // !<DEFAULT> code: base_more
   }

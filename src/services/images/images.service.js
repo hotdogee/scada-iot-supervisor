@@ -14,11 +14,19 @@ const multerMemory = multer()
 const supportedImageFormats = new Set(['jpg', 'png', 'webp', 'tiff', 'jpeg'])
 // !end
 
-const moduleExports = function (app) {
+const moduleExports = async function (app) {
+  const db = await app.get('mongoClient')
+  const Model = await db.createCollection('images', {
+    // !<DEFAULT> code: create_collection
+    // validator: { $jsonSchema: $jsonSchema },
+    // validationLevel: 'strict', // The MongoDB default
+    // validationAction: 'error', // The MongoDB default
+    // !end
+  })
   const paginate = app.get('paginate')
-  const mongoClient = app.get('mongoClient')
-  const options = { paginate }
-  // !code: func_init // !end
+  // !<DEFAULT> code: func_init
+  const options = { Model, paginate, whitelist: ['$client'], multi: false }
+  // !end
 
   // Initialize our service with any options it requires
   // !code: extend
@@ -96,21 +104,6 @@ const moduleExports = function (app) {
 
   // Get our initialized service so that we can register hooks
   const service = app.service('images')
-
-  // eslint-disable-next-line no-unused-vars
-  const promise = mongoClient
-    .then((db) => {
-      return db.createCollection('images', {
-        // !<DEFAULT> code: create_collection
-        // validator: { $jsonSchema: $jsonSchema },
-        // validationLevel: 'strict', // The MongoDB default
-        // validationAction: 'error', // The MongoDB default
-        // !end
-      })
-    })
-    .then((serviceModel) => {
-      service.Model = serviceModel
-    })
 
   service.hooks(hooks)
   // !code: func_return // !end

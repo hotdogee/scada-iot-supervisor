@@ -7,7 +7,6 @@ const hooks = require('./logs.hooks')
 // !code: init // !end
 
 const moduleExports = async function (app) {
-  const paginate = app.get('paginate')
   const db = await app.get('mongoClient')
   const Model = await db.createCollection('logs', {
     // !<DEFAULT> code: create_collection
@@ -16,6 +15,7 @@ const moduleExports = async function (app) {
     // validationAction: 'error', // The MongoDB default
     // !end
   })
+  const paginate = app.get('paginate')
   // !<DEFAULT> code: func_init
   const options = { Model, paginate, whitelist: ['$client'], multi: false }
   // !end

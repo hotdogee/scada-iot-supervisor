@@ -6,9 +6,9 @@ const app = require('./app')
 const seedData = require('./seed-data')
 // !code: imports // !end
 // !code: init // !end
+
 ;(async () => {
   await app.get('serviceSetup')
-
   const port = app.get('port')
   const server = app.listen(port)
   // !code: init2 // !end
@@ -38,7 +38,7 @@ const seedData = require('./seed-data')
     await seedData(app)
     // !code: listening1 // !end
   })
-})()
 
-// !code: funcs // !end
-// !code: end // !end
+  // !code: funcs // !end
+  // !code: end // !end
+})()

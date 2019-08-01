@@ -1,7 +1,9 @@
 // Hooks for service `blob`. (Can be re-generated.)
 const commonHooks = require('feathers-hooks-common')
-const { authenticate } = require('@feathersjs/authentication').hooks
 const { ObjectID } = require('mongodb')
+// !<DEFAULT> code: auth_imports
+const { authenticate } = require('@feathersjs/authentication').hooks
+// !end
 // !code: imports
 /* eslint-disable no-unused-vars */
 require('dotenv').config()

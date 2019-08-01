@@ -2,9 +2,20 @@
 // Validation definitions for validateSchema hook for service `images`. (Can be re-generated.)
 const { validateSchema } = require('feathers-hooks-common')
 const merge = require('lodash.merge')
-const ajv = require('ajv')
+const Ajv = require('ajv')
 // !code: imports // !end
-// !code: init // !end
+// !<DEFAULT> code: init
+const ajv = new Ajv()
+require('ajv-keywords/keywords/instanceof')(ajv)
+ajv.addKeyword('coerce', {
+  type: 'string',
+  modifying: true,
+  validate: (fn, data, ps, path, parent, key) => {
+    parent[key] = fn(data)
+    return true
+  }
+})
+// !end
 
 // !<DEFAULT> code: set_id_type
 // eslint-disable-next-line no-unused-vars

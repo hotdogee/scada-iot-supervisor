@@ -6,11 +6,18 @@ const hooks = require('./albums.hooks')
 // !end
 // !code: init // !end
 
-const moduleExports = function (app) {
+const moduleExports = async function (app) {
+  const db = await app.get('mongoClient')
+  const Model = await db.createCollection('albums', {
+    // !<DEFAULT> code: create_collection
+    // validator: { $jsonSchema: $jsonSchema },
+    // validationLevel: 'strict', // The MongoDB default
+    // validationAction: 'error', // The MongoDB default
+    // !end
+  })
   const paginate = app.get('paginate')
-  const mongoClient = app.get('mongoClient')
   // !<DEFAULT> code: func_init
-  const options = { paginate, whitelist: ['$client'], multi: false }
+  const options = { Model, paginate, whitelist: ['$client'], multi: false }
   // !end
 
   // Initialize our service with any options it requires
@@ -20,21 +27,6 @@ const moduleExports = function (app) {
 
   // Get our initialized service so that we can register hooks
   const service = app.service('albums')
-
-  // eslint-disable-next-line no-unused-vars
-  const promise = mongoClient
-    .then((db) => {
-      return db.createCollection('albums', {
-        // !<DEFAULT> code: create_collection
-        // validator: { $jsonSchema: $jsonSchema },
-        // validationLevel: 'strict', // The MongoDB default
-        // validationAction: 'error', // The MongoDB default
-        // !end
-      })
-    })
-    .then((serviceModel) => {
-      service.Model = serviceModel
-    })
 
   service.hooks(hooks)
   // !code: func_return // !end

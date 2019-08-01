@@ -10,12 +10,16 @@ const users = require('./users/users.service')
 
 // eslint-disable-next-line no-unused-vars
 const moduleExports = function (app) {
-  app.configure(albums)
-  app.configure(blob)
-  app.configure(images)
-  // app.configure(logs)
-  app.configure(users)
-  app.set('serviceSetup', Promise.all([logs.call(app, app)]))
+  app.set(
+    'serviceSetup',
+    Promise.all([
+      albums.call(app, app),
+      blob.call(app, app),
+      images.call(app, app),
+      logs.call(app, app),
+      users.call(app, app)
+    ])
+  )
   // !code: func_return // !end
 }
 
