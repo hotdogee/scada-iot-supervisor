@@ -686,9 +686,7 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
       debug(`adding oauth account to current entity`, tokenEntity)
       if (oauthEntity) {
         throw new BadRequest(
-          `Could not add ${
-            this.name
-          } account, already associated with another user`
+          `Could not add ${this.name} account, already associated with another user`
         )
       }
       // push entity.accounts
@@ -1008,6 +1006,7 @@ const moduleExports = function (app) {
     //   }
     // }
   )
+  // !code: loc_2
   // this sets:
   // app.set('grant', omit(app.get('authentication').oauth, 'redirect'))
   // app.set('grant', require('grant').express()(omit(app.get('authentication').oauth, 'redirect')))
@@ -1106,8 +1105,7 @@ const moduleExports = function (app) {
   //     }
   //   } (feathers\packages\authentication-oauth\src\strategy.ts)
   // * redirect to UI_URL + '#' + result.accessToken (feathers\packages\authentication-oauth\src\strategy.getRedirect)
-
-  // !code: loc_2 // !end
+  // !end
 
   // The `authentication` service is used to create a JWT.
   // The before `create` hook registers strategies that can be used
