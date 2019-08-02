@@ -11,6 +11,23 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: sequelize_model
   {
+    timestamp: {
+      type: DataTypes.DATE
+    },
+    albumId: {
+      type: DataTypes.INTEGER
+    },
+    key: {
+      type: DataTypes.TEXT
+    },
+    updated: {
+      type: DataTypes.DATE,
+      defaultValue: Date.now
+    },
+    created: {
+      type: DataTypes.DATE,
+      defaultValue: Date.now
+    }
     // !end
     // !<DEFAULT> code: moduleExports
   }

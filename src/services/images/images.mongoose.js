@@ -10,6 +10,17 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: model
   {
+    timestamp: Date,
+    albumId: mongoose.Schema.Types.ObjectId,
+    key: String,
+    updated: {
+      type: Date,
+      default: Date.now
+    },
+    created: {
+      type: Date,
+      default: Date.now
+    }
     // !end
     // !<DEFAULT> code: moduleExports
   }

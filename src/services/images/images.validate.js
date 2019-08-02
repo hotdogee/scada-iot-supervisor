@@ -30,7 +30,34 @@ const base = merge(
     description: 'Images database.',
     required: [],
     uniqueItemProperties: [],
-    properties: {}
+    properties: {
+      _id: {
+        type: 'ID'
+      },
+      timestamp: {
+        type: 'string',
+        format: 'date-time'
+      },
+      albumId: {
+        type: 'ID',
+        faker: {
+          fk: 'albums:random'
+        }
+      },
+      key: {
+        type: 'string'
+      },
+      updated: {
+        type: 'string',
+        format: 'date-time',
+        default: Date.now
+      },
+      created: {
+        type: 'string',
+        format: 'date-time',
+        default: Date.now
+      }
+    }
     // !end
     // !<DEFAULT> code: base_more
   }

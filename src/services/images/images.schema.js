@@ -21,7 +21,14 @@ const schema = {
 
   // Fields in the model.
   properties: {
-    // !code: schema_properties // !end
+    // !code: schema_properties
+    _id: { type: 'ID' },
+    timestamp: { type: 'string', format: 'date-time' },
+    albumId: { type: 'ID', faker: { fk: 'albums:random' } },
+    key: { type: 'string' },
+    updated: { type: 'string', format: 'date-time', default: Date.now },
+    created: { type: 'string', format: 'date-time', default: Date.now }
+    // !end
     // !<DEFAULT> code: schema_more
   }
   // !end

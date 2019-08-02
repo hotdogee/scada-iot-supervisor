@@ -798,6 +798,7 @@ class ECDSAAuthenticationService extends AuthenticationService {
       this.getTokenOptions(authResult, params)
     ])
 
+    // do not create new accessToken if using JWT strategy
     if (authResult.accessToken) {
       return authResult
     }

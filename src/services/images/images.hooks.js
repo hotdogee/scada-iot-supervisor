@@ -57,7 +57,7 @@ const {
 // !end
 // !<DEFAULT> code: foreign_keys
 // eslint-disable-next-line no-unused-vars
-const foreignKeys = []
+const foreignKeys = ['_id', 'albumId']
 // !end
 // !code: init // !end
 
@@ -199,6 +199,8 @@ function assertAlbum () {
       })
     } else {
       params.album = album
+      data.albumId = new ObjectID(albumId)
+      app.info(`typeof data.albumId = ${typeof data.albumId}, ${data.albumId}`)
     }
     return context
   }
@@ -224,9 +226,11 @@ function assertAlbumLimit () {
     // total - keep > page limit
     // sort ascending
     let { total, data: images } = await service.find({
-      albumId,
-      $sort: {
-        timestamp: 1
+      query: {
+        albumId,
+        $sort: {
+          timestamp: 1
+        }
       }
     })
     // in place sort descending, older images at end of array
@@ -245,9 +249,11 @@ function assertAlbumLimit () {
     app.debug(`after total ${total} ${keep}`)
     while (total > keep) {
       const result = await service.find({
-        albumId,
-        $sort: {
-          timestamp: 1
+        query: {
+          albumId,
+          $sort: {
+            timestamp: 1
+          }
         }
       })
       total = result.total
