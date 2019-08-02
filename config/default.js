@@ -23,7 +23,7 @@ module.exports = {
       header: {
         typ: 'access'
       },
-      issuer: 'infans.io',
+      issuer: 'hanl.in',
       algorithm: 'HS256',
       expiresIn: '30m'
     },
@@ -32,16 +32,20 @@ module.exports = {
       passwordField: '\\password'
     },
     oauth: {
-      redirect: 'http://localhost:8685',
+      redirect: process.env.UI_URL || '/',
       defaults: {
-        path: '/oauth',
-        host: 'localhost:6001',
-        protocol: 'http'
+        path: process.env.OAUTH_PATH || '/oauth',
+        host:
+          process.env.OAUTH_HOST ||
+          `${process.env.HOST || 'localhost'}:${process.env.PORT || '6001'}`,
+        protocol:
+          process.env.OAUTH_PROTOCOL || process.env.NODE_ENV === 'production'
+            ? 'https'
+            : 'http' // transport: 'session'
       },
       google: {
-        key:
-          '830396712455-2pajms642mvqiao4j501nsb4s6bs3stt.apps.googleusercontent.com',
-        secret: 'XmDkQmFzC2GPFXtVuk9UFlWk',
+        key: process.env.GOOGLE_CLIENT_ID || 'your google client id',
+        secret: process.env.GOOGLE_CLIENT_SECRET || 'your google client secret',
         scope: ['profile openid email'],
         nonce: true,
         custom_params: {
@@ -50,27 +54,29 @@ module.exports = {
         profileUrl: 'https://openidconnect.googleapis.com/v1/userinfo'
       },
       facebook: {
-        key: '1365216103654575',
-        secret: '2a7408f5e6648ed9f09c7594d401f43d',
+        key: process.env.FACEBOOK_CLIENT_ID || 'your facebook client id',
+        secret:
+          process.env.FACEBOOK_CLIENT_SECRET || 'your facebook client secret',
         scope: ['public_profile', 'email'],
         profileUrl:
           'https://graph.facebook.com/me?fields=id,email,first_name,last_name,short_name,name,middle_name,name_format,picture,permissions'
       },
       line: {
+        key: process.env.LINE_CLIENT_ID || 'your line client id',
+        secret: process.env.LINE_CLIENT_SECRET || 'your line client secret',
         authorize_url: 'https://access.line.me/oauth2/v2.1/authorize',
         access_url: 'https://api.line.me/oauth2/v2.1/token',
         oauth: 2,
         state: true,
         scope_delimiter: ' ',
-        key: '1593954833',
-        secret: '89ce4ff0d2c15110ffbca1689113a545',
         scope: ['profile openid email'],
         nonce: true,
         profileUrl: 'https://api.line.me/v2/profile'
       },
       twitter: {
-        key: 'dCGPMs0y2Sbt8PlET5t1ToGJ6',
-        secret: 'HHidwVt8cdlZjLMJKh2ml6XlgUzfV3ADASYx1pyX3qACtSp6LQ',
+        key: process.env.TWITTER_CLIENT_ID || 'your twitter client id',
+        secret:
+          process.env.TWITTER_CLIENT_SECRET || 'your twitter client secret',
         profileUrl:
           'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true&skip_status=true&include_entities=false'
       }
