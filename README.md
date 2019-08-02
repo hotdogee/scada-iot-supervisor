@@ -191,3 +191,17 @@ query = {
   console.log(`runtime: ${new Date() - start}ms`)
 })()
 ```
+
+# Keys
+
+- [mailjet](https://app.mailjet.com/transactional)
+- [reCAPTCHA](https://www.google.com/recaptcha/admin/site/343640963/settings)
+- [VAPID](https://developers.google.com/web/fundamentals/push-notifications/subscribing-a-user)
+  ```bash
+  $ npm install -g web-push
+  $ web-push generate-vapid-keys
+  ```
+- [Google OAuth2](https://console.developers.google.com/apis/credentials?project=scada-248614)
+- [Facebook OAuth2](https://developers.facebook.com/apps/335907437318058/fb-login/settings/)
+- [Twitter OAuth](https://developer.twitter.com/en/apps/16613455)
+- [LINE OAuth2](https://developers.line.biz/console/channel/1605624008/basic/)
