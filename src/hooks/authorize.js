@@ -43,6 +43,9 @@ function defineAbilitiesFor (params, data) {
   // can('patch', 'email-verifications', { token: { $exists: false } })
 
   if (user) {
+    can(['find', 'get', 'create', 'remove'], ['api-keys'], {
+      userId: user._id
+    })
     if (payload.aud === 'public-keys') {
       can('create', ['public-keys'], {
         userId: user._id
