@@ -7,7 +7,9 @@ module.exports = {
   extends: 'standard',
   globals: {
     Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly'
+    SharedArrayBuffer: 'readonly',
+    btoa: 'readonly',
+    atob: 'readonly'
   },
   parserOptions: {
     ecmaVersion: 2018

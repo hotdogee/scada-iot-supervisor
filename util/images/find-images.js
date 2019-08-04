@@ -1,5 +1,6 @@
 // node amqp-feathers.js --supervisor=goo.bio:3030 --ampqstr=amqp://localhost
-require('dotenv').config({ path: '../../.env' })
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const fs = require('fs')
 const path = require('path')
 const request = require('request')
@@ -11,7 +12,7 @@ const formData = {
   albumId: '5d40995997207574c0081863',
   file: req
 }
-request.post({ url: service, formData }, function (err, httpResponse, body) {
+request.post({ url: service, formData }, function(err, httpResponse, body) {
   if (err) {
     return console.error('upload failed:', err)
   }

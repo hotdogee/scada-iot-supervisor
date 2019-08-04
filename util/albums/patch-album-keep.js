@@ -1,4 +1,5 @@
-require('dotenv').config({ path: '../../.env' })
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const io = require('socket.io-client')
 const feathers = require('@feathersjs/feathers')
 const socketio = require('@feathersjs/socketio-client')
@@ -25,7 +26,7 @@ socket.on('connect', async (connection) => {
       keep: 10
     })
     // { name: 'cam1', _id: '5d40995997207574c0081863' }
-    logger.info(`${argv.service}.${argv.service}`, result)
+    logger.info(`${argv.service}.${argv.method}`, result)
   } catch (error) {
     logger.error(error)
   } finally {

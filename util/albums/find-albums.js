@@ -1,4 +1,5 @@
-require('dotenv').config({ path: '../../.env' })
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const io = require('socket.io-client')
 const feathers = require('@feathersjs/feathers')
 const socketio = require('@feathersjs/socketio-client')

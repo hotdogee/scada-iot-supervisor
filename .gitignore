@@ -120,3 +120,4 @@ data/
 # dotenv environment variables file
 .env
 .node-persist
+.keystore

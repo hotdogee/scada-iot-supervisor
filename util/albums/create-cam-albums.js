@@ -29,7 +29,7 @@ socket.on('connect', async (connection) => {
           keep: 10
         })
         // { name: 'cam1', _id: '5d405c30cafd4e6cb87a3e92' }
-        logger.info(`${argv.service}.${argv.service}`, result)
+        logger.info(`${argv.service}.${argv.method}`, result)
       })
     )
   } catch (error) {
