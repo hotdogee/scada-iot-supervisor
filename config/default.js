@@ -15,6 +15,8 @@ module.exports = {
   authentication: {
     entity: '\\user',
     service: 'users',
+    header: 'Authorization',
+    schemes: ['Bearer', 'JWT'],
     secret:
       'e889da34fa082aac28663a15c32d634fdee607145490cab32e8a6e7343bbc78845f94d1ce451dbaba4ab20b07fdee28392c34bbe68c6ba4b3030d2c6c4cfa26102be1d6cd91a142c16c9b07fffead08ba04b60a3afa058e694b524c7dece4b4559958b716ba8b9abc24593fa57a767a1cbb8936ae7613544995b17741135c5f75cec4db9005fe295badcbc728579a6ab6a9595365804926396d3ebe520ff7c1cd7512a153efbedfb7b07ac319da11c67e4e6d05017cf6ba0b04bd2bd4ec917d87113a802c3aa8dc4575acde42bdffad357178c388d62886dc01ce8e5bc8e0d0ed04c57da6a6ce52aa82cf0d396de0f29268dcf83e46acbbb2107bda65d8748b8',
     authStrategies: ['jwt', 'ecdsa', 'local'],
