@@ -73,6 +73,116 @@
       "isAuthEntity": false,
       "requiresAuth": true,
       "graphql": true
+    },
+    "apiKeys": {
+      "name": "apiKeys",
+      "nameSingular": "apiKey",
+      "subFolder": "",
+      "fileName": "api-keys",
+      "adapter": "mongodb",
+      "path": "/api-keys",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "apiServers": {
+      "name": "apiServers",
+      "nameSingular": "apiServer",
+      "subFolder": "",
+      "fileName": "api-servers",
+      "adapter": "mongodb",
+      "path": "/api-servers",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "emails": {
+      "name": "emails",
+      "nameSingular": "email",
+      "subFolder": "",
+      "fileName": "emails",
+      "adapter": "mongodb",
+      "path": "/emails",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "orgs": {
+      "name": "orgs",
+      "nameSingular": "org",
+      "subFolder": "",
+      "fileName": "orgs",
+      "adapter": "mongodb",
+      "path": "/orgs",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "roles": {
+      "name": "roles",
+      "nameSingular": "role",
+      "subFolder": "",
+      "fileName": "roles",
+      "adapter": "mongodb",
+      "path": "/roles",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "schedules": {
+      "name": "schedules",
+      "nameSingular": "schedule",
+      "subFolder": "",
+      "fileName": "schedules",
+      "adapter": "mongodb",
+      "path": "/schedules",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "publicKeys": {
+      "name": "publicKeys",
+      "nameSingular": "publicKey",
+      "subFolder": "",
+      "fileName": "public-keys",
+      "adapter": "mongodb",
+      "path": "/public-keys",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "notifications": {
+      "name": "notifications",
+      "nameSingular": "notification",
+      "subFolder": "",
+      "fileName": "notifications",
+      "adapter": "mongodb",
+      "path": "/notifications",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "subscriptions": {
+      "name": "subscriptions",
+      "nameSingular": "subscription",
+      "subFolder": "",
+      "fileName": "subscriptions",
+      "adapter": "mongodb",
+      "path": "/subscriptions",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
+    },
+    "templates": {
+      "name": "templates",
+      "nameSingular": "template",
+      "subFolder": "",
+      "fileName": "templates",
+      "adapter": "mongodb",
+      "path": "/templates",
+      "isAuthEntity": false,
+      "requiresAuth": true,
+      "graphql": true
     }
   },
   "hooks": {},
