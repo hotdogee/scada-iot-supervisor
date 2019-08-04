@@ -325,6 +325,51 @@ const {
 //   }
 // }
 
+class APIKeyJWTStrategy extends JWTStrategy {
+  async authenticate (authentication, params) {
+    // const authentication = {
+    //   strategy: 'ecdsa',
+    //   signature: btoa(String.fromCharCode(...new Uint8Array(signature))),
+    //   document: {
+    //     payload: {
+    //       userId: state.user._id
+    //     },
+    //     publicKey: JSON.stringify(publicKey),
+    //     timestamp: new Date(),
+    //     // timestamp: new Date('2018-11-06T07:34:20.671Z'),
+    //     userAgent: navigator.userAgent
+    //   }
+    // }
+    // header: Authorization: Bearer 123123123123
+    // header: Authorization: JWT 123123123123
+    // const authentication = { strategy: 'jwt', accessToken: '123123123123' }
+    const result = super.authenticate(authentication, params)
+    // payload = { iat: 1564893049, exp: 1564894849, aud: 'api-key', iss: 'hanl.in' }
+    // if aud in payload
+    const {
+      authentication: {
+        payload: { aud }
+      }
+    } = result
+    if (aud === 'api-key') {
+      // check service('api-keys')
+      try {
+        const apiKey = this.app
+          .service('api-keys')
+          .get(authentication.accessToken)
+        this.app.debug(apiKey)
+        return result
+      } catch (error) {
+        // TypeError: Cannot read property 'get' of undefined
+        // NotFound: No record found for id '123123123123'
+        throw new NotAuthenticated(`Invalid api-key`)
+      }
+    } else {
+      return result
+    }
+  }
+}
+
 class ECDSAStrategy extends AuthenticationBaseStrategy {
   get configuration () {
     const authConfig = this.authentication.configuration
@@ -939,7 +984,7 @@ const moduleExports = function (app) {
   // !code: func_init // !end
 
   // Set up authentication with the secret
-  authentication.register('jwt', new JWTStrategy())
+  authentication.register('jwt', new APIKeyJWTStrategy())
   authentication.register('ecdsa', new ECDSAStrategy())
   authentication.register('local', new MultiAccountLocalStrategy())
   authentication.register('google', new MultiAccountOAuthStrategy())
