@@ -10,7 +10,6 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: model
   {
-    accountSelected: Number,
     accounts: [
       {
         type: {
@@ -21,8 +20,7 @@ const moduleExports = merge(
         value: {
           type: String,
           required: true
-        },
-        verificationId: mongoose.Schema.Types.ObjectId
+        }
       }
     ],
     password: {
@@ -31,24 +29,20 @@ const moduleExports = merge(
       required: true
     },
     tfa: String,
-    authorizationSelected: Number,
     authorizations: [
       {
-        role: {
-          type: String,
-          required: true
-        },
         org: {
           type: String,
           required: true
         },
-        patientId: Number
+        role: {
+          type: String,
+          required: true
+        }
       }
     ],
-    locale: {
-      type: String,
-      required: true
-    },
+    language: String,
+    country: String,
     avatar: mongoose.Schema.Types.ObjectId,
     fullName: {
       type: String,

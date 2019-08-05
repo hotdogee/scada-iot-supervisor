@@ -33,16 +33,14 @@ const base = merge(
     uniqueItemProperties: [],
     properties: {
       _id: {
-        type: 'string'
-      },
-      accountSelected: {
-        type: 'number'
+        type: ID
       },
       accounts: {
         type: 'array',
         items: {
           type: 'object',
           required: ['type', 'value'],
+          additionalProperties: false,
           properties: {
             type: {
               type: 'string',
@@ -50,9 +48,6 @@ const base = merge(
             },
             value: {
               type: 'string'
-            },
-            verificationId: {
-              type: 'ID'
             }
           }
         }
@@ -69,9 +64,6 @@ const base = merge(
       tfa: {
         type: 'string'
       },
-      authorizationSelected: {
-        type: 'number'
-      },
       authorizations: {
         type: 'array',
         maxItems: 100,
@@ -79,29 +71,32 @@ const base = merge(
           type: 'object',
           required: ['role', 'org'],
           properties: {
-            role: {
-              type: 'string',
-              faker: {
-                fk: 'roles:random'
-              }
-            },
             org: {
               type: 'string',
               faker: {
                 fk: 'orgs:random'
               }
             },
-            patientId: {
-              type: 'number'
+            role: {
+              type: 'string',
+              faker: {
+                fk: 'roles:random'
+              }
+            },
+            id: {
+              type: 'string'
             }
           }
         }
       },
-      locale: {
+      language: {
+        type: 'string'
+      },
+      country: {
         type: 'string'
       },
       avatar: {
-        type: 'ID'
+        type: ID
       },
       fullName: {
         type: 'string',

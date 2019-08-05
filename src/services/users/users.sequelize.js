@@ -18,9 +18,6 @@ const moduleExports = merge(
   {},
   // !<DEFAULT> code: sequelize_model
   {
-    accountSelected: {
-      type: DataTypes.REAL
-    },
     accounts: {
       type: DataTypes.JSONB,
       allowNull: false
@@ -32,15 +29,14 @@ const moduleExports = merge(
     tfa: {
       type: DataTypes.TEXT
     },
-    authorizationSelected: {
-      type: DataTypes.REAL
-    },
     authorizations: {
       type: DataTypes.JSONB
     },
-    locale: {
-      type: DataTypes.TEXT,
-      allowNull: false
+    language: {
+      type: DataTypes.TEXT
+    },
+    country: {
+      type: DataTypes.TEXT
     },
     avatar: {
       type: DataTypes.INTEGER

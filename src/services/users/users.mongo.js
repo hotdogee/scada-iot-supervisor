@@ -14,13 +14,11 @@ const moduleExports = merge(
       _id: {
         bsonType: 'objectId'
       },
-      accountSelected: {
-        bsonType: 'number'
-      },
       accounts: {
         items: {
           type: 'object',
           required: ['type', 'value'],
+          additionalProperties: false,
           properties: {
             type: {
               type: 'string',
@@ -28,9 +26,6 @@ const moduleExports = merge(
             },
             value: {
               type: 'string'
-            },
-            verificationId: {
-              type: 'ID'
             }
           }
         },
@@ -48,35 +43,35 @@ const moduleExports = merge(
       tfa: {
         bsonType: 'string'
       },
-      authorizationSelected: {
-        bsonType: 'number'
-      },
       authorizations: {
         maxItems: 100,
         items: {
           type: 'object',
           required: ['role', 'org'],
           properties: {
-            role: {
-              type: 'string',
-              faker: {
-                fk: 'roles:random'
-              }
-            },
             org: {
               type: 'string',
               faker: {
                 fk: 'orgs:random'
               }
             },
-            patientId: {
-              type: 'number'
+            role: {
+              type: 'string',
+              faker: {
+                fk: 'roles:random'
+              }
+            },
+            id: {
+              type: 'string'
             }
           }
         },
         bsonType: 'array'
       },
-      locale: {
+      language: {
+        bsonType: 'string'
+      },
+      country: {
         bsonType: 'string'
       },
       avatar: {
