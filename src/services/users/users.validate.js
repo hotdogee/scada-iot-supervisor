@@ -33,7 +33,7 @@ const base = merge(
     uniqueItemProperties: [],
     properties: {
       _id: {
-        type: 'ID'
+        type: 'string'
       },
       accountSelected: {
         type: 'number'

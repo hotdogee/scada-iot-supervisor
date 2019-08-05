@@ -301,31 +301,31 @@ function createEmailVerification (expiresIn = '30m') {
   }
 }
 
-function addTestAuth () {
-  return async (context) => {
-    try {
-      // context.app.service('user-authorizations').create({
-      //   userId: context.result._id,
-      //   scope: {
-      //     role: 'patient',
-      //     org: 'mmh',
-      //     patientId: 14958
-      //   }
-      // })
-      // context.app.service('user-authorizations').create({
-      //   userId: context.result._id,
-      //   scope: {
-      //     role: 'embryologist',
-      //     org: 'mmh'
-      //   }
-      // })
-      return context
-    } catch (error) {
-      debug(error)
-      throw error
-    }
-  }
-}
+// function addTestAuth () {
+//   return async (context) => {
+//     try {
+//       // context.app.service('user-authorizations').create({
+//       //   userId: context.result._id,
+//       //   scope: {
+//       //     role: 'patient',
+//       //     org: 'mmh',
+//       //     patientId: 14958
+//       //   }
+//       // })
+//       // context.app.service('user-authorizations').create({
+//       //   userId: context.result._id,
+//       //   scope: {
+//       //     role: 'embryologist',
+//       //     org: 'mmh'
+//       //   }
+//       // })
+//       return context
+//     } catch (error) {
+//       debug(error)
+//       throw error
+//     }
+//   }
+// }
 
 // function getAuthorizations () {
 //   return async (context) => {

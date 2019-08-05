@@ -28,7 +28,7 @@ const schema = {
   // Fields in the model.
   properties: {
     // !code: schema_properties
-    _id: { type: 'ID' },
+    _id: { type: 'string' },
     accounts: {
       type: 'array',
       items: {
@@ -40,8 +40,7 @@ const schema = {
             type: 'string',
             enum: ['email', 'mobile', 'nationalId', 'passportId']
           },
-          value: { type: 'string' },
-          verificationId: { type: 'ID' }
+          value: { type: 'string' }
         }
       }
     },
@@ -77,7 +76,7 @@ const schema = {
     language: { type: 'string' },
     country: { type: 'string' },
     avatar: {
-      type: 'ID'
+      type: 'string'
       /*, faker: { fk: 'images:random' } */
     },
     fullName: {
