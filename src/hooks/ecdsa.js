@@ -73,12 +73,10 @@ exports.verifyECDSA = function (
     //   },
     //   data: { googleId: '108576876073520472460' }
     // }
-    const {
-      data,
-      params: { provider }
-    } = context
     // check type === before
     checkContext(context, 'before')
+    const { params } = context
+    const { provider, signature, document } = params
     // check provider
     if (!provider) {
       debug(`SKIP verifyECDSA (server call)`)
@@ -87,8 +85,8 @@ exports.verifyECDSA = function (
     // check required data fields
     // throw new errors.BadRequest(`Field ${name} does not exist. (required)`)
     // throw new errors.BadRequest(`Field ${name} is null. (required)`)
-    required(...requiredDataFields)(context)
-    const { signature, document } = data
+    // required(...requiredDataFields)(context)
+    // const { signature, document } = data
     // debug(`data = ${safeStringify(data)}`)
     // document = {
     //   payload: { email: credentials.email },
@@ -103,34 +101,28 @@ exports.verifyECDSA = function (
     if (!valid) {
       throw invalidError
     }
-    // prepare refresh-token object
-    const refreshToken = {
-      _id: document.publicKey,
-      document: safeStringify(document),
-      signature
-    }
-    context.refreshToken = refreshToken
-    // clean up data
-    delete data.document
-    delete data.signature
     return context
   }
 }
 
 exports.savePublicKey = function () {
   return (context) => {
-    const {
-      params: { provider }
-    } = context
     // check type === after
     checkContext(context, 'after')
+    const { app, params, result } = context
+    const { user, provider, signature, document } = params
     // check provider
     if (!provider) {
       debug(`SKIP verifyECDSA (server call)`)
       return context
     }
-    context.refreshToken.userId = context.result._id || context.params.user._id
-    context.app.service('public-keys').create(context.refreshToken)
+    const data = {
+      _id: document.publicKey,
+      userId: result._id || user._id,
+      document: safeStringify(document),
+      signature
+    }
+    app.service('public-keys').create(data)
     return context
     // debug(`context = `, context)
     // context = {

@@ -14,6 +14,8 @@ const {
 // !code: imports
 // const safeStringify = require('fast-safe-stringify')
 const commonPassword = require('common-password')
+const merge = require('lodash.merge')
+const jwt = require('jsonwebtoken')
 const path = require('path')
 const debug = require('debug')(
   `scada:${path.basename(__filename, path.extname(__filename))}`
@@ -52,7 +54,9 @@ const {
   isProvider,
   keep,
   populate,
-  skipRemainingHooks
+  skipRemainingHooks,
+  paramsFromClient,
+  checkContext
   /* eslint-enable no-unused-vars */
 } = commonHooks
 // !end
@@ -98,40 +102,46 @@ const moduleExports = {
     find: [authenticate('jwt'), mongoKeys(ObjectID, foreignKeys)],
     get: [authenticate('jwt')],
     create: [
-      // validateSchema(createUserSchema, ajv),
-      rejectCommonPassword(),
+      // create local, create oauth,
+      validateCreate(),
+      paramsFromClient('recaptchaToken', 'signature', 'document'),
       verifyRecaptcha(),
       verifyECDSA(),
-      unique('accounts.value'),
+      rejectDuplicateAccount(),
+      rejectCommonPassword('password'),
       hashPassword('password'),
       // iff(
       //   isProvider('external'),
       //   keep(...Object.keys(createUserSchema.properties))
       // ),
-      alterItems((user) => {
-        user.accountSelected = 0
-        user.authorizationSelected = ''
-      }),
+      // alterItems((user) => {
+      //   user.accountSelected = 0
+      //   user.authorizationSelected = ''
+      // }),
       timestamp('created'),
       timestamp('updated')
     ],
     update: [
+      // no updates allowed
       ...restrict,
       disallow('external'),
       // validateSchema(createUserSchema, ajv),
       rejectCommonPassword(),
       verifyECDSA(),
-      unique('accounts.value'),
+      rejectDuplicateAccount(),
       hashPassword('password'),
       timestamp('updated')
     ],
     patch: [
-      timestamp('updated'),
-      // validateSchema(patchUserSchema, ajv),
-      unique('accounts.value'),
-      rejectCommonPassword(),
+      // patch info, patch account verified (required verification token), patch password (required elevated access)
+      // iff(isProvider('external'), )
+      ...restrict,
+      paramsFromClient('signature', 'document'),
+      verifyECDSA(),
+      rejectDuplicateAccount(),
+      rejectCommonPassword('password'),
       hashPassword('password'),
-      iff(isProvider('external'), ...restrict, verifyECDSA())
+      timestamp('updated')
       // iff(
       //   isProvider('external'),
       //   keep(...Object.keys(patchUserSchema.properties))
@@ -149,26 +159,26 @@ const moduleExports = {
       when(
         (hook) => hook.params.provider, // Will be undefined for internal calls from the server
         protect('password') /* Must always be the last hook */
-      ),
-      populate({
-        schema: {
-          include: {
-            service: 'user-authorizations',
-            nameAs: 'authorizations',
-            parentField: '_id',
-            childField: 'userId',
-            asArray: true,
-            query: {
-              $select: ['scope', 'created', 'updated'],
-              $sort: { updated: -1 }
-            }
-          }
-        }
-      })
+      )
+      // populate({
+      //   schema: {
+      //     include: {
+      //       service: 'user-authorizations',
+      //       nameAs: 'authorizations',
+      //       parentField: '_id',
+      //       childField: 'userId',
+      //       asArray: true,
+      //       query: {
+      //         $select: ['scope', 'created', 'updated'],
+      //         $sort: { updated: -1 }
+      //       }
+      //     }
+      //   }
+      // })
     ],
     find: [],
     get: [],
-    create: [savePublicKey(), createEmailVerification(), addTestAuth()],
+    create: [savePublicKey(), createEmailVerification()],
     update: [],
     patch: [],
     remove: []
@@ -204,6 +214,8 @@ function rejectCommonPassword (
   })
 ) {
   return (context) => {
+    // check type === before
+    checkContext(context, 'before')
     if (!context.data[fieldName]) return context
     if (commonPassword(context.data[fieldName])) {
       debug('Password is too easy to guess')
@@ -213,51 +225,74 @@ function rejectCommonPassword (
   }
 }
 
-function unique (
-  fieldName,
+function rejectDuplicateAccount (
   error = new BadRequest({
-    message: `${fieldName} exists`,
+    message: `account exists`,
     errors: {
-      [fieldName]: `${fieldName} exists`
+      account: `account exists`
     }
   })
 ) {
   return async (context) => {
-    if (!context.data.accounts) return context
+    // check type === before
+    checkContext(context, 'before')
+    const { id, data, service } = context
+    const { accounts } = data
+    if (!Array.isArray(accounts)) return context
+    const [{ type, value } = {}] = accounts
+    if (!(type && value)) return context
     // check if fieldName value exists in db
     const params = {
       query: {
-        [fieldName]: context.data.accounts[0].value,
+        'accounts.type': type,
+        'accounts.value': value,
         $limit: 0
       }
     }
-    if (context.id) {
-      params.query._id = { $ne: context.id }
+    if (id) {
+      // update or patch
+      params.query._id = { $ne: id }
     }
-    const result = await context.service.find(params)
-    if (result.total > 0) {
+    const { total } = await service.find(params)
+    if (total > 0) {
       throw error
     }
     return context
   }
 }
 
-function createEmailVerification () {
+function createEmailVerification (expiresIn = '30m') {
   return async (context) => {
+    // check type === after
+    checkContext(context, 'after')
     try {
-      if (
-        !context.result.accounts ||
-        context.result.accounts[0].type !== 'email'
-      ) {
-        return context
+      const { app, data, result } = context
+      // user data instead of result because we want to check the submitted data
+      const { accounts } = data
+      if (!Array.isArray(accounts)) return context
+      const [{ type, value } = {}] = accounts
+      if (!(type === 'email' && value)) return context
+      const { _id: userId, language } = result
+      // sign jwt
+      const payload = {}
+      const { secret, jwtOptions } = app.get('authentication')
+      const options = merge({}, jwtOptions, {
+        audience: value,
+        subject: userId,
+        expiresIn
+      })
+      debug('jwt.sign', payload, options)
+      const token = jwt.sign(payload, secret, options)
+      debug('token', token)
+      const email = {
+        template: 'email-verification',
+        userId,
+        email: value,
+        language,
+        token
       }
-      const data = {
-        userId: context.result._id,
-        email: context.result.accounts[0].value,
-        locale: context.result.locale
-      }
-      debug(`context.app.service('email-verifications').create`, data)
-      context.app.service('email-verifications').create(data)
+      debug(`app.service('emails').create`, email)
+      app.service('emails').create(email)
       return context
     } catch (error) {
       debug(error)

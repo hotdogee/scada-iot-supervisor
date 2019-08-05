@@ -29,12 +29,12 @@ const schema = {
   properties: {
     // !code: schema_properties
     _id: { type: 'ID' },
-    accountSelected: { type: 'number' },
     accounts: {
       type: 'array',
       items: {
         type: 'object',
         required: ['type', 'value'],
+        additionalProperties: false,
         properties: {
           type: {
             type: 'string',
@@ -51,7 +51,6 @@ const schema = {
       chance: { hash: { length: 60 } }
     },
     tfa: {},
-    authorizationSelected: { type: 'number' },
     authorizations: {
       type: 'array',
       maxItems: 100,
@@ -59,22 +58,24 @@ const schema = {
         type: 'object',
         required: ['role', 'org'],
         properties: {
-          role: {
-            type: 'string',
-            faker: { fk: 'roles:random' }
-          },
           org: {
             type: 'string',
             faker: { fk: 'orgs:random' }
           },
-          patientId: {
-            type: 'number'
+          role: {
+            type: 'string',
+            faker: { fk: 'roles:random' }
+          },
+          id: {
+            // external database id
+            type: 'string'
             // faker: { fk: 'orgs:random' }
           }
         }
       }
     },
-    locale: { type: 'string' },
+    language: { type: 'string' },
+    country: { type: 'string' },
     avatar: {
       type: 'ID'
       /*, faker: { fk: 'images:random' } */

@@ -2,31 +2,29 @@ const debug = require('debug')('hooks.recaptcha')
 const fetch = require('node-fetch')
 const { URLSearchParams } = require('url')
 const errors = require('@feathersjs/errors')
-const safeStringify = require('fast-safe-stringify')
+// const safeStringify = require('fast-safe-stringify')
 const { checkContext } = require('feathers-hooks-common')
 
 exports.verifyRecaptcha = function () {
   return async (context) => {
-    const {
-      data,
-      params: { provider }
-    } = context
     // check type === before
     checkContext(context, 'before')
+    const { params } = context
+    const { provider, recaptchaToken } = params
     // check provider
     if (!provider) {
       debug(`SKIP verifyRecaptcha (server call)`)
       return context
     }
 
-    debug(`data = ${safeStringify(data)}`)
-    debug(`recaptchaToken = ${data.recaptchaToken}`)
+    // debug(`data = ${safeStringify(data)}`)
+    // debug(`recaptchaToken = ${data.recaptchaToken}`)
     let result = null
     try {
       debug(`RECAPTCHA_SECRET = ${process.env.RECAPTCHA_SECRET}`)
       const params = new URLSearchParams()
       params.append('secret', process.env.RECAPTCHA_SECRET)
-      params.append('response', data.recaptchaToken)
+      params.append('response', recaptchaToken)
       const response = await fetch(
         'https://www.google.com/recaptcha/api/siteverify',
         {
@@ -34,7 +32,7 @@ exports.verifyRecaptcha = function () {
           body: params
         }
       )
-      debug(`response = `, response)
+      // debug(`response = `, response)
       // response =  Response {
       //   size: 0,
       //   timeout: 0,
@@ -73,7 +71,7 @@ exports.verifyRecaptcha = function () {
       //      statusText: 'OK',
       //      headers: Headers { [Symbol(map)]: [Object] } } }
       result = await response.json()
-      debug(`result = `, result)
+      debug(`result =`, result)
     } catch (error) {
       throw new errors.BadRequest({
         message: 'reCAPTCHA network error',
@@ -140,7 +138,7 @@ exports.verifyRecaptcha = function () {
     //   res.status(201).json({message: "Congratulations! We think you are human."});
     // })
     // clean up data
-    delete data.recaptchaToken
+    // delete data[fieldName]
     return context
   }
 }

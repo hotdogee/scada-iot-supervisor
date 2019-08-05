@@ -3,6 +3,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const io = require('socket.io-client')
 const feathers = require('@feathersjs/feathers')
 const socketio = require('@feathersjs/socketio-client')
+const { paramsForServer } = require('feathers-hooks-common')
 const logger = require('../../src/logger')
 const { machineId } = require('node-machine-id')
 const WebCrypto = require('node-webcrypto-ossl') // this defines global.btoa and global.atob
@@ -68,15 +69,23 @@ socket.on('connect', async (connection) => {
     //   }
     // }
     const data = {
-      email: argv.email,
+      accounts: [
+        {
+          type: 'email',
+          value: argv.email
+        }
+      ],
       password: argv.password,
       language: argv.language,
-      country: argv.country,
+      country: argv.country
+    }
+    const params = paramsForServer({
+      query: {},
       signature,
       document
-    }
+    })
     logger.info(`${argv.service}.${argv.method} data =`, data)
-    const result = await api.service(argv.service)[argv.method](data)
+    const result = await api.service(argv.service)[argv.method](data, params)
     // { name: 'cam1', _id: '5d405c30cafd4e6cb87a3e92' }
     logger.info(`${argv.service}.${argv.method} result =`, result)
   } catch (error) {
