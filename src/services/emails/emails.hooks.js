@@ -122,12 +122,11 @@ function sendEmail () {
       const { transporter } = options
       // const data = {
       //   templateName: 'email-verification',
-      //   userId,
       //   email: value,
       //   language,
       //   token
       // }
-      const { templateName: name, userId, email, language, token } = data
+      const { templateName: name, email, language, token } = data
       // get template
       const params = {
         query: {

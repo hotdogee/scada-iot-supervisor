@@ -120,7 +120,7 @@ const fixZh = {
   'zh-hk': 'zh-hant',
   'zh-cn': 'zh-hans'
 }
-function fallbackLanguage (priority = ['en'], supported = ['en', 'zh-hant']) {
+function fallbackLanguage (priority = ['en']) {
   return async (context) => {
     // check type === before, method === create
     checkContext(context, 'after', ['find'], 'fallbackLanguage')
@@ -134,13 +134,14 @@ function fallbackLanguage (priority = ['en'], supported = ['en', 'zh-hant']) {
     const { fallbackLanguage, query } = params
     if (fallbackLanguage) {
       app.debug(`fallbackLanguage params =`, params)
+      // find closest match
       let language = query.language.toLowerCase()
       language = fixZh[language] || language
       const tokens = language.split(/[-_]/)
       const result = await service._find({
         query: omit(params.query, ['language'])
       })
-      result.data = result.data.reduce((acc, template) => {
+      let match = result.data.reduce((acc, template) => {
         // app.debug(`fallbackLanguage acc, template =`, { acc, template })
         let i = 0
         const t = template.language.split(/[-_]/)
@@ -148,7 +149,20 @@ function fallbackLanguage (priority = ['en'], supported = ['en', 'zh-hant']) {
         if (i > acc.length) acc[0] = template
         return acc
       }, [])
-      result.total = result.data.length
+      if (match.length === 0) {
+        // find fallback
+        for (const p of priority) {
+          const found = result.data.find((template) => {
+            return template.language === p
+          })
+          if (found) {
+            match = [found]
+            break
+          }
+        }
+      }
+      result.data = match
+      result.total = match.length
       context.result = result
     }
     return context

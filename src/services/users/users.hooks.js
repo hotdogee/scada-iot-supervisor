@@ -265,39 +265,33 @@ function createEmailVerification (expiresIn = '30m') {
   return async (context) => {
     // check type === after
     checkContext(context, 'after')
-    try {
-      const { app, data, result } = context
-      // user data instead of result because we want to check the submitted data
-      const { accounts } = data
-      if (!Array.isArray(accounts)) return context
-      const [{ type, value } = {}] = accounts
-      if (!(type === 'email' && value)) return context
-      const { _id: userId, language } = result
-      // sign jwt
-      const payload = {}
-      const { secret, jwtOptions } = app.get('authentication')
-      const options = merge({}, jwtOptions, {
-        audience: value,
-        subject: userId,
-        expiresIn
-      })
-      debug('jwt.sign', payload, options)
-      const token = jwt.sign(payload, secret, options)
-      debug('token', token)
-      const email = {
-        templateName: 'email-verification',
-        userId,
-        email: value,
-        language,
-        token
-      }
-      debug(`app.service('emails').create`, email)
-      app.service('emails').create(email)
-      return context
-    } catch (error) {
-      debug(error)
-      throw error
+    const { app, data, result } = context
+    // user data instead of result because we want to check the submitted data
+    const { accounts } = data
+    if (!Array.isArray(accounts)) return context
+    const [{ type, value } = {}] = accounts
+    if (!(type === 'email' && value)) return context
+    const { _id: userId, language } = result
+    // sign jwt
+    const payload = {}
+    const { secret, jwtOptions } = app.get('authentication')
+    const options = merge({}, jwtOptions, {
+      audience: value,
+      subject: userId,
+      expiresIn
+    })
+    app.debug('jwt.sign', payload, options)
+    const token = jwt.sign(payload, secret, options)
+    app.debug('token', token)
+    const email = {
+      templateName: 'email-verification',
+      email: value,
+      language,
+      token
     }
+    app.debug(`app.service('emails').create`, email)
+    app.service('emails').create(email)
+    return context
   }
 }
 
