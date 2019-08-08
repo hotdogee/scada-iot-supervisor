@@ -18,7 +18,7 @@ exports.assertDate = function (fieldName) {
   }
 }
 
-exports.assertDateDefault = function (fieldName) {
+exports.assertDateOrSetNow = function (fieldName) {
   return (context) => {
     checkContext(context, 'before', ['create', 'update', 'patch'], 'assertDate')
     if (context.data[fieldName]) {

@@ -18,7 +18,7 @@ const socket = io(argv.apiOrigin, {
 })
 const api = feathers().configure(socketio(socket), { timeout: 1000 })
 
-const albumNames = ['cam1', 'cam2', 'cam3', 'cam4']
+const albumNames = ['template']
 
 socket.on('connect', async (connection) => {
   try {
@@ -26,9 +26,15 @@ socket.on('connect', async (connection) => {
       albumNames.map(async (name) => {
         const result = await api.service(argv.service)[argv.method]({
           name: name,
-          keep: 10
+          deduplication: true
         })
-        // { name: 'cam1', _id: '5d405c30cafd4e6cb87a3e92' }
+        // albums.create = {
+        //   name: 'template',
+        //   deduplication: true,
+        //   created: '2019-08-06T02:49:58.180Z',
+        //   updated: '2019-08-06T02:49:58.180Z',
+        //   _id: '5d48ead63717e88e0c1207af'
+        // }
         logger.info(`${argv.service}.${argv.method}`, result)
       })
     )

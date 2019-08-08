@@ -35,6 +35,7 @@ function defineAbilitiesFor (params, data) {
   can(['get', 'find', 'create', 'patch'], ['blob'])
   can(['get', 'find', 'create', 'patch'], ['images'])
   can(['get', 'find', 'create', 'patch'], ['albums'])
+  can(['find', 'create'], ['templates'])
   can('create', ['users', 'authentication', 'password-resets']) // , 'email-verifications', 'public-keys', 'emails'
   can('read', ['api-servers'])
   can('patch', ['email-verifications'])

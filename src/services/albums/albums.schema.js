@@ -21,7 +21,14 @@ const schema = {
 
   // Fields in the model.
   properties: {
-    // !code: schema_properties // !end
+    // !code: schema_properties
+    _id: { type: 'ID' },
+    name: { type: 'string' },
+    keep: { type: 'integer' },
+    deduplication: { type: 'boolean' },
+    updated: { type: 'string', format: 'date-time', default: Date.now },
+    created: { type: 'string', format: 'date-time', default: Date.now }
+    // !end
     // !<DEFAULT> code: schema_more
   }
   // !end

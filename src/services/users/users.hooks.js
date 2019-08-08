@@ -285,7 +285,7 @@ function createEmailVerification (expiresIn = '30m') {
       const token = jwt.sign(payload, secret, options)
       debug('token', token)
       const email = {
-        template: 'email-verification',
+        templateName: 'email-verification',
         userId,
         email: value,
         language,

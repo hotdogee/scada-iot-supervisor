@@ -205,3 +205,7 @@ query = {
 - [Facebook OAuth2](https://developers.facebook.com/apps/335907437318058/fb-login/settings/)
 - [Twitter OAuth](https://developer.twitter.com/en/apps/16613455)
 - [LINE OAuth2](https://developers.line.biz/console/channel/1605624008/basic/)
+
+# References
+
+- [Why do some developers at strong companies like Google consider Agile development to be nonsense?](https://www.quora.com/Why-do-some-developers-at-strong-companies-like-Google-consider-Agile-development-to-be-nonsense/answer/David-Jeske?fbclid=IwAR0PPamL4Ce4JrRHVdWkTUgmI4W8mxH54S143vndeVid8ctZFja-arkxJeE)

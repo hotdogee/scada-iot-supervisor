@@ -13,7 +13,7 @@ const dauria = require('dauria')
 // const mimeTypes = require('mime-types')
 const fsBlobStore = require('fs-blob-store')
 const { omit, sortBy } = require('lodash')
-const { timestamp, assertDateDefault } = require('../../hooks/common')
+const { timestamp, assertDateOrSetNow } = require('../../hooks/common')
 /* eslint-enables no-unused-vars */
 // !end
 
@@ -78,12 +78,13 @@ const moduleExports = {
     create: [
       assertAlbum(),
       saveToBlobStore(),
-      assertDateDefault('timestamp'),
+      assertAlbumDeduplicate(),
+      assertDateOrSetNow('timestamp'),
       timestamp('created'),
       timestamp('updated')
     ],
-    update: [assertDateDefault('timestamp'), timestamp('updated')],
-    patch: [assertDateDefault('timestamp'), timestamp('updated')],
+    update: [assertDateOrSetNow('timestamp'), timestamp('updated')],
+    patch: [assertDateOrSetNow('timestamp'), timestamp('updated')],
     remove: []
     // !end
   },
@@ -142,6 +143,7 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
   // 3. data.buffer: raw data buffer of the blob
   //    data.contentType: MIME type, string: 'image/jpeg'
   //    data.originalName: string
+  // sets data.key after blob is created
   return async (context) => {
     // check type === before, method === create
     checkContext(context, 'before', ['create'], 'saveToBlobStore')
@@ -169,7 +171,9 @@ function saveToBlobStore (store = fsBlobStore('./uploads')) {
 }
 
 function assertAlbum () {
-  // check if album exists
+  // if data.albumId is given
+  // throw error if album not found
+  // set params.album if album exists for downstream hooks to use
   return async (context) => {
     // check type === before, method === 'create', 'update', 'patch'
     checkContext(
@@ -206,8 +210,45 @@ function assertAlbum () {
   }
 }
 
+function assertAlbumDeduplicate () {
+  // if params.album.deduplication
+  // if image with the same albumId and key exists
+  // set context.result = image
+  return async (context) => {
+    // check type === before, method === 'create', 'update', 'patch'
+    checkContext(
+      context,
+      'before',
+      ['create', 'update', 'patch'],
+      'assertAlbumDeduplicate'
+    )
+    const { service, data, params } = context
+    const { album } = params
+    if (!album) return context
+    const { _id: albumId, deduplication } = album
+    if (!deduplication) return context
+    const { key } = data
+    const {
+      total,
+      data: [image]
+    } = await service.find({
+      query: {
+        albumId,
+        key
+      }
+    })
+    if (total > 0) {
+      context.result = image
+    }
+    return context
+  }
+}
+
 function assertAlbumLimit () {
-  // add imageId to album
+  // if params.album.keep
+  // get album images sorted by ascending timestamp
+  // remove old images over keep limit
+  // supports paginate
   return async (context) => {
     // check type === after, method === 'create', 'update', 'patch'
     checkContext(
