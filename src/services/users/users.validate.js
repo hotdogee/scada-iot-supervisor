@@ -29,7 +29,7 @@ const base = merge(
     title: 'Users',
     description: 'Users database.',
     fakeRecords: 20,
-    required: ['accounts', 'password', 'locale'],
+    required: ['accounts', 'language'],
     uniqueItemProperties: [],
     properties: {
       _id: {

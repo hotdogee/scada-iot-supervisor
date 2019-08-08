@@ -167,7 +167,8 @@ function sendEmail () {
       if (html && html.type === 'pug') {
         content.html = pug.render(html.content, {
           url: `${process.env.UI_URL}/auth/verify-email?token=${token}`,
-          complaintEmail: process.env.COMPLAINT_EMAIL
+          complaintEmail: process.env.COMPLAINT_EMAIL,
+          logo: 'cid:logo'
         })
       }
       // render images to attachments
@@ -178,19 +179,30 @@ function sendEmail () {
             const image = await app.service('images').get(a.imageId)
             a.filename = `${a.cid}${path.extname(image.key)}`
             // convert imageId to stream
-            a.content = request.get(
-              `${process.env.API_URL}/images/${a.imageId}?$client[raw]=1`
-            )
+            await new Promise((resolve, reject) => {
+              request.get(
+                {
+                  uri: `${process.env.API_URL}/images/${a.imageId}?$client[raw]=1`,
+                  encoding: null
+                },
+                (error, response, body) => {
+                  if (error) reject(error)
+                  a.content = body
+                  resolve()
+                }
+              )
+            })
             delete a.imageId
           }
           return a
         })
       )
       // send mail with defined transport object
+      app.debug('transporter.sendMail:', content)
       const info = await transporter.sendMail(content)
       data.info = info
 
-      debug('Message sent:', info)
+      app.debug('Message sent:', info)
 
       // const i18n = context.app.get('i18n')
       // // debug(i18n.getLocale())

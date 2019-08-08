@@ -105,7 +105,7 @@ const moduleExports = merge(
         bsonType: 'string'
       }
     },
-    required: ['accounts', 'password', 'locale']
+    required: ['accounts', 'language']
     // !end
     // !<DEFAULT> code: moduleExports
   }

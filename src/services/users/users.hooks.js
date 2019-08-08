@@ -141,10 +141,13 @@ const moduleExports = {
       // patch info, , patch password (required elevated access)
       // iff(isProvider('external'), )
       // ...restrict,
-      verifyECDSA(),
-      rejectDuplicateAccount(),
-      rejectCommonPassword('password'),
-      hashPassword('password'),
+      // verifyECDSA(),
+      iff(
+        (c) => !c.result,
+        rejectDuplicateAccount(),
+        rejectCommonPassword('password'),
+        hashPassword('password')
+      ),
       timestamp('updated')
       // iff(
       //   isProvider('external'),
@@ -276,13 +279,25 @@ function createEmailVerification (expiresIn = '30m') {
     const [{ type, value } = {}] = accounts
     if (!(type === 'email' && value)) return context
     const { _id: userId, language } = result
+    // > console.dir(id)
+    // ObjectID {
+    //   _bsontype: 'ObjectID',
+    //   id:
+    //     Buffer[Uint8Array][
+    //       (93, 76, 117, 103, 42, 88, 174, 57, 28, 108, 50, 212)
+    //     ]
+    // }
+    // > id.getTimestamp()
+    // 2019-08-08T19:17:59.000Z
+    // > id.toHexString()
+    // '5d4c75672a58ae391c6c32d4'
     // sign jwt
     const payload = {}
     const { secret, jwtOptions } = app.get('authentication')
     const options = merge({}, jwtOptions, {
       header: { typ: 'verifyEmail' },
       audience: value,
-      subject: userId,
+      subject: userId.toHexString(),
       expiresIn
     })
     app.debug('jwt.sign', payload, options)

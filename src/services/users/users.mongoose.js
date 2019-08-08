@@ -25,8 +25,7 @@ const moduleExports = merge(
     ],
     password: {
       type: String,
-      minLength: 8,
-      required: true
+      minLength: 8
     },
     tfa: String,
     authorizations: [
@@ -41,7 +40,10 @@ const moduleExports = merge(
         }
       }
     ],
-    language: String,
+    language: {
+      type: String,
+      required: true
+    },
     country: String,
     avatar: mongoose.Schema.Types.ObjectId,
     fullName: {

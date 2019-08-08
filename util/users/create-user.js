@@ -1,3 +1,6 @@
+// node .\util\users\create-user.js
+// node .\util\users\create-user.js --language=zh-hant
+
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const io = require('socket.io-client')

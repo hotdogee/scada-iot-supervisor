@@ -23,8 +23,7 @@ const moduleExports = merge(
       allowNull: false
     },
     password: {
-      type: DataTypes.TEXT,
-      allowNull: false
+      type: DataTypes.TEXT
     },
     tfa: {
       type: DataTypes.TEXT
@@ -33,7 +32,8 @@ const moduleExports = merge(
       type: DataTypes.JSONB
     },
     language: {
-      type: DataTypes.TEXT
+      type: DataTypes.TEXT,
+      allowNull: false
     },
     country: {
       type: DataTypes.TEXT
