@@ -13,7 +13,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     service: 'users',
     method: 'patch',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyOTM1OTEsImV4cCI6MTU2NTI5NTM5MSwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGM3YzE3YjY4NDM3YTJkMGQ5OGVmOCJ9.dTqIOw01FAuX7GGWxR_5TeGPTmZOQpLCBI9S9UfpNqo'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyOTYxODIsImV4cCI6MTU2NTI5Nzk4MiwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGM4NjM2MmNjOTZlOWZiNDY2NzYxOSJ9.ek-rz2t4vGeEjJgfPAZklOl39VxpX_Q8vjkvxJOa6yE'
   }
 })
 const socket = io(argv.apiOrigin, {
