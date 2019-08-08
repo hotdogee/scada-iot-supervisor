@@ -16,8 +16,7 @@ const schema = {
   required: [
     // !code: schema_required
     'accounts',
-    'password',
-    'locale'
+    'language'
     // !end
   ],
   // Fields with unique values.

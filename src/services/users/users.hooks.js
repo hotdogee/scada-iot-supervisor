@@ -133,10 +133,14 @@ const moduleExports = {
       timestamp('updated')
     ],
     patch: [
-      // patch info, patch account verified (required verification token), patch password (required elevated access)
+      paramsFromClient('signature', 'document', 'token'),
+      // patch account verified
+      // typ: verifyEmail token required
+      // typ: access Token not required
+      verifyToken(),
+      // patch info, , patch password (required elevated access)
       // iff(isProvider('external'), )
-      ...restrict,
-      paramsFromClient('signature', 'document'),
+      // ...restrict,
       verifyECDSA(),
       rejectDuplicateAccount(),
       rejectCommonPassword('password'),
@@ -264,7 +268,7 @@ function rejectDuplicateAccount (
 function createEmailVerification (expiresIn = '30m') {
   return async (context) => {
     // check type === after
-    checkContext(context, 'after')
+    checkContext(context, 'after', ['create'], 'createEmailVerification')
     const { app, data, result } = context
     // user data instead of result because we want to check the submitted data
     const { accounts } = data
@@ -276,12 +280,22 @@ function createEmailVerification (expiresIn = '30m') {
     const payload = {}
     const { secret, jwtOptions } = app.get('authentication')
     const options = merge({}, jwtOptions, {
+      header: { typ: 'verifyEmail' },
       audience: value,
       subject: userId,
       expiresIn
     })
     app.debug('jwt.sign', payload, options)
     const token = jwt.sign(payload, secret, options)
+    // eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyODkyNzQsImV4cCI6MTU2NTI5MTA3NCwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjEyMzEyMzEyMyJ9.P5mq4J2VR-RJsdPC9lrGnAZXd8u2azeF_DyWXYHIXDQ
+    // jwt.verify(token, secret, options)
+    // const payload = {
+    //   iat: 1565289274,
+    //   exp: 1565291074,
+    //   aud: 'hotdogee@gmail.com',
+    //   iss: 'hanl.in',
+    //   sub: '123123123'
+    // }
     app.debug('token', token)
     const email = {
       templateName: 'email-verification',
@@ -291,6 +305,52 @@ function createEmailVerification (expiresIn = '30m') {
     }
     app.debug(`app.service('emails').create`, email)
     app.service('emails').create(email)
+    return context
+  }
+}
+
+function verifyToken () {
+  return async (context) => {
+    // check type === before
+    checkContext(context, 'before', ['patch'], 'verifyToken')
+    const { app, params, service } = context
+    const { token } = params
+    if (!token) return context
+    const { secret, jwtOptions } = app.get('authentication')
+    const options = merge({}, jwtOptions, {
+      complete: true
+    })
+    // verify checks signature, expires and issuer
+    const { payload, header } = jwt.verify(token, secret, options)
+    // {
+    //   header: { alg: 'HS256', typ: 'verifyEmail' },
+    //   payload: {
+    //     iat: 1565289274,
+    //     exp: 1565291074,
+    //     aud: 'hotdogee@gmail.com',
+    //     iss: 'hanl.in',
+    //     sub: '123123123'
+    //   },
+    //   signature: 'P5mq4J2VR-RJsdPC9lrGnAZXd8u2azeF_DyWXYHIXDQ'
+    // }
+    const { typ } = header
+    if (typ === 'verifyEmail') {
+      // set id, data and result
+      await service.patch(
+        payload.sub,
+        {
+          'accounts.$.verified': new Date()
+        },
+        {
+          query: {
+            'accounts.value': payload.aud
+          }
+        }
+      )
+      context.result = {
+        result: 'success'
+      }
+    }
     return context
   }
 }
