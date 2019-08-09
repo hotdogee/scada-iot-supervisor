@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const { MongoClient, ObjectID } = require('mongodb')
@@ -13,6 +14,7 @@ const argv = require('minimist')(process.argv.slice(2), {
   }
 })
 
+/* eslint-enables no-unused-vars */
 ;(async () => {
   try {
     const client = await MongoClient.connect(argv.mongodb, {

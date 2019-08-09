@@ -4,6 +4,7 @@ const { inspect } = require('util')
 const colors = require('colors/safe')
 const { MESSAGE } = require('triple-beam')
 const jsonStringify = require('fast-safe-stringify')
+const serializeError = require('serialize-error')
 // !code: imports // !end
 // !<DEFAULT> code: init
 const levelColors = {
@@ -56,6 +57,16 @@ const formatConsole = format((info, opts = {}) => {
     new Date(time - tzoffset).toISOString().slice(0, -1)
   )
   const padding = (info.padding && info.padding[info.level]) || ''
+  // serialize Errors
+  console.log('===DEBUG===', info, typeof info)
+  if (info.message instanceof Error) {
+    info.message = inspect(serializeError(info.message), {
+      compact: true,
+      depth: 5,
+      breakLength: 200,
+      colors: true
+    })
+  }
   if (stringifiedRest !== '{}') {
     const rest = inspect(JSON.parse(stringifiedRest), {
       compact: true,

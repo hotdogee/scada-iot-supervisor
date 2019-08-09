@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const io = require('socket.io-client')
@@ -21,6 +22,7 @@ const socket = io(argv.apiOrigin, {
 })
 const api = feathers().configure(socketio(socket), { timeout: 1000 })
 
+/* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
   try {
     const result = await api.service(argv.service)[argv.method](

@@ -78,6 +78,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "pug": "^2.0.4",
+    "serialize-error": "^4.1.0",
     "serve-favicon": "^2.5.0",
     "sharp": "^0.23.0",
     "supports-color": "^7.0.0",
