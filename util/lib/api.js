@@ -47,11 +47,11 @@ api.configure(
 // handle access token expired
 api.hooks({
   error: {
-    all: [handleNotAuthenticaticated()]
+    all: [handleNotAuthenticated()]
   }
 })
 
-function handleNotAuthenticaticated () {
+function handleNotAuthenticated () {
   return async (context) => {
     const {
       path,
@@ -62,7 +62,7 @@ function handleNotAuthenticaticated () {
     } = context
     // context.arguments = [ { name: 'geo9-pi3p1' }, { query: { '$client': {} } } ]
     // logger.debug(`context error`, error)
-    // logger.debug(`handleNotAuthenticaticated`, a1, a2, a3)
+    // logger.debug(`handleNotAuthenticated`, a1, a2, a3)
     if (error.name !== 'NotAuthenticated') return context
     logger.warn(`${error.message}: trying to refresh access token`)
     let result
