@@ -105,7 +105,7 @@ socket.on('connect', async (connection) => {
           a.imageId = await new Promise((resolve, reject) => {
             request.post({ url: imagesService, formData, json: true }, function (
               err,
-              httpResponse,
+              res,
               body
             ) {
               if (err) {

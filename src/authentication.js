@@ -468,10 +468,19 @@ class APIKeyJWTStrategy extends JWTStrategy {
     if (aud === 'api-key') {
       // check service('api-keys')
       try {
-        const apiKey = this.app
+        // eslint-disable-next-line no-unused-vars
+        const apiKey = await this.app
           .service('api-keys')
           .get(authentication.accessToken)
-        this.app.debug('api-keys', apiKey)
+        // this.app.debug('api-keys', apiKey)
+        // const apiKey = {
+        //   _id:
+        //     'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjUzNzY3NTIsImV4cCI6MTg4MDk1Mjc1MiwiYXVkIjoiYXBpLWtleSIsImlzcyI6ImhhbmwuaW4iLCJzdWIiOiI1ZDRkODYwYjA5YjlkMTNhZmM2ZDIzZWUifQ.f34B051mLIYO0Fe1zh2jL_SK-oRV3SUOXgiuy5XTmAM',
+        //   name: 'geo9-pi3p1',
+        //   userId: '5d4d860b09b9d13afc6d23ee',
+        //   created: '2019-08-09T18:52:32.267Z',
+        //   updated: '2019-08-09T18:52:32.267Z'
+        // }
         // verify IPs
         // verify domains
         // verify geolocations

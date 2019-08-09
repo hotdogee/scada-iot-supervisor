@@ -21,7 +21,7 @@ const argv = require('minimist')(process.argv.slice(2), {
 socket.on('connect', async (connection) => {
   try {
     const auth = await api.reAuthenticate()
-    logger.info(`reAuthenticate result =`, auth)
+    // logger.info(`reAuthenticate result =`, auth)
     const data = {
       name: argv.name,
       userId: auth.user._id

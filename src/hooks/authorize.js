@@ -33,7 +33,7 @@ function defineAbilitiesFor (params, data) {
   // }
   can(['get', 'find', 'create', 'patch'], ['logs'])
   can(['get', 'find', 'create', 'patch'], ['blob'])
-  can(['get', 'find', 'create', 'patch'], ['images'])
+  can(['get', 'find'], ['images'])
   can(['get', 'find', 'create', 'patch'], ['albums'])
   can(['find', 'create'], ['templates'])
   can('create', ['users', 'authentication', 'password-resets']) // , 'email-verifications', 'public-keys', 'emails'
@@ -44,6 +44,7 @@ function defineAbilitiesFor (params, data) {
   // can('patch', 'email-verifications', { token: { $exists: false } })
 
   if (user) {
+    can(['create'], ['images'])
     can(['find', 'get', 'create', 'remove'], ['api-keys'], {
       userId: user._id
     })
@@ -113,13 +114,16 @@ module.exports = function (options = {}) {
     const { method, service, path, params, data, id } = context
     // context.app.debug(`data in authorize`, context.toJSON())
     const clientIp = params.clientIp || params.restAddress
+    const provider = params.provider ? params.provider : 'server'
+    const user = params.user ? params.user._id : 'anonymous'
+    const strategy = params.authentication
+      ? params.authentication.strategy
+      : 'null'
     const ability = defineAbilitiesFor(params, data)
     const throwUnlessCan = (method, subject) => {
       if (ability.cannot(method, subject)) {
         throw new Forbidden(
-          `${clientIp} - ${safeStringify(params.user._id)} - ${safeStringify(
-            params.authentication.strategy
-          )} is not allowed to ${method} ${path}. data = ${safeStringify(
+          `${provider} - ${clientIp} - ${user} - ${strategy} is not allowed to ${method} ${path}. data = ${safeStringify(
             subject
           )}`
         )
