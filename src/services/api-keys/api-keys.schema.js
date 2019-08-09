@@ -12,7 +12,9 @@ const schema = {
 
   // Required fields.
   required: [
-    // !code: schema_required // !end
+    // !code: schema_required
+    'userId'
+    // !end
   ],
   // Fields with unique values.
   uniqueItemProperties: [
@@ -21,7 +23,30 @@ const schema = {
 
   // Fields in the model.
   properties: {
-    // !code: schema_properties // !end
+    // !code: schema_properties
+    _id: { type: 'string' },
+    userId: { type: 'ID', faker: { fk: 'users:random' } },
+    addresses: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    },
+    domains: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    },
+    locations: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    },
+    updated: { type: 'string', format: 'date-time', default: Date.now },
+    created: { type: 'string', format: 'date-time', default: Date.now }
+    // !end
     // !<DEFAULT> code: schema_more
   }
   // !end

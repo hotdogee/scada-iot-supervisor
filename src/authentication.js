@@ -327,6 +327,10 @@ const {
 
 class APIKeyJWTStrategy extends JWTStrategy {
   async authenticate (authentication, params) {
+    // this.app.debug(`super.authenticate (authentication, params) = `, {
+    //   authentication,
+    //   params
+    // })
     // const authentication = {
     //   strategy: 'jwt',
     //   accessToken:
@@ -348,6 +352,77 @@ class APIKeyJWTStrategy extends JWTStrategy {
     //     accept: '*/*',
     //     host: 'localhost:8081',
     //     connection: 'close'
+    //   },
+    //   authenticated: true
+    // }
+    // rest params = {
+    //   route: {},
+    //   headers: {
+    //     accept: 'application/json',
+    //     'content-type': 'application/json',
+    //     authorization:
+    //       'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjUzNzQ0NjgsImV4cCI6MTU2NTM3NDQ3OCwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGQ4NjBiMDliOWQxM2FmYzZkMjNlZSIsImp0aSI6IjRjMDc4YTk4LTBkZjUtNGI3YS04N2I5LWE5MWM0N2ExMjcxZiJ9.7AYUE--iq-0znexMoAPHq1mJ3FPvFGG0iL3gIObMi0c',
+    //     'content-length': '57',
+    //     'user-agent': 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+    //     'accept-encoding': 'gzip,deflate',
+    //     connection: 'close',
+    //     host: 'localhost:8081'
+    //   },
+    //   authenticated: true
+    // }
+    // socketio params = {
+    //   route: {},
+    //   connection: {
+    //     provider: 'socketio',
+    //     headers: {
+    //       'user-agent': 'node-XMLHttpRequest',
+    //       accept: '*/*',
+    //       host: 'localhost:8081',
+    //       connection: 'close'
+    //     },
+    //     clientIp: '::ffff:127.0.0.1',
+    //     authentication: {
+    //       strategy: 'jwt',
+    //       accessToken:
+    //         'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjUzNzQ1ODgsImV4cCI6MTU2NTM3NDU5OCwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGQ4NjBiMDliOWQxM2FmYzZkMjNlZSIsImp0aSI6ImMwNjE1ODcxLTNjYTYtNDM2Yi1hNGQzLWRlOGIzZTJjMDIxNyJ9.ph_29cDnxHNmEudrPA0GQXpRCykDI637WyAXqrWNm10'
+    //     },
+    //     user: {
+    //       _id: '5d4d860b09b9d13afc6d23ee',
+    //       accounts: [
+    //         {
+    //           type: 'email',
+    //           value: 'hotdogee@gmail.com',
+    //           verified: '2019-08-09T14:52:41.732Z'
+    //         }
+    //       ],
+    //       language: 'en',
+    //       country: 'tw',
+    //       created: '2019-08-09T14:41:15.799Z',
+    //       updated: '2019-08-09T14:52:41.737Z',
+    //       authorizations: [{ org: 'hanl.in', role: 'admin' }]
+    //     }
+    //   },
+    //   headers: {
+    //     'user-agent': 'node-XMLHttpRequest',
+    //     accept: '*/*',
+    //     host: 'localhost:8081',
+    //     connection: 'close'
+    //   },
+    //   clientIp: '::ffff:127.0.0.1',
+    //   user: {
+    //     _id: '5d4d860b09b9d13afc6d23ee',
+    //     accounts: [
+    //       {
+    //         type: 'email',
+    //         value: 'hotdogee@gmail.com',
+    //         verified: '2019-08-09T14:52:41.732Z'
+    //       }
+    //     ],
+    //     language: 'en',
+    //     country: 'tw',
+    //     created: '2019-08-09T14:41:15.799Z',
+    //     updated: '2019-08-09T14:52:41.737Z',
+    //     authorizations: [{ org: 'hanl.in', role: 'admin' }]
     //   },
     //   authenticated: true
     // }
@@ -396,7 +471,10 @@ class APIKeyJWTStrategy extends JWTStrategy {
         const apiKey = this.app
           .service('api-keys')
           .get(authentication.accessToken)
-        this.app.debug(apiKey)
+        this.app.debug('api-keys', apiKey)
+        // verify IPs
+        // verify domains
+        // verify geolocations
         return result
       } catch (error) {
         // TypeError: Cannot read property 'get' of undefined

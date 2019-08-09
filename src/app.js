@@ -62,7 +62,8 @@ app.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 // Host the public folder
 app.use('/', express.static(app.get('public')))
 // !end
-// !code: use_end // !end
+// !code: use_end
+// !end
 
 // Set up Plugins and providers
 // !code: config_start
@@ -71,9 +72,22 @@ app.configure(i18n)
 // !end
 // !<DEFAULT> code: express_rest
 app.configure(express.rest())
+app.set('trust proxy', true)
+app.use(function (req, res, next) {
+  req.feathers.clientIp = req.ip
+  req.feathers.restAddress = req.connection.remoteAddress
+  next()
+})
 // !end
 // !<DEFAULT> code: express_socketio
-app.configure(socketio())
+app.configure(
+  socketio(function (io) {
+    io.use(function (socket, next) {
+      socket.feathers.clientIp = socket.handshake.address
+      next()
+    })
+  })
+)
 // !end
 // Configure database adapters
 app.configure(mongodb)

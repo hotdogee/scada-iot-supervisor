@@ -112,11 +112,12 @@ module.exports = function (options = {}) {
 
     const { method, service, path, params, data, id } = context
     // context.app.debug(`data in authorize`, context.toJSON())
+    const clientIp = params.clientIp || params.restAddress
     const ability = defineAbilitiesFor(params, data)
     const throwUnlessCan = (method, subject) => {
       if (ability.cannot(method, subject)) {
         throw new Forbidden(
-          `${safeStringify(params.user._id)} - ${safeStringify(
+          `${clientIp} - ${safeStringify(params.user._id)} - ${safeStringify(
             params.authentication.strategy
           )} is not allowed to ${method} ${path}. data = ${safeStringify(
             subject

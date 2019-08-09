@@ -6,7 +6,13 @@ const { ObjectID } = require('mongodb')
 const { authenticate } = require('@feathersjs/authentication').hooks
 /* eslint-enables no-unused-vars */
 // !end
-// !code: imports // !end
+// !code: imports
+/* eslint-disable no-unused-vars */
+const jwt = require('jsonwebtoken')
+const merge = require('lodash.merge')
+const { timestamp, assertDate } = require('../../hooks/common')
+/* eslint-enables no-unused-vars */
+// !end
 
 // !<DEFAULT> code: used
 /* eslint-disable no-unused-vars */
@@ -63,13 +69,18 @@ const moduleExports = {
     // Your hooks should include:
     //   all   : authenticate('jwt')
     //   find  : mongoKeys(ObjectID, foreignKeys)
-    // !<DEFAULT> code: before
+    // !code: before
     all: [authenticate('jwt')],
     find: [mongoKeys(ObjectID, foreignKeys)],
     get: [],
-    create: [],
-    update: [],
-    patch: [],
+    create: [
+      signApiKey(),
+      timestamp('created'),
+      timestamp('updated'),
+      validateCreate()
+    ],
+    update: [timestamp('updated')],
+    patch: [timestamp('updated')],
     remove: []
     // !end
   },
@@ -104,5 +115,25 @@ const moduleExports = {
 // !code: exports // !end
 module.exports = moduleExports
 
-// !code: funcs // !end
+// !code: funcs
+function signApiKey (audience = 'api-key', expiresIn = '10y') {
+  return async (context) => {
+    // check type === before, method === 'patch'
+    checkContext(context, 'before', ['create'], 'signApiKey')
+    const { app, service, subject, data, params, id: albumId } = context
+    const { userId } = data
+    // sign jwt
+    const payload = {}
+    const { secret, jwtOptions } = app.get('authentication')
+    const options = merge({}, jwtOptions, {
+      audience,
+      subject: userId,
+      expiresIn
+    })
+    // app.debug('jwt.sign', payload, options)
+    data._id = jwt.sign(payload, secret, options)
+    return context
+  }
+}
+// !end
 // !code: end // !end
