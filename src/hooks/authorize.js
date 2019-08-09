@@ -116,9 +116,11 @@ module.exports = function (options = {}) {
     const throwUnlessCan = (method, subject) => {
       if (ability.cannot(method, subject)) {
         throw new Forbidden(
-          `You are not allowed to ${method} ${path}. ${safeStringify(
-            params.user
-          )} - ${safeStringify(params.authentication)}`
+          `${safeStringify(params.user._id)} - ${safeStringify(
+            params.authentication.strategy
+          )} is not allowed to ${method} ${path}. data = ${safeStringify(
+            subject
+          )}`
         )
       }
     }

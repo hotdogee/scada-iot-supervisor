@@ -15,7 +15,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     name: 'geo9-pi3p1'
   }
 })
-logger.debug(`argv`, argv)
+// logger.debug(`argv`, argv)
 
 /* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
@@ -23,7 +23,8 @@ socket.on('connect', async (connection) => {
     const auth = await api.reAuthenticate()
     logger.info(`reAuthenticate result =`, auth)
     const data = {
-      name: argv.name
+      name: argv.name,
+      userId: auth.user._id
     }
     const params = paramsForServer({
       query: {}

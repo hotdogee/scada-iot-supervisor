@@ -27,7 +27,7 @@ module.exports = {
       },
       issuer: 'hanl.in',
       algorithm: 'HS256',
-      expiresIn: '30m'
+      expiresIn: '10s'
     },
     local: {
       usernameField: 'accounts.value',

@@ -51,35 +51,49 @@ api.hooks({
   }
 })
 
-function handleNotAuthenticaticated() {
+function handleNotAuthenticaticated () {
   return async (context) => {
     const {
-      app,
+      path,
       service,
-      subject,
-      data,
-      params,
       error,
       method,
-      arguments
+      arguments: [a1, a2, a3]
     } = context
     // context.arguments = [ { name: 'geo9-pi3p1' }, { query: { '$client': {} } } ]
     // logger.debug(`context error`, error)
-    // logger.debug(`context`, context)
+    // logger.debug(`handleNotAuthenticaticated`, a1, a2, a3)
     if (error.name !== 'NotAuthenticated') return context
-    logger.warning(`trying to refresh access token`)
+    logger.warn(`${error.message}: trying to refresh access token`)
+    let result
     try {
-      const result = await refreshAccessToken()
-      logger.info(`trying again with new access token: ${result.accessToken}`)
-      // context.result = service[method](...arguments)
+      result = await refreshAccessToken()
+      logger.info(`new access token: ${result.accessToken}`)
     } catch (error) {
-      logger.warning(`failed to refresh access token`)
+      logger.warn(`failed to refresh access token`)
+      return context
+    }
+    if (path === 'authentication' && method === 'create') {
+      const { strategy } = a1
+      if (strategy === 'jwt') {
+        logger.info(`trying again: ${path}[${method}]`, {
+          strategy,
+          accessToken: result.accessToken
+        })
+        context.result = await service[method]({
+          strategy,
+          accessToken: result.accessToken
+        })
+      }
+    } else if (path !== 'authentication') {
+      logger.info(`trying again: ${path}[${method}]`, a1, a2, a3)
+      context.result = await service[method](a1, a2, a3)
     }
     return context
   }
 }
 
-async function refreshAccessToken(
+async function refreshAccessToken (
   service = 'authenticate',
   strategy = 'ecdsa',
   userId = null
