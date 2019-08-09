@@ -17,11 +17,16 @@ const levelColors = {
   silly: 'magenta',
   custom: 'yellow'
 }
-// const logInfo = format((info, opts = {}) => {
-//   console.log('logInfo', info)
-//   return info
-// })
+const logInfo = format((info, opts = {}) => {
+  // console.log('===DEBUG=== logInfo', info, typeof info)
+  return info
+})
 const formatConsole = format((info, opts = {}) => {
+  // serialize Errors
+  // console.log('===DEBUG===', info, typeof info)
+  if (info instanceof Error) {
+    info = Object.assign({}, info, serializeError(info))
+  }
   const stringifiedRest = jsonStringify(
     Object.assign({}, info, {
       level: undefined,
@@ -57,16 +62,6 @@ const formatConsole = format((info, opts = {}) => {
     new Date(time - tzoffset).toISOString().slice(0, -1)
   )
   const padding = (info.padding && info.padding[info.level]) || ''
-  // serialize Errors
-  console.log('===DEBUG===', info, typeof info)
-  if (info.message instanceof Error) {
-    info.message = inspect(serializeError(info.message), {
-      compact: true,
-      depth: 5,
-      breakLength: 200,
-      colors: true
-    })
-  }
   if (stringifiedRest !== '{}') {
     const rest = inspect(JSON.parse(stringifiedRest), {
       compact: true,
@@ -93,20 +88,18 @@ const moduleExports = createLogger({
   // To see more detailed errors, change this to debug'
   level: 'debug',
   // !end
-  // !code: format // !end
+  // !code: format
+  format: format.combine(
+    logInfo(),
+    format.splat(),
+    format.timestamp(),
+    format.ms(),
+    format.padLevels(),
+    formatConsole()
+  ),
+  // !end
   // !<DEFAULT> code: transport
-  transports: [
-    new transports.Console({
-      format: format.combine(
-        // logInfo(),
-        format.splat(),
-        format.timestamp(),
-        format.ms(),
-        format.padLevels(),
-        formatConsole()
-      )
-    })
-  ]
+  transports: [new transports.Console({})]
   // !end
   // !code: moduleExports // !end
 })
