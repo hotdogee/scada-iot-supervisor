@@ -1,4 +1,5 @@
 // Logger. (Can be re-generated.)
+const { omit } = require('lodash')
 const { createLogger, format, transports } = require('winston')
 const { inspect } = require('util')
 const colors = require('colors/safe')
@@ -26,6 +27,9 @@ const formatConsole = format((info, opts = {}) => {
   // console.log('===DEBUG===', info, typeof info)
   if (info instanceof Error) {
     info = Object.assign({}, info, serializeError(info))
+    if (info.hook) {
+      info.hook = omit(info.hook, ['service', 'app', 'arguments'])
+    }
   }
   const stringifiedRest = jsonStringify(
     Object.assign({}, info, {

@@ -121,3 +121,4 @@ data/
 .env
 .node-persist
 .keystore
+.storage

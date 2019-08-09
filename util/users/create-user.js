@@ -4,12 +4,10 @@
 /* eslint-disable no-unused-vars */
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
-const io = require('socket.io-client')
-const feathers = require('@feathersjs/feathers')
-const socketio = require('@feathersjs/socketio-client')
 const { paramsForServer } = require('feathers-hooks-common')
 const logger = require('../../src/logger')
 const { generateKeyPair, saveKeyPair, sign } = require('../lib/auth')
+const { api, socket, storage } = require('../lib/api')
 const WebCrypto = require('node-webcrypto-ossl') // this defines global.btoa and global.atob
 const webcrypto = new WebCrypto({
   directory: '.keystore'
@@ -28,12 +26,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     country: 'tw'
   }
 })
-logger.debug(`argv`, argv)
-
-const socket = io(argv.apiOrigin, {
-  path: argv.apiPathname + '/socket.io' // default: /socket.io
-})
-const api = feathers().configure(socketio(socket), { timeout: 1000 })
+// logger.debug(`argv`, argv)
 
 /* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
@@ -93,6 +86,8 @@ socket.on('connect', async (connection) => {
     const result = await api.service(argv.service)[argv.method](data, params)
     // { name: 'cam1', _id: '5d405c30cafd4e6cb87a3e92' }
     logger.info(`${argv.service}.${argv.method} result =`, result)
+    // save userId
+    storage.setItem('user-id', result._id)
   } catch (error) {
     logger.error(error)
   } finally {
