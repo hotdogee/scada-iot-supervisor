@@ -112,11 +112,6 @@ $RECYCLE.BIN/
 # TypeScript
 compiled/
 
-# Others
-lib/
-data/
-!/src/lib
-
 # dotenv environment variables file
 .env
 .node-persist
