@@ -8,16 +8,21 @@ const hooks = require('./users.hooks')
 
 const moduleExports = async function (app) {
   const db = await app.get('mongoClient')
-  const Model = await db.collection('users', {
-    // !<DEFAULT> code: create_collection
+  // !<DEFAULT> code: collection
+  const collection = await db.collection('users', {
     // validator: { $jsonSchema: $jsonSchema },
     // validationLevel: 'strict', // The MongoDB default
     // validationAction: 'error', // The MongoDB default
-    // !end
   })
+  // !end
   const paginate = app.get('paginate')
   // !<DEFAULT> code: func_init
-  const options = { Model, paginate, whitelist: ['$client'], multi: false }
+  const options = {
+    Model: collection,
+    paginate,
+    whitelist: ['$client'],
+    multi: false
+  }
   // !end
 
   // Initialize our service with any options it requires
