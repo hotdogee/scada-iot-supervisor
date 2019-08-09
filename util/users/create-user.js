@@ -8,11 +8,7 @@ const { paramsForServer } = require('feathers-hooks-common')
 const logger = require('../../src/logger')
 const { generateKeyPair, saveKeyPair, sign } = require('../lib/auth')
 const { api, socket, storage } = require('../lib/api')
-const WebCrypto = require('node-webcrypto-ossl') // this defines global.btoa and global.atob
-const webcrypto = new WebCrypto({
-  directory: '.keystore'
-})
-const keyStorage = webcrypto.keyStorage
+
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -82,10 +78,18 @@ socket.on('connect', async (connection) => {
       signature,
       document
     })
-    logger.info(`${argv.service}.${argv.method} data =`, data)
+    // logger.info(`${argv.service}.${argv.method} data =`, data)
     const result = await api.service(argv.service)[argv.method](data, params)
     // { name: 'cam1', _id: '5d405c30cafd4e6cb87a3e92' }
     logger.info(`${argv.service}.${argv.method} result =`, result)
+    // result = {
+    //   accounts: [{ type: 'email', value: 'hotdogee@gmail.com' }],
+    //   language: 'en',
+    //   country: 'tw',
+    //   created: '2019-08-09T14:41:15.799Z',
+    //   updated: '2019-08-09T14:41:15.799Z',
+    //   _id: '5d4d860b09b9d13afc6d23ee'
+    // }
     // save userId
     storage.setItem('user-id', result._id)
   } catch (error) {
@@ -94,113 +98,3 @@ socket.on('connect', async (connection) => {
     process.exit()
   }
 })
-
-/* eslint-disable no-unused-vars */
-async function generateKeyExplore () {
-  const key = await webcrypto.subtle.generateKey(
-    {
-      name: 'ECDSA',
-      namedCurve: 'P-256' // can be 'P-256', 'P-384', or 'P-512'
-    },
-    true, // whether the key is extractable (i.e. can be used in exportKey)
-    ['sign', 'verify']
-  )
-  /**
-   * saving private RSA key to KeyStorage
-   * creates file ./key_storage/prvRSA-1024.json
-   */
-  // keyStorage.setItem("prvRSA-1024", keyPairs.privateKey);
-  // console.log(keyPairs)
-  // console.log(keyPairs.privateKey)
-  // console.log(keyPairs.publicKey)
-  // CryptoKey {
-  //   usages: [ 'sign' ],
-  //   native_: Key { type: 408 },
-  //   extractable: false,
-  //   algorithm: { name: 'ECDSA', namedCurve: 'P-256' },
-  //   type: 'private'
-  // }
-  // CryptoKey {
-  //   usages: [ 'verify' ],
-  //   native_: Key { type: 408 },
-  //   extractable: true,
-  //   algorithm: { name: 'ECDSA', namedCurve: 'P-256' },
-  //   type: 'public'
-  // }
-
-  const jwk = await webcrypto.subtle.exportKey(
-    'jwk', // can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
-    key.publicKey // can be a publicKey or privateKey, as long as extractable was true
-  )
-  console.log(`publicKey`, jwk)
-  // publicKey {
-  //   kty: 'EC',
-  //   crv: 'P-256',
-  //   key_ops: [ 'verify' ],
-  //   x: '-eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0',
-  //   y: 'dY_tapL4n6CbxZNRRagYE9JnCg9AN-kWekmQEUdvzv4'
-  // }
-
-  const jwk2 = await webcrypto.subtle.exportKey(
-    'jwk', // can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
-    key.privateKey // can be a publicKey or privateKey, as long as extractable was true
-  )
-  console.log(`privateKey`, jwk2)
-  // privateKey {
-  //   kty: 'EC',
-  //   crv: 'P-256',
-  //   key_ops: [ 'sign' ],
-  //   x: '-eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0',
-  //   y: 'dY_tapL4n6CbxZNRRagYE9JnCg9AN-kWekmQEUdvzv4',
-  //   d: 'LHwHF8aPlkt0KZ9LsnRkS_Epxk28ucCWD4m2ulWZqoA'
-  // }
-  keyStorage.setItem('ECDSA1publicKey', key.publicKey)
-  // {
-  //   "algorithm": { "name": "ECDSA", "namedCurve": "P-256" },
-  //   "usages": ["verify"],
-  //   "type": "public",
-  //   "keyJwk": {
-  //     "kty": "EC",
-  //     "crv": 415,
-  //     "x": "+eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0=",
-  //     "y": "dY/tapL4n6CbxZNRRagYE9JnCg9AN+kWekmQEUdvzv4="
-  //   },
-  //   "name": "ECDSA1publicKey",
-  //   "extractable": true
-  // }
-
-  keyStorage.setItem('ECDSA1privateKey', key.privateKey)
-  // {
-  //   "algorithm": { "name": "ECDSA", "namedCurve": "P-256" },
-  //   "usages": ["sign"],
-  //   "type": "private",
-  //   "keyJwk": {
-  //     "kty": "EC",
-  //     "crv": 415,
-  //     "x": "+eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0=",
-  //     "y": "dY/tapL4n6CbxZNRRagYE9JnCg9AN+kWekmQEUdvzv4=",
-  //     "d": "LHwHF8aPlkt0KZ9LsnRkS/Epxk28ucCWD4m2ulWZqoA="
-  //   },
-  //   "name": "ECDSA1privateKey",
-  //   "extractable": true
-  // }
-
-  // keyStorage.setItem('ECDSA1key', key) // error
-  const key2 = await webcrypto.subtle.generateKey(
-    {
-      name: 'ECDSA',
-      namedCurve: 'P-256' // can be 'P-256', 'P-384', or 'P-512'
-    },
-    false, // whether the key is extractable (i.e. can be used in exportKey)
-    ['sign', 'verify']
-  )
-  const jwk3 = await webcrypto.subtle.exportKey(
-    'jwk', // can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
-    key2.publicKey // can be a publicKey or privateKey, as long as extractable was true
-  )
-  console.log(`publicKey`, jwk3)
-  keyStorage.setItem('ECDSA2publicKey', key2.publicKey)
-  keyStorage.setItem('ECDSA2privateKey', key2.privateKey)
-}
-// generateKeyExplore()
-/* eslint-enables no-unused-vars */

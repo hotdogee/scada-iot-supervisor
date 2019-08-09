@@ -8,7 +8,7 @@ const { LocalStrategy } = require('@feathersjs/authentication-local')
 const { OAuthStrategy, setup } = require('@feathersjs/authentication-oauth')
 
 // !code: imports
-const debug = require('debug')('infans:auth')
+const debug = require('debug')('scada:auth')
 // const { verifyECDSA, savePublicKey } = require('./hooks/ecdsa')
 const { verify } = require('./lib/ecdsa')
 // const CustomStrategy = require('passport-custom')
@@ -328,23 +328,62 @@ const {
 class APIKeyJWTStrategy extends JWTStrategy {
   async authenticate (authentication, params) {
     // const authentication = {
-    //   strategy: 'ecdsa',
-    //   signature: btoa(String.fromCharCode(...new Uint8Array(signature))),
-    //   document: {
+    //   strategy: 'jwt',
+    //   accessToken:
+    //     'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjUzNjg3MzIsImV4cCI6MTU2NTM3MDUzMiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGQ4NjBiMDliOWQxM2FmYzZkMjNlZSIsImp0aSI6IjQ1NzgwNzk0LTlmNDItNDZiZi04ZTIwLTNiOTQxYWIxMTEwNCJ9.MiOcubW9fgbKAKuH4owTZcGFP1J5lB1lw66NDyAGOuA',
+    //   query: {},
+    //   route: {},
+    //   connection: {
+    //     provider: 'socketio',
+    //     headers: {
+    //       'user-agent': 'node-XMLHttpRequest',
+    //       accept: '*/*',
+    //       host: 'localhost:8081',
+    //       connection: 'close'
+    //     }
+    //   },
+    //   provider: 'socketio',
+    //   headers: {
+    //     'user-agent': 'node-XMLHttpRequest',
+    //     accept: '*/*',
+    //     host: 'localhost:8081',
+    //     connection: 'close'
+    //   },
+    //   authenticated: true
+    // }
+    const result = await super.authenticate(authentication, params)
+    // this.app.debug(`super.authenticate result = `, { result })
+    // const result = {
+    //   accessToken:
+    //     'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjUzNjkwNDUsImV4cCI6MTU2NTM3MDg0NSwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGQ4NjBiMDliOWQxM2FmYzZkMjNlZSIsImp0aSI6IjEwODllNDJmLWYwYTYtNGM4Mi04ZmFjLWVjODRhZmI3N2QyYSJ9.L0mhgS5PCL8aCsw0ae_8E95iNEpFXAHUdkD55G7Y35U',
+    //   authentication: {
+    //     strategy: 'jwt',
     //     payload: {
-    //       userId: state.user._id
-    //     },
-    //     publicKey: JSON.stringify(publicKey),
-    //     timestamp: new Date(),
-    //     // timestamp: new Date('2018-11-06T07:34:20.671Z'),
-    //     userAgent: navigator.userAgent
+    //       iat: 1565369045,
+    //       exp: 1565370845,
+    //       iss: 'hanl.in',
+    //       sub: '5d4d860b09b9d13afc6d23ee',
+    //       jti: '1089e42f-f0a6-4c82-8fac-ec84afb77d2a'
+    //     }
+    //   },
+    //   user: {
+    //     _id: '5d4d860b09b9d13afc6d23ee',
+    //     accounts: [
+    //       {
+    //         type: 'email',
+    //         value: 'hotdogee@gmail.com',
+    //         verified: '2019-08-09T14:52:41.732Z'
+    //       }
+    //     ],
+    //     password:
+    //       '$2a$10$4CPRGVRUgcpAAfAWxV9J3eB6S8ClJZHmrJYIAM4POM1vHzBgikWIi',
+    //     language: 'en',
+    //     country: 'tw',
+    //     created: '2019-08-09T14:41:15.799Z',
+    //     updated: '2019-08-09T14:52:41.737Z',
+    //     authorizations: [{ org: 'hanl.in', role: 'admin' }]
     //   }
     // }
-    // header: Authorization: Bearer 123123123123
-    // header: Authorization: JWT 123123123123
-    // const authentication = { strategy: 'jwt', accessToken: '123123123123' }
-    const result = super.authenticate(authentication, params)
-    // payload = { iat: 1564893049, exp: 1564894849, aud: 'api-key', iss: 'hanl.in' }
     // if aud in payload
     const {
       authentication: {

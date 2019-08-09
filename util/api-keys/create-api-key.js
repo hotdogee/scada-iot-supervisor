@@ -10,8 +10,9 @@ const logger = require('../../src/logger')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    service: 'api-key',
-    method: 'create'
+    service: 'api-keys',
+    method: 'create',
+    name: 'geo9-pi3p1'
   }
 })
 logger.debug(`argv`, argv)
@@ -19,25 +20,15 @@ logger.debug(`argv`, argv)
 /* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
   try {
+    const auth = await api.reAuthenticate()
+    logger.info(`reAuthenticate result =`, auth)
     const data = {
-      accounts: [
-        {
-          type: 'email',
-          value: argv.email
-        }
-      ],
-      password: argv.password,
-      language: argv.language,
-      country: argv.country
+      name: argv.name
     }
     const params = paramsForServer({
-      query: {},
-      signature,
-      document
+      query: {}
     })
-    logger.info(`${argv.service}.${argv.method} data =`, data)
     const result = await api.service(argv.service)[argv.method](data, params)
-    // { name: 'cam1', _id: '5d405c30cafd4e6cb87a3e92' }
     logger.info(`${argv.service}.${argv.method} result =`, result)
   } catch (error) {
     logger.error(error)

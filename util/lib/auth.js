@@ -87,6 +87,115 @@ async function sign (keyPair, payload) {
   }
 }
 
+/* eslint-disable no-unused-vars */
+async function generateKeyExplore () {
+  const key = await webcrypto.subtle.generateKey(
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-256' // can be 'P-256', 'P-384', or 'P-512'
+    },
+    true, // whether the key is extractable (i.e. can be used in exportKey)
+    ['sign', 'verify']
+  )
+  /**
+   * saving private RSA key to KeyStorage
+   * creates file ./key_storage/prvRSA-1024.json
+   */
+  // keyStorage.setItem("prvRSA-1024", keyPairs.privateKey);
+  // console.log(keyPairs)
+  // console.log(keyPairs.privateKey)
+  // console.log(keyPairs.publicKey)
+  // CryptoKey {
+  //   usages: [ 'sign' ],
+  //   native_: Key { type: 408 },
+  //   extractable: false,
+  //   algorithm: { name: 'ECDSA', namedCurve: 'P-256' },
+  //   type: 'private'
+  // }
+  // CryptoKey {
+  //   usages: [ 'verify' ],
+  //   native_: Key { type: 408 },
+  //   extractable: true,
+  //   algorithm: { name: 'ECDSA', namedCurve: 'P-256' },
+  //   type: 'public'
+  // }
+
+  const jwk = await webcrypto.subtle.exportKey(
+    'jwk', // can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
+    key.publicKey // can be a publicKey or privateKey, as long as extractable was true
+  )
+  console.log(`publicKey`, jwk)
+  // publicKey {
+  //   kty: 'EC',
+  //   crv: 'P-256',
+  //   key_ops: [ 'verify' ],
+  //   x: '-eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0',
+  //   y: 'dY_tapL4n6CbxZNRRagYE9JnCg9AN-kWekmQEUdvzv4'
+  // }
+
+  const jwk2 = await webcrypto.subtle.exportKey(
+    'jwk', // can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
+    key.privateKey // can be a publicKey or privateKey, as long as extractable was true
+  )
+  console.log(`privateKey`, jwk2)
+  // privateKey {
+  //   kty: 'EC',
+  //   crv: 'P-256',
+  //   key_ops: [ 'sign' ],
+  //   x: '-eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0',
+  //   y: 'dY_tapL4n6CbxZNRRagYE9JnCg9AN-kWekmQEUdvzv4',
+  //   d: 'LHwHF8aPlkt0KZ9LsnRkS_Epxk28ucCWD4m2ulWZqoA'
+  // }
+  keyStorage.setItem('ECDSA1publicKey', key.publicKey)
+  // {
+  //   "algorithm": { "name": "ECDSA", "namedCurve": "P-256" },
+  //   "usages": ["verify"],
+  //   "type": "public",
+  //   "keyJwk": {
+  //     "kty": "EC",
+  //     "crv": 415,
+  //     "x": "+eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0=",
+  //     "y": "dY/tapL4n6CbxZNRRagYE9JnCg9AN+kWekmQEUdvzv4="
+  //   },
+  //   "name": "ECDSA1publicKey",
+  //   "extractable": true
+  // }
+
+  keyStorage.setItem('ECDSA1privateKey', key.privateKey)
+  // {
+  //   "algorithm": { "name": "ECDSA", "namedCurve": "P-256" },
+  //   "usages": ["sign"],
+  //   "type": "private",
+  //   "keyJwk": {
+  //     "kty": "EC",
+  //     "crv": 415,
+  //     "x": "+eGGqhymn8iL3ogA3UqNiXZmBfBLqFJhwXALwC7qgz0=",
+  //     "y": "dY/tapL4n6CbxZNRRagYE9JnCg9AN+kWekmQEUdvzv4=",
+  //     "d": "LHwHF8aPlkt0KZ9LsnRkS/Epxk28ucCWD4m2ulWZqoA="
+  //   },
+  //   "name": "ECDSA1privateKey",
+  //   "extractable": true
+  // }
+
+  // keyStorage.setItem('ECDSA1key', key) // error
+  const key2 = await webcrypto.subtle.generateKey(
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-256' // can be 'P-256', 'P-384', or 'P-512'
+    },
+    false, // whether the key is extractable (i.e. can be used in exportKey)
+    ['sign', 'verify']
+  )
+  const jwk3 = await webcrypto.subtle.exportKey(
+    'jwk', // can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
+    key2.publicKey // can be a publicKey or privateKey, as long as extractable was true
+  )
+  console.log(`publicKey`, jwk3)
+  keyStorage.setItem('ECDSA2publicKey', key2.publicKey)
+  keyStorage.setItem('ECDSA2privateKey', key2.privateKey)
+}
+/* eslint-enables no-unused-vars */
+
 module.exports = {
   generateKeyPair,
   saveKeyPair,

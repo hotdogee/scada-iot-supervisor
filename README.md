@@ -11,25 +11,36 @@ https://line.scada.hanl.in - localhost:8082 - line webhook
 
 ## Setup server pm2
 
-cd scada-iot-supervisor
-NODE_ENV=production pm2 start npm --name scada-iot-supervisor -- run start
+```bash
+$ cd scada-iot-supervisor
+$ NODE_ENV=production pm2 start npm --name scada-iot-supervisor -- run start
 
-cd ../scada-iot-hmi
-NODE_ENV=production pm2 start npm --name scada-iot-hmi -- run start
-NODE_ENV=production pm2 start /usr/bin/http-server --name scada-iot-hmi -- ./dist --push-state -c 60 -p 8303 -d false
+$ cd ../scada-iot-hmi
+$ NODE_ENV=production pm2 start npm --name scada-iot-hmi -- run start
+$ NODE_ENV=production pm2 start /usr/bin/http-server --name scada-iot-hmi -- ./dist --push-state -c 60 -p 8303 -d false
 
-pm2 save
+$ pm2 save
+```
 
-## About
+## adding first admin user
 
-This project uses a custom modification of @feathers-plus/cli to support:
-
-- StandardJS
-- js config files
+```bash
+$ cd scada-iot-supervisor
+# creates a new user and sends a verification email to the given email address
+$ node ./util/users/create-user.js --email=admin@example.com --password=random1password --language=en
+2019-08-09T22:41:15.844 info      users.create result = { accounts: [ { type: 'email', value: 'admin@example.com' } ], language: 'en', country: 'tw', created: '2019-08-09T14:41:15.799Z', updated: '2019-08-09T14:41:15.799Z', _id: '5d4d860b09b9d13afc6d23ee' } +266ms
+# obtain the verification token from the link in the email
+$ node ./util/users/patch-verify-email.js --token=eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUzNjE2NzUsImV4cCI6MTU2NTM2MzQ3NSwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGQ4NjBiMDliOWQxM2FmYzZkMjNlZSJ9.jJvKuky9XBNnhTengesrZvxij9xBH9tk4RlFxHoK9Xo
+2019-08-09T22:52:41.778 info      users.patch { result: 'success' } +0ms
+# patch admin authorizations
+$ node ./util/users/patch-admin-authorization.js --userId=5d4d860b09b9d13afc6d23ee --org=example.com --role=admin
+# refresh access token
+$ node ./util/users/refresh-access-token.js --userId=5d4d860b09b9d13afc6d23ee
+```
 
 # Scaffolding
 
-```
+```bash
 # Generate a new service with its model
 node ..\..\feathers-plus-cli g service
 ```
@@ -209,3 +220,11 @@ query = {
 # References
 
 - [Why do some developers at strong companies like Google consider Agile development to be nonsense?](https://www.quora.com/Why-do-some-developers-at-strong-companies-like-Google-consider-Agile-development-to-be-nonsense/answer/David-Jeske?fbclid=IwAR0PPamL4Ce4JrRHVdWkTUgmI4W8mxH54S143vndeVid8ctZFja-arkxJeE)
+
+
+## About
+
+This project uses a custom modification of @feathers-plus/cli to support:
+
+- StandardJS
+- js config files

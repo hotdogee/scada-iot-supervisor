@@ -3,12 +3,13 @@ const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const { MongoClient, ObjectID } = require('mongodb')
 const logger = require('../../src/logger')
+const { storage } = require('../lib/api')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
     mongodb: process.env.MONGODB,
     service: 'users',
-    userId: '5d4c86362cc96e9fb4667619',
+    userId: null,
     org: 'hanl.in',
     role: 'admin'
   }
@@ -17,13 +18,15 @@ const argv = require('minimist')(process.argv.slice(2), {
 /* eslint-enables no-unused-vars */
 ;(async () => {
   try {
+    const userId = argv.userId || storage.getItem('user-id')
+    if (!userId) throw new Error('userId required')
     const client = await MongoClient.connect(argv.mongodb, {
       useNewUrlParser: true
     })
     const db = client.db()
     const collection = await db.collection('users', {})
     const result = await collection.updateOne(
-      { _id: new ObjectID(argv.userId) },
+      { _id: new ObjectID(userId) },
       { $addToSet: { authorizations: { org: argv.org, role: argv.role } } }
     )
     logger.info(`${argv.service}.updateOne`, { result })

@@ -5,60 +5,25 @@
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const logger = require('../../src/logger')
-const { readKeyPair, sign } = require('../lib/auth')
-const { api, socket } = require('../lib/api')
-const serializeError = require('serialize-error')
+const { socket, refreshAccessToken } = require('../lib/api')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
     service: 'authenticate',
     strategy: 'ecdsa',
-    userId: '5d4c86362cc96e9fb4667619'
+    userId: null
   }
 })
-logger.debug(`argv`, argv)
+// logger.debug(`argv`, argv)
 
 /* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
   try {
-    const keyPair = readKeyPair()
-    // logger.debug(`keyPair`, keyPair)
-    const { signature, document } = await sign(keyPair, {
-      userId: argv.userId
-    })
-    // logger.debug(`{ signature, document }`, { signature, document })
-    // {
-    //   signature:
-    //     'bnGfjyG7m6YtUFmbHBMrBI5NCg9MxWcgdrmvqi3jO1EvnFStlBtH0Ei6YbAelaKSkdCjCXmDq2iS4DSKJOI4bw==',
-    //   document: {
-    //     payload: { userId: '5d4c86362cc96e9fb4667619' },
-    //     publicKey:
-    //       '{"kty":"EC","crv":"P-256","key_ops":["verify"],"x":"vYSJ8JWZkWCI0gUz6dZFoVbWIR-VV8kUZ0LiAPXrZrI","y":"VZUAzGBkAcLhrqZvJYtqrBrmZNz6jXxZLKIu932odWM"}',
-    //     timestamp: '2019-08-09T11:02:27.827Z',
-    //     userAgent:
-    //       'bfdaca43d47406f301471f211210fce990269efbcc7c363ea9e2a11d0ab98ad5'
-    //   }
-    // }
-    const data = {
-      strategy: argv.strategy,
-      signature,
-      document
-    }
-    // logger.info(`${argv.service} data =`, data)
-    // const data = {
-    //   strategy: 'ecdsa',
-    //   signature:
-    //     'bnGfjyG7m6YtUFmbHBMrBI5NCg9MxWcgdrmvqi3jO1EvnFStlBtH0Ei6YbAelaKSkdCjCXmDq2iS4DSKJOI4bw==',
-    //   document: {
-    //     payload: { userId: '5d4c86362cc96e9fb4667619' },
-    //     publicKey:
-    //       '{"kty":"EC","crv":"P-256","key_ops":["verify"],"x":"vYSJ8JWZkWCI0gUz6dZFoVbWIR-VV8kUZ0LiAPXrZrI","y":"VZUAzGBkAcLhrqZvJYtqrBrmZNz6jXxZLKIu932odWM"}',
-    //     timestamp: '2019-08-09T11:02:27.827Z',
-    //     userAgent:
-    //       'bfdaca43d47406f301471f211210fce990269efbcc7c363ea9e2a11d0ab98ad5'
-    //   }
-    // }
-    const result = await api[argv.service](data)
+    const result = await refreshAccessToken(
+      argv.service,
+      argv.strategy,
+      argv.userId
+    )
     logger.info(`${argv.service} result =`, result)
     // const result = {
     //   accessToken:
