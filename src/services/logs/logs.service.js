@@ -8,7 +8,7 @@ const hooks = require('./logs.hooks')
 
 const moduleExports = async function (app) {
   const db = await app.get('mongoClient')
-  const Model = await db.createCollection('logs', {
+  const Model = await db.collection('logs', {
     // !<DEFAULT> code: create_collection
     // validator: { $jsonSchema: $jsonSchema },
     // validationLevel: 'strict', // The MongoDB default

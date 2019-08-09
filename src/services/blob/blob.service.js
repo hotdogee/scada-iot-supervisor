@@ -13,7 +13,7 @@ const multerMemory = multer()
 
 const moduleExports = async function (app) {
   const db = await app.get('mongoClient')
-  const Model = await db.createCollection('blob', {
+  const Model = await db.collection('blob', {
     // !<DEFAULT> code: create_collection
     // validator: { $jsonSchema: $jsonSchema },
     // validationLevel: 'strict', // The MongoDB default

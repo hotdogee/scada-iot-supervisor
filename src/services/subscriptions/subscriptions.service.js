@@ -8,7 +8,7 @@ const hooks = require('./subscriptions.hooks')
 
 const moduleExports = async function (app) {
   const db = await app.get('mongoClient')
-  const Model = await db.createCollection('subscriptions', {
+  const Model = await db.collection('subscriptions', {
     // !<DEFAULT> code: create_collection
     // validator: { $jsonSchema: $jsonSchema },
     // validationLevel: 'strict', // The MongoDB default

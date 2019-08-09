@@ -16,7 +16,7 @@ const supportedImageFormats = new Set(['jpg', 'png', 'webp', 'tiff', 'jpeg'])
 
 const moduleExports = async function (app) {
   const db = await app.get('mongoClient')
-  const Model = await db.createCollection('images', {
+  const Model = await db.collection('images', {
     // !<DEFAULT> code: create_collection
     // validator: { $jsonSchema: $jsonSchema },
     // validationLevel: 'strict', // The MongoDB default

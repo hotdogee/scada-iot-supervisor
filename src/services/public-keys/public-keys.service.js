@@ -8,7 +8,7 @@ const hooks = require('./public-keys.hooks')
 
 const moduleExports = async function (app) {
   const db = await app.get('mongoClient')
-  const Model = await db.createCollection('public-keys', {
+  const Model = await db.collection('public-keys', {
     // !<DEFAULT> code: create_collection
     // validator: { $jsonSchema: $jsonSchema },
     // validationLevel: 'strict', // The MongoDB default

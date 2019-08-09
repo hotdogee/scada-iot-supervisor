@@ -28,7 +28,7 @@ const transporter = nodemailer.createTransport(transport, defaults)
 
 const moduleExports = async function (app) {
   const db = await app.get('mongoClient')
-  const Model = await db.createCollection('emails', {
+  const Model = await db.collection('emails', {
     // !<DEFAULT> code: create_collection
     // validator: { $jsonSchema: $jsonSchema },
     // validationLevel: 'strict', // The MongoDB default

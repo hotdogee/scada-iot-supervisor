@@ -21,7 +21,7 @@ const argv = require('minimist')(process.argv.slice(2), {
       useNewUrlParser: true
     })
     const db = client.db()
-    const collection = await db.createCollection('users', {})
+    const collection = await db.collection('users', {})
     const result = await collection.updateOne(
       { _id: new ObjectID(argv.userId) },
       { $addToSet: { authorizations: { org: argv.org, role: argv.role } } }
