@@ -6,6 +6,7 @@
 
 https://scada.hanl.in - localhost:8083 - vue frontend
 https://scada.hanl.in/api - localhost:8081 - feathers backend
+https://scada.hanl.in/api2 - localhost:8086 - feathers 4.0 backend
 https://scada.hanl.in/media - localhost:8085 - node-media-server
 https://line.scada.hanl.in - localhost:8082 - line webhook
 

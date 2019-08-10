@@ -90,7 +90,7 @@ const formatConsole = format((info, opts = {}) => {
 const moduleExports = createLogger({
   // !<DEFAULT> code: level
   // To see more detailed errors, change this to debug'
-  level: 'debug',
+  level: process.env.LOG_LEVEL || 'debug',
   // !end
   // !code: format
   format: format.combine(

@@ -114,6 +114,7 @@ compiled/
 
 # dotenv environment variables file
 .env
+.env.prod
 .node-persist
 .keystore
 .storage
