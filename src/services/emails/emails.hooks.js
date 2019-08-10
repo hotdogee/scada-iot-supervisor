@@ -160,7 +160,7 @@ function sendEmail () {
       //     ]
       //   }
       // }
-      // if we haven't setup templates yet, log token
+      // if we haven't setup templates yet, log token for initial account creation
       if (total === 0) {
         app.error(`${name}.${language} email template not found`)
         app.error(`token = '${token}'`)

@@ -76,6 +76,7 @@ const moduleExports = {
       // handleRaw()
     ],
     create: [
+      // debugLogger(),
       assertAlbum(),
       saveToBlobStore(),
       assertAlbumDeduplicate(),
@@ -123,6 +124,107 @@ const moduleExports = {
 module.exports = moduleExports
 
 // !code: funcs
+function debugLogger () {
+  // add imageId to album
+  return async (context) => {
+    const { app } = context
+    // app.debug('debugLogger', { this: this })
+    // const this = {
+    //   global: '[Circular]',
+    //   '__core-js_shared__': {
+    //     versions: [
+    //       {
+    //         version: '2.6.9',
+    //         mode: 'pure',
+    //         copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
+    //       }
+    //     ],
+    //     wks: {},
+    //     keys: { IE_PROTO: 'Symbol(IE_PROTO)_2.ie07yv3jwl' },
+    //     'symbol-registry': {},
+    //     symbols: {},
+    //     'op-symbols': {}
+    //   },
+    //   locale: 'en'
+    // }
+    app.debug('debugLogger', { context })
+    // const context = {
+    //   type: 'before',
+    //   method: 'create',
+    //   path: 'images',
+    //   params: {
+    //     query: {},
+    //     route: {},
+    //     provider: 'rest',
+    //     headers: {
+    //       host: 'localhost:8081',
+    //       authorization:
+    //         'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjUzNzgyNjEsImV4cCI6MTg4MDk1NDI2MSwiYXVkIjoiYXBpLWtleSIsImlzcyI6ImhhbmwuaW4iLCJzdWIiOiI1ZDRkODYwYjA5YjlkMTNhZmM2ZDIzZWUifQ.JXRxPXXL366NxyER8_Hnc8ORRDlpKoOh5dRtJZNGWWA',
+    //       accept: 'application/json',
+    //       'content-type':
+    //         'multipart/form-data; boundary=--------------------------387244591272783150385596',
+    //       'content-length': '174772',
+    //       connection: 'close'
+    //     },
+    //     authentication: {
+    //       strategy: 'jwt',
+    //       accessToken:
+    //         'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjUzNzgyNjEsImV4cCI6MTg4MDk1NDI2MSwiYXVkIjoiYXBpLWtleSIsImlzcyI6ImhhbmwuaW4iLCJzdWIiOiI1ZDRkODYwYjA5YjlkMTNhZmM2ZDIzZWUifQ.JXRxPXXL366NxyER8_Hnc8ORRDlpKoOh5dRtJZNGWWA',
+    //       payload: {
+    //         iat: 1565378261,
+    //         exp: 1880954261,
+    //         aud: 'api-key',
+    //         iss: 'hanl.in',
+    //         sub: '5d4d860b09b9d13afc6d23ee'
+    //       }
+    //     },
+    //     clientIp: '::ffff:127.0.0.1',
+    //     restAddress: '::ffff:127.0.0.1',
+    //     file: {
+    //       fieldname: 'file',
+    //       originalname: 'cam1.jpg',
+    //       encoding: '7bit',
+    //       mimetype: 'image/jpeg',
+    //       buffer: {
+    //         type: 'Buffer',
+    //         data: [255]
+    //       },
+    //       size: 174304
+    //     },
+    //     user: {
+    //       _id: '5d4d860b09b9d13afc6d23ee',
+    //       accounts: [
+    //         {
+    //           type: 'email',
+    //           value: 'hotdogee@gmail.com',
+    //           verified: '2019-08-09T14:52:41.732Z'
+    //         }
+    //       ],
+    //       password:
+    //         '$2a$10$4CPRGVRUgcpAAfAWxV9J3eB6S8ClJZHmrJYIAM4POM1vHzBgikWIi',
+    //       language: 'en',
+    //       country: 'tw',
+    //       created: '2019-08-09T14:41:15.799Z',
+    //       updated: '2019-08-09T14:52:41.737Z',
+    //       authorizations: [
+    //         {
+    //           org: 'hanl.in',
+    //           role: 'admin'
+    //         }
+    //       ]
+    //     },
+    //     authenticated: true,
+    //     ability: {}
+    //   },
+    //   data: {
+    //     timestamp: '2019-08-10T17:50:01.836Z',
+    //     albumId: '5d435c1fb73082687c8797a6'
+    //   }
+    // }
+    return context
+  }
+}
+
 function handleRaw () {
   return async (context) => {
     // check type === before, method === create
@@ -257,7 +359,8 @@ function assertAlbumLimit () {
       ['create', 'update', 'patch'],
       'addImageToAlbum'
     )
-    const { app, service, params } = context
+    const { app, service, params, logger } = context
+    const log = logger('assertAlbumLimit')
     const { album } = params
     if (!album) return context
     const { _id: albumId, keep } = album
@@ -279,7 +382,7 @@ function assertAlbumLimit () {
     //   (a, b) =>
     //     new Date(b.timestamp || b.updated) - new Date(a.timestamp || a.updated)
     // )
-    app.debug(`before total ${total} ${keep}`)
+    log.debug(`before total ${total} ${keep}`)
     if (total > keep) {
       total -= (await Promise.all(
         images.slice(0, total - keep).map(({ _id: imageId }) => {
@@ -287,7 +390,7 @@ function assertAlbumLimit () {
         })
       )).length
     }
-    app.debug(`after total ${total} ${keep}`)
+    log.debug(`after total ${total} ${keep}`)
     while (total > keep) {
       const result = await service.find({
         query: {

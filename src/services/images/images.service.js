@@ -66,16 +66,17 @@ const moduleExports = async function (app) {
     // http://localhost:6001/images/5d409c9036a569744447825b?$client[raw]=1&$client[width]=600&$client[height]=700&$client[format]=webp
     function (req, res, next) {
       const { hook: context } = res
+      // eslint-disable-next-line no-unused-vars
       const { app, params, result } = context
       const { raw, width, height, format } = params
       const { key } = result
-      app.debug(`handleRaw ${typeof width}, ${width}`) // string
-      app.debug(`handleRaw ${typeof height}, ${height}`) // string
-      app.debug(`handleRaw ${typeof format}, ${format}`) // string
+      // app.debug(`handleRaw ${typeof width}, ${width}`) // string
+      // app.debug(`handleRaw ${typeof height}, ${height}`) // string
+      // app.debug(`handleRaw ${typeof format}, ${format}`) // string
       if (raw) {
-        app.debug(`handleRaw`, params)
+        // app.debug(`handleRaw`, params)
         const file = path.resolve(process.env.UPLOAD_PATH, key)
-        app.debug(`handleRaw ${typeof file}, ${file}`) // string
+        // app.debug(`handleRaw ${typeof file}, ${file}`) // string
         // parse params
         const w = parseInt(width) || undefined
         const h = parseInt(height) || undefined
