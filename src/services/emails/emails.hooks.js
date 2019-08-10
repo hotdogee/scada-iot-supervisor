@@ -160,6 +160,15 @@ function sendEmail () {
       //     ]
       //   }
       // }
+      // if we haven't setup templates yet, log token
+      if (total === 0) {
+        app.error(`${name}.${language} email template not found`)
+        app.error(`token = '${token}'`)
+        context.result = {
+          token
+        }
+        return context
+      }
       const { content } = template
       const { html, attachments } = content
       content.to = email
