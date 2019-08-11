@@ -23,9 +23,6 @@ const request = require('request-compose').extend({
   Request: { oauth: require('request-oauth') }
 }).client
 
-const {
-  getDefaultSettings
-} = require('@feathersjs/authentication-oauth/lib/utils')
 const { express } = require('grant')
 const { original } = require('@feathersjs/express')
 const session = require('express-session')
@@ -1100,8 +1097,7 @@ const setupExpress = (options) => {
   }
 }
 
-const grantOauth = (settings = {}) => (app) => {
-  const options = getDefaultSettings(app, settings)
+const grantOauth = (options = {}) => (app) => {
   app.configure(setup(options))
   app.configure(setupExpress(options))
 }
@@ -1137,8 +1133,12 @@ const moduleExports = function (app) {
 
   app.configure(
     grantOauth({
+      authService: app.get('defaultAuthentication'),
+      linkStrategy: 'jwt',
       expressSession: session({
         secret,
+        saveUninitialized: false, // don't create session until something stored
+        resave: false, // don't save session if unmodified
         store: new MongoStore({
           url: process.env.MONGODB,
           secret
