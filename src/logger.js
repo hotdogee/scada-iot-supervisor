@@ -1,6 +1,6 @@
 // Logger. (Can be re-generated.)
 /* eslint-disable no-unused-vars */
-const { omit } = require('lodash')
+const { omit, pick } = require('lodash')
 const { createLogger, format, transports } = require('winston')
 // const { inspect } = require('util')
 const colors = require('colors/safe')
@@ -28,10 +28,14 @@ const logInfo = format((info, opts = {}) => {
   return info
 })
 const consoleHook = format((info, opts = {}) => {
-  Object.assign(
-    info,
-    omit(info[Symbol.for('hook')], ['type', 'method', 'path'])
-  )
+  if (process.env.NODE_ENV === 'production') {
+    Object.assign(info, pick(info[Symbol.for('hook')], ['message', 'stack']))
+  } else {
+    Object.assign(
+      info,
+      omit(info[Symbol.for('hook')], ['type', 'method', 'path'])
+    )
+  }
   return info
 })
 const formatConsole = format((info, opts = {}) => {

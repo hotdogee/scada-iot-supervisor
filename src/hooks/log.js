@@ -71,7 +71,11 @@ module.exports = function () {
         [Symbol.for('hook')]: safeContext(context)
       })
     } else {
-      logger.error(`=== ${prefix} ===`, safeError(context))
+      // logger.error(`=== ${prefix} ===`, safeError(context))
+      logger.error('', {
+        label: `=== ${prefix} ===`,
+        [Symbol.for('hook')]: safeError(context)
+      })
     }
     return context
   }
