@@ -28,6 +28,8 @@ const {
 } = require('@feathersjs/authentication-oauth/lib/utils')
 const { express } = require('grant')
 const { original } = require('@feathersjs/express')
+const session = require('express-session')
+const MongoStore = require('connect-mongo')(session)
 const qs = require('querystring')
 const {
   /* eslint-disable no-unused-vars */
@@ -1131,9 +1133,18 @@ const moduleExports = function (app) {
   app.use('/authentication', authentication)
   // !end
   // !<DEFAULT> code: configure_auth
+  const { secret } = app.get('authentication')
 
   app.configure(
-    grantOauth()
+    grantOauth({
+      expressSession: session({
+        secret,
+        store: new MongoStore({
+          url: process.env.MONGODB,
+          secret
+        })
+      })
+    })
     // expressOauth()
     // default = {
     //   authService: 'authentication',
