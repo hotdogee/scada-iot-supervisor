@@ -1150,7 +1150,7 @@ const moduleExports = function (app) {
   // this sets:
   // app.set('grant', omit(app.get('authentication').oauth, 'redirect'))
   // app.set('grant', require('grant').express()(omit(app.get('authentication').oauth, 'redirect')))
-  // * Link to /oauth/google (infans-ui)
+  // * Link to /oauth/google (scada-iot-hmi)
   // * => /oauth/connect/google?query (feathers\packages\authentication-oauth\src\express.ts)
   // * => https://accounts.google.com/o/oauth2/auth?{
   //     client_id: provider.key,

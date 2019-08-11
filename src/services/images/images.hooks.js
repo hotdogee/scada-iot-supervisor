@@ -359,7 +359,7 @@ function assertAlbumLimit () {
       ['create', 'update', 'patch'],
       'addImageToAlbum'
     )
-    const { app, service, params, logger } = context
+    const { service, params, logger } = context
     const log = logger('assertAlbumLimit')
     const { album } = params
     if (!album) return context

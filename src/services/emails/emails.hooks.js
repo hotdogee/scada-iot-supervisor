@@ -233,31 +233,31 @@ function sendEmail () {
       // //           }),
       // //           {
       // //             email: context.data.email,
-      // //             site: `Infans - ${i18n.getLocale()} - ${locale}`,
+      // //             site: `SCADA/IoT - ${i18n.getLocale()} - ${locale}`,
       // //             verifyUrl: `${process.env.UI_URL}/user/verify-email?token=${verifyToken}`
       // //           }
       // //         )
       // //       )
       // const locals = {
       //   email: context.data.email,
-      //   site: `Infans`,
+      //   site: `SCADA/IoT`,
       //   verifyUrl: `${process.env.UI_URL}/auth/verify-email-app?token=${verifyToken}`,
       //   // verifyUrl: `${
       //   //   process.env.UI_URL
       //   // }/user/verify-email?token=${verifyToken}`,
-      //   complaintEmail: 'service@binflux.com',
+      //   complaintEmail: 'scada@hanl.in',
       //   logo: 'cid:logo'
       // }
       // const data = {
       //   to: context.data.email,
       //   subject: i18n.__(`[{{site}}] Email verification`, {
-      //     site: `Infans`
+      //     site: `SCADA/IoT`
       //   }),
       //   html: verifyEmailTemplate(locals),
       //   encoding: 'utf-8',
       //   attachments: [
       //     {
-      //       filename: 'infans.png',
+      //       filename: 'logo.png',
       //       path: path.join(__dirname, 'templates', 'logo-256.png'),
       //       cid: 'logo'
       //     }

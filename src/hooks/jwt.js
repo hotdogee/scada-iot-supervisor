@@ -34,7 +34,7 @@ exports.verifyToken = function (
     //   "iat": 1552767152,
     //   "exp": 1552768952,
     //   "aud": "users.patch",
-    //   "iss": "binflux.com",
+    //   "iss": "hanl.in",
     //   "sub": "verify",
     //   "jti": "1214e3d8-686c-42db-a57e-3029d1e6a4b8"
     // }
@@ -79,7 +79,7 @@ exports.verifyToken = function (
 //   },
 //   audience: 'api',
 //   subject: 'access',
-//   issuer: 'infans.io',
+//   issuer: 'hanl.in',
 //   algorithm: 'HS256',
 //   expiresIn: '30m' // expiresIn: '10s'
 // }

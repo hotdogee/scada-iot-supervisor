@@ -11,7 +11,7 @@ const TYPE_KEY = Symbol.for('type')
 /* eslint-disable no-unused-vars */
 const path = require('path')
 const debug = require('debug')(
-  `infans-api:${path.basename(__filename, path.extname(__filename))}`
+  `scada:${path.basename(__filename, path.extname(__filename))}`
 )
 /* eslint-enable no-unused-vars */
 
@@ -27,24 +27,21 @@ function defineAbilitiesFor (params, data) {
   //   iat: 1561828929,
   //   exp: 1561830729,
   //   aud: 'api',
-  //   iss: 'infans.io',
+  //   iss: 'hanl.in',
   //   sub: '5d166b06ada0c3004e2f2319',
   //   jti: '90164fab-f2ac-4b27-b4d4-781b87f5f175'
   // }
-  can(['get', 'find', 'create', 'patch'], ['logs'])
-  can(['get', 'find', 'create', 'patch'], ['blob'])
-  can(['get', 'find'], ['images'])
-  can(['get', 'find', 'create', 'patch'], ['albums'])
-  can(['find', 'create'], ['templates'])
-  can('create', ['users', 'authentication', 'password-resets']) // , 'email-verifications', 'public-keys', 'emails'
-  can('read', ['api-servers'])
-  can('patch', ['email-verifications'])
+  can(['get', 'find'], ['logs', 'blob', 'images', 'albums'])
+  can('create', ['users']) // , 'email-verifications', 'public-keys', 'emails'
+  // can('read', ['api-servers'])
+  // can('patch', ['email-verifications'])
   // token can only be used once
-  can('patch', ['password-resets'], { token: { $exists: false } })
+  // can('patch', ['password-resets'], { token: { $exists: false } })
   // can('patch', 'email-verifications', { token: { $exists: false } })
 
   if (user) {
-    can(['create'], ['images'])
+    can(['create'], ['logs', 'blob', 'images', 'albums'])
+    can(['find', 'create'], ['templates'])
     can(['find', 'get', 'create', 'remove'], ['api-keys'], {
       userId: user._id
     })
@@ -85,7 +82,7 @@ function defineAbilitiesFor (params, data) {
     can('manage', 'roles') // for test
     if (Array.isArray(user.authorizations) && user.authorizationSelected) {
       // const authorization = user.authorizations[user.authorizationSelected]
-      // if (authorization.org === 'binflux' && authorization.role === 'admin') {
+      // if (authorization.org === 'hanl.in' && authorization.role === 'admin') {
       //   can('manage', 'all')
       // }
       // if (authorization.org === 'MMH' && authorization.role === 'consultant') {
@@ -123,9 +120,8 @@ module.exports = function (options = {}) {
     const throwUnlessCan = (method, subject) => {
       if (ability.cannot(method, subject)) {
         throw new Forbidden(
-          `${provider} - ${clientIp} - ${user} - ${strategy} is not allowed to ${method} ${path}. data = ${safeStringify(
-            subject
-          )}`
+          `${provider} - ${clientIp} - ${user} - ${strategy} is not allowed to ${method} ${path}.`
+          // + `\ndata = ${safeStringify(subject)}`
         )
       }
     }

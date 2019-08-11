@@ -2,12 +2,12 @@
 /* eslint-disable no-unused-vars */
 const { omit } = require('lodash')
 const { createLogger, format, transports } = require('winston')
-const { inspect } = require('util')
+// const { inspect } = require('util')
 const colors = require('colors/safe')
 const { MESSAGE } = require('triple-beam')
 const jsonStringify = require('fast-safe-stringify')
 const serializeError = require('serialize-error')
-const prettier = require('prettier-eslint')
+// const prettier = require('prettier-eslint')
 const colorize = require('json-colorizer')
 /* eslint-enables no-unused-vars */
 // !code: imports // !end
