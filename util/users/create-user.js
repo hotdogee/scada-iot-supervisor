@@ -12,8 +12,6 @@ const { api, socket, storage } = require('../lib/api')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    apiOrigin: process.env.API_ORIGIN,
-    apiPathname: process.env.API_PATHNAME || '',
     service: 'users',
     method: 'create',
     email: 'hotdogee@gmail.com',

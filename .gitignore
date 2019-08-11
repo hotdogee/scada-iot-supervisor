@@ -99,6 +99,7 @@ Desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+PRIVATE.md
 
 # Windows Installer files
 *.cab
@@ -119,6 +120,7 @@ uploads/
 # dotenv environment variables file
 .env
 .env.prod
+.env.api2
 .node-persist
 .keystore
 .storage

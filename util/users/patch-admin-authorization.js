@@ -10,7 +10,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     mongodb: process.env.MONGODB,
     service: 'users',
     userId: null,
-    org: 'hanl.in',
+    org: 'example.com',
     role: 'admin'
   }
 })

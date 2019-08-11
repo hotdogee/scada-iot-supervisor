@@ -7,18 +7,16 @@ const { api, socket, storage } = require('../lib/api')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    apiOrigin: process.env.API_ORIGIN,
-    apiPathname: process.env.API_PATHNAME || '',
     service: 'users',
     method: 'patch',
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyOTYxODIsImV4cCI6MTU2NTI5Nzk4MiwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGM4NjM2MmNjOTZlOWZiNDY2NzYxOSJ9.ek-rz2t4vGeEjJgfPAZklOl39VxpX_Q8vjkvxJOa6yE'
+    token: null
   }
 })
 
 /* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
   try {
+    if (!argv.token) throw new Error('token required')
     const result = await api.service(argv.service)[argv.method](
       null,
       {},
