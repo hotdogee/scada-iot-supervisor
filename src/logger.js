@@ -125,41 +125,55 @@ const formatConsole = format((info, opts = {}) => {
   //     }
   //   )
   // }
-
-  const stringifiedRest = colorize(
-    jsonStringify(
-      Object.assign({}, info, {
-        level: undefined,
-        label: undefined,
-        message: undefined,
-        timestamp: undefined,
-        ms: undefined,
-        splat: undefined
-      }),
-      (key, value) => {
-        // console.log('Key:', JSON.stringify(key), 'Value:', JSON.stringify(value))
-        // Remove the circular structure
-        if (key === 'data' && Array.isArray(value)) {
-          return
-        }
-        return value
+  const stringifiedRest = jsonStringify(
+    Object.assign({}, info, {
+      level: undefined,
+      label: undefined,
+      message: undefined,
+      timestamp: undefined,
+      ms: undefined,
+      splat: undefined
+    }),
+    (key, value) => {
+      // console.log('Key:', JSON.stringify(key), 'Value:', JSON.stringify(value))
+      // Remove the circular structure
+      if (key === 'data' && Array.isArray(value)) {
+        return
       }
-    ),
-    {
-      pretty: true,
-      colors: {
-        BRACE: 'gray',
-        BRACKET: 'gray',
-        COLON: 'gray',
-        COMMA: 'gray',
-        STRING_KEY: 'white',
-        STRING_LITERAL: 'green',
-        NUMBER_LITERAL: 'yellowBright',
-        BOOLEAN_LITERAL: 'red',
-        NULL_LITERAL: 'red'
-      }
+      return value
     }
   )
+  const colorizeRest = colorize(stringifiedRest, {
+    pretty: true,
+    colors: {
+      BRACE: 'gray',
+      BRACKET: 'gray',
+      COLON: 'gray',
+      COMMA: 'gray',
+      STRING_KEY: 'white',
+      STRING_LITERAL: 'green',
+      NUMBER_LITERAL: 'yellowBright',
+      BOOLEAN_LITERAL: 'red',
+      NULL_LITERAL: 'red'
+    }
+  })
+  // colorize(
+  //   {},
+  //   {
+  //     pretty: true,
+  //     colors: {
+  //       BRACE: 'gray',
+  //       BRACKET: 'gray',
+  //       COLON: 'gray',
+  //       COMMA: 'gray',
+  //       STRING_KEY: 'white',
+  //       STRING_LITERAL: 'green',
+  //       NUMBER_LITERAL: 'yellowBright',
+  //       BOOLEAN_LITERAL: 'red',
+  //       NULL_LITERAL: 'red'
+  //     }
+  //   }
+  // )
   // const stringifiedRest = jsonStringify(
   //   Object.assign({}, info, {
   //     level: undefined,
@@ -214,11 +228,7 @@ const formatConsole = format((info, opts = {}) => {
 
   info[MESSAGE] = `${localISOTime} ${level}${label ? ' ' + label : ''}${
     info.message ? ' ' + info.message + ' ' : ''
-  }${
-    stringifiedRest === '\u001b[90m{\u001b[39m\u001b[90m}\u001b[39m'
-      ? ''
-      : '\n' + stringifiedRest
-  } ${ms}`
+  }${stringifiedRest === '{}' ? '' : '\n' + colorizeRest} ${ms}`
 
   return info
 })
