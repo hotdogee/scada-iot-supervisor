@@ -148,14 +148,17 @@ function saveToBlobStore (store = uploadStore) {
     const ext = mimeTypes.extension(contentType)
     const key = `${hash}.${ext}`
     // check if key exists
-    try {
-      const result = await service.get(key)
+    const { total, data } = await service.find({
+      query: {
+        _id: key
+      }
+    })
+    if (total > 0) {
       log.info(`return existing blob: ${key}`)
-      context.result = result
+      context.result = data[0]
       return context
-    } catch (error) {
-      // app.info(`saveToBlobStore creating new blob: ${key}`)
     }
+    // app.info(`saveToBlobStore creating new blob: ${key}`)
     // save to blob store
     await new Promise((resolve, reject) => {
       from(function (size, next) {

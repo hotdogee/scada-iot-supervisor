@@ -64,11 +64,11 @@ const moduleExports = {
     //   find  : mongoKeys(ObjectID, foreignKeys)
     // !code: before
     all: [
+      paramsFromClient('raw', 'width', 'height', 'format')
       // authenticate('jwt')
     ],
     find: [mongoKeys(ObjectID, foreignKeys)],
     get: [
-      paramsFromClient('raw', 'width', 'height', 'format')
       // handleRaw()
     ],
     create: [

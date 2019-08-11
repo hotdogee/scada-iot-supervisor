@@ -80,7 +80,15 @@ function defineAbilitiesFor (params, data) {
     can('manage', 'authorization-applications') // for test
     can('manage', 'orgs') // for test
     can('manage', 'roles') // for test
-    if (Array.isArray(user.authorizations) && user.authorizationSelected) {
+    if (Array.isArray(user.authorizations)) {
+      // if role === 'admin
+      if (
+        user.authorizations.some(
+          (a) => a.org === 'hanl.in' && a.role === 'admin'
+        )
+      ) {
+        can(['remove'], ['images'])
+      }
       // const authorization = user.authorizations[user.authorizationSelected]
       // if (authorization.org === 'hanl.in' && authorization.role === 'admin') {
       //   can('manage', 'all')
