@@ -1,5 +1,5 @@
-// node .\util\users\create-user.js
-// node .\util\users\create-user.js --language=zh-hant
+// node .\util\api-keys\create-api-key.js --name=geo9-pi3p1
+// node .\util\api-keys\create-api-key.js --name=geo9-pi3p2
 
 /* eslint-disable no-unused-vars */
 const path = require('path')
