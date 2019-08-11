@@ -2,7 +2,7 @@ require('dotenv').config()
 
 module.exports = {
   host: process.env.HOST || 'localhost',
-  port: process.env.PORT || '8081',
+  port: process.env.PORT || '8086',
   prefixPath: process.env.PREFIX_PATH || '',
   public: '../public/',
   paginate: {
