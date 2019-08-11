@@ -113,6 +113,9 @@ $RECYCLE.BIN/
 # TypeScript
 compiled/
 
+# uploads
+uploads/
+
 # dotenv environment variables file
 .env
 .env.prod
