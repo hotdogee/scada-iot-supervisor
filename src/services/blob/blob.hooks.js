@@ -120,6 +120,8 @@ function saveToBlobStore (store = uploadStore) {
   //    data.contentType: MIME type, string: 'image/jpeg'
   //    data.originalName: string
   return async (context) => {
+    // check type === before, method === create
+    checkContext(context, 'before', ['create'], 'saveToBlobStore')
     let {
       app,
       data: { uri, buffer, contentType, originalName },
@@ -127,8 +129,6 @@ function saveToBlobStore (store = uploadStore) {
       service,
       logger
     } = context
-    // check type === before, method === create
-    checkContext(context, 'before', ['create'], 'saveToBlobStore')
     const log = logger('saveToBlobStore')
     // convert file or uri to buffer and contentType
     if (file) {
@@ -193,16 +193,9 @@ function saveToBlobStore (store = uploadStore) {
 function removeFromBlobStore (store = uploadStore, services = ['images']) {
   // check related services: images
   return async (context) => {
-    const {
-      id: key,
-      app,
-      data: { uri, buffer, contentType, originalName },
-      params: { file },
-      service,
-      logger
-    } = context
     // check type === before, method === remove
     checkContext(context, 'before', ['remove'], 'removeFromBlobStore')
+    const { id: key, app, logger } = context
     const log = logger('removeFromBlobStore')
     const params = {
       query: {
@@ -210,7 +203,7 @@ function removeFromBlobStore (store = uploadStore, services = ['images']) {
         key
       }
     }
-    const refCount = services.reduce(async (p, s) => {
+    const refCount = await services.reduce(async (p, s) => {
       const acc = await p
       const { total } = await app.service(s).find(params)
       return acc + total

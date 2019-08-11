@@ -8,11 +8,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 // !end
 // !code: imports
 /* eslint-disable no-unused-vars */
-// const crypto = require('crypto')
-const dauria = require('dauria')
-// const mimeTypes = require('mime-types')
-const fsBlobStore = require('fs-blob-store')
-const { omit, sortBy } = require('lodash')
+const { omit } = require('lodash')
 const { timestamp, assertDateOrSetNow } = require('../../hooks/common')
 /* eslint-enables no-unused-vars */
 // !end
@@ -101,7 +97,7 @@ const moduleExports = {
     ],
     update: [],
     patch: [],
-    remove: []
+    remove: [attemptRemoveBlob()]
     // !end
   },
 
@@ -124,6 +120,22 @@ const moduleExports = {
 module.exports = moduleExports
 
 // !code: funcs
+function attemptRemoveBlob () {
+  return async (context) => {
+    // check type === after, method === remove
+    checkContext(context, 'after', ['remove'], 'attemptRemoveBlob')
+    const {
+      app,
+      result: { key },
+      logger
+    } = context
+    const log = logger('attemptRemoveBlob')
+    const result = await app.service('blob').remove(key)
+    log.info('blob.remove', result)
+    return context
+  }
+}
+
 function debugLogger () {
   // add imageId to album
   return async (context) => {
@@ -238,7 +250,7 @@ function handleRaw () {
   }
 }
 
-function saveToBlobStore (store = fsBlobStore('./uploads')) {
+function saveToBlobStore () {
   // there are three ways of receiving blob data
   // 1. multipart/form-data.file: single file upload
   // 2. data.uri: data URI of the blob
