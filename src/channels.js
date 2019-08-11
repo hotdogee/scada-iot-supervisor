@@ -1,3 +1,5 @@
+// const { omit } = require('lodash')
+
 module.exports = function (app) {
   if (typeof app.channel !== 'function') {
     // If no real-time functionality has been configured just return
@@ -5,8 +7,8 @@ module.exports = function (app) {
   }
 
   app.on('connection', (connection) => {
-    // On a new real-time connection, add it to the anonymous channel
-    app.channel('anonymous').join(connection)
+    // On a new real-time connection, add it to the public channel
+    app.channel('public').join(connection)
   })
 
   app.on('login', (authResult, { connection }) => {
@@ -17,7 +19,7 @@ module.exports = function (app) {
       // const user = connection.user
 
       // The connection is no longer anonymous, remove it
-      app.channel('anonymous').leave(connection)
+      // app.channel('anonymous').leave(connection)
 
       // Add it to the authenticated user channel
       app.channel('authenticated').join(connection)
@@ -36,19 +38,35 @@ module.exports = function (app) {
     }
   })
 
-  // eslint-disable-next-line no-unused-vars
-  app.publish((data, hook) => {
-    // Here you can add event publishers to channels set up in `channels.js`
-    // To publish only for a specific event use `app.publish(eventname, () => {})`
-
-    // eslint-disable-next-line
-    console.log(
-      'Publishing all events to all authenticated users. See `channels.js` and https://docs.feathersjs.com/api/channels.html for more information.'
-    )
-
-    // e.g. to publish all service events to all authenticated users use
-    return app.channel('authenticated')
+  app.on('logout', (payload, { connection }) => {
+    if (connection) {
+      // When logging out, leave all channels before joining anonymous channel
+      app.channel(app.channels.filter((i) => i !== 'public')).leave(connection)
+    }
   })
+
+  // When a user is removed, make all their connections leave every channel
+  app.service('users').on('removed', (user) => {
+    app
+      .channel(app.channels.filter((i) => i !== 'public'))
+      .leave((connection) => {
+        return user._id === (connection.user && connection.user._id)
+      })
+  })
+
+  // eslint-disable-next-line no-unused-vars
+  // app.publish((data, context) => {
+  //   // Here you can add event publishers to channels set up in `channels.js`
+  //   // To publish only for a specific event use `app.publish(eventname, () => {})`
+
+  //   // eslint-disable-next-line
+  //   console.log(
+  //     'Publishing all events to all authenticated users. See `channels.js` and https://docs.feathersjs.com/api/channels.html for more information.'
+  //   )
+
+  //   // e.g. to publish all service events to all authenticated users use
+  //   return app.channel('authenticated')
+  // })
 
   // Here you can also add service specific event publishers
   // e.g. the publish the `users` service `created` event to the `admins` channel
@@ -61,4 +79,11 @@ module.exports = function (app) {
   //     app.channel(`emails/${data.recipientEmail}`)
   //   ]
   // })
+
+  app.service('logs').publish('created', (data, context) => {
+    return [app.channel('public')]
+  })
+  app.service('images').publish('created', (data, context) => {
+    return [app.channel('public')]
+  })
 }

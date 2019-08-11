@@ -991,14 +991,14 @@ const setupExpress = (options) => {
     const { authService, linkStrategy } = options
     const app = feathersApp
     const config = app.get('grant')
-    const prefixPath = app.get('prefixPath')
+    const prefixPath = app.get('prefixPath') // process.env.PREFIX_PATH || '',
 
     if (!config) {
       debug('No grant configuration found, skipping Express oAuth setup')
       return
     }
 
-    const { path } = config.defaults
+    const { path } = config.defaults // process.env.OAUTH_PATH || '/oauth'
     const grantApp = express()(config)
     const authApp = original()
 
