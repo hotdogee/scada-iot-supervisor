@@ -1,27 +1,26 @@
+// node ./util/albums/create-cam-albums.js
+
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
-const io = require('socket.io-client')
-const feathers = require('@feathersjs/feathers')
-const socketio = require('@feathersjs/socketio-client')
 const logger = require(path.resolve(__dirname, '../../src/logger'))
+const { api, socket } = require('../lib/api')
+
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
-    apiOrigin: process.env.API_ORIGIN,
-    apiPathname: process.env.API_PATHNAME || '',
     service: 'albums',
-    method: 'create'
+    method: 'create',
+    albumNames: 'cam1,cam2,cam3,cam4'
   }
 })
-const socket = io(argv.apiOrigin, {
-  path: argv.apiPathname + '/socket.io' // default: /socket.io
-})
-const api = feathers().configure(socketio(socket), { timeout: 1000 })
+// logger.debug(`argv`, argv)
 
-const albumNames = ['cam1', 'cam2', 'cam3', 'cam4']
+const albumNames = argv.albumNames.split(',')
 
 socket.on('connect', async (connection) => {
   try {
+    // eslint-disable-next-line no-unused-vars
+    const auth = await api.reAuthenticate()
     await Promise.all(
       albumNames.map(async (name) => {
         const result = await api.service(argv.service)[argv.method]({
