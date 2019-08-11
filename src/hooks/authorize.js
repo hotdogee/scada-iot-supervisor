@@ -2,13 +2,13 @@
 // For more information on hooks see: http://docs.feathersjs.com/api/hooks.html
 
 // const { omit } = require('lodash')
+/* eslint-disable no-unused-vars */
 const safeStringify = require('fast-safe-stringify')
 const { checkContext } = require('feathers-hooks-common')
 const { AbilityBuilder, Ability } = require('@casl/ability')
 const { toMongoQuery } = require('@casl/mongoose')
 const { Forbidden } = require('@feathersjs/errors')
 const TYPE_KEY = Symbol.for('type')
-/* eslint-disable no-unused-vars */
 const path = require('path')
 const debug = require('debug')(
   `scada:${path.basename(__filename, path.extname(__filename))}`

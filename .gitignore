@@ -1,6 +1,7 @@
 # Logs
 logs
-!/src/services/logs
+!src/services/logs
+!util/logs
 *.log
 
 # Runtime data
