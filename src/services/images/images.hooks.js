@@ -306,7 +306,7 @@ function assertAlbum () {
     } else {
       params.album = album
       data.albumId = new ObjectID(albumId)
-      app.info(`typeof data.albumId = ${typeof data.albumId}, ${data.albumId}`)
+      // app.info(`typeof data.albumId = ${typeof data.albumId}, ${data.albumId}`)
     }
     return context
   }

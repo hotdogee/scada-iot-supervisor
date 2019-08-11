@@ -60,7 +60,9 @@ const {
 // eslint-disable-next-line no-unused-vars
 const foreignKeys = ['userId']
 // !end
-// !code: init // !end
+// !code: init
+const uploadStore = fsBlobStore(process.env.UPLOAD_PATH)
+// !end
 
 const moduleExports = {
   before: {
@@ -74,7 +76,7 @@ const moduleExports = {
     create: [saveToBlobStore(), timestamp('created'), timestamp('updated')],
     update: [timestamp('updated')],
     patch: [timestamp('updated')],
-    remove: []
+    remove: [removeFromBlobStore()]
     // !end
   },
 
@@ -109,7 +111,7 @@ const moduleExports = {
 module.exports = moduleExports
 
 // !code: funcs
-function saveToBlobStore (store = fsBlobStore(process.env.UPLOAD_PATH)) {
+function saveToBlobStore (store = uploadStore) {
   // de-duplication with key = `${hash}.${ext}`
   // there are three ways of receiving blob data
   // 1. multipart/form-data.file: single file upload
@@ -122,10 +124,12 @@ function saveToBlobStore (store = fsBlobStore(process.env.UPLOAD_PATH)) {
       app,
       data: { uri, buffer, contentType, originalName },
       params: { file },
-      service
+      service,
+      logger
     } = context
     // check type === before, method === create
     checkContext(context, 'before', ['create'], 'saveToBlobStore')
+    const log = logger('saveToBlobStore')
     // convert file or uri to buffer and contentType
     if (file) {
       buffer = file.buffer
@@ -146,11 +150,11 @@ function saveToBlobStore (store = fsBlobStore(process.env.UPLOAD_PATH)) {
     // check if key exists
     try {
       const result = await service.get(key)
-      app.info(`saveToBlobStore found existing blob: ${key}`)
+      log.info(`return existing blob: ${key}`)
       context.result = result
       return context
     } catch (error) {
-      app.info(`saveToBlobStore creating new blob: ${key}`)
+      // app.info(`saveToBlobStore creating new blob: ${key}`)
     }
     // save to blob store
     await new Promise((resolve, reject) => {
@@ -182,6 +186,54 @@ function saveToBlobStore (store = fsBlobStore(process.env.UPLOAD_PATH)) {
       _id: key,
       originalName
     }
+    return context
+  }
+}
+
+function removeFromBlobStore (store = uploadStore, services = ['images']) {
+  // check related services: images
+  return async (context) => {
+    const {
+      id: key,
+      app,
+      data: { uri, buffer, contentType, originalName },
+      params: { file },
+      service,
+      logger
+    } = context
+    // check type === before, method === remove
+    checkContext(context, 'before', ['remove'], 'removeFromBlobStore')
+    const log = logger('removeFromBlobStore')
+    const params = {
+      query: {
+        $limit: 0,
+        key
+      }
+    }
+    const refCount = services.reduce(async (p, s) => {
+      const acc = await p
+      const { total } = await app.service(s).find(params)
+      return acc + total
+    }, Promise.resolve(0))
+    log.info(`refCount = ${refCount}`)
+    if (refCount > 0) {
+      // still being used, can not remove yet
+      context.result = {
+        _id: key,
+        result: 'hold',
+        refCount
+      }
+      return context
+    }
+    await new Promise((resolve, reject) => {
+      store.remove(key, (error) =>
+        error
+          ? reject(error)
+          : resolve({
+            key
+          })
+      )
+    })
     return context
   }
 }
