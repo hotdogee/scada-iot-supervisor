@@ -8,6 +8,8 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 // !end
 // !code: imports
 /* eslint-disable no-unused-vars */
+const sharp = require('sharp')
+const dauria = require('dauria')
 const { omit } = require('lodash')
 const { timestamp, assertDateOrSetNow } = require('../../hooks/common')
 /* eslint-enables no-unused-vars */
@@ -264,6 +266,15 @@ function saveToBlobStore () {
     const { app, data, params } = context
     const { uri, buffer, contentType, originalName } = data
     const { file } = params
+    // check if file is a supported image type
+    let input = buffer
+    if (file) {
+      input = file.buffer
+    } else if (uri) {
+      input = dauria.parseDataURI(uri).buffer
+    }
+    // throws Error: Input buffer contains unsupported image format
+    await sharp(input).metadata()
     // send image data to blob service and receive key
     const { _id: key } = await app.service('blob').create(
       {
