@@ -117,6 +117,9 @@ compiled/
 # uploads
 uploads/
 
+# old data
+data/*
+
 # dotenv environment variables file
 .env
 .env.prod
