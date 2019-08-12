@@ -64,7 +64,7 @@ const moduleExports = async function (app) {
     createService(options),
     // handle raw views
     // http://localhost:6001/images/5d409c9036a569744447825b?$client[raw]=1&$client[width]=600&$client[height]=700&$client[format]=webp
-    function (req, res, next) {
+    async function (req, res, next) {
       const { hook: context } = res
       // eslint-disable-next-line no-unused-vars
       const { app, params, result } = context
@@ -74,32 +74,33 @@ const moduleExports = async function (app) {
       // app.debug(`handleRaw ${typeof height}, ${height}`) // string
       // app.debug(`handleRaw ${typeof format}, ${format}`) // string
       if (raw) {
+        // app.debug(`handleRaw`, params)
+        const file = path.resolve(process.env.UPLOAD_PATH, key)
+        // check if file is a supported image type
         try {
-          // app.debug(`handleRaw`, params)
-          const file = path.resolve(process.env.UPLOAD_PATH, key)
-          // app.debug(`handleRaw ${typeof file}, ${file}`) // string
-          // parse params
-          const w = parseInt(width) || undefined
-          const h = parseInt(height) || undefined
-          const f = supportedImageFormats.has(format) ? format : undefined
-          if (w || h || f) {
-            let transform = sharp()
-            if (w || h) {
-              transform = transform.resize(w, h)
-            }
-            if (f) {
-              transform = transform.toFormat(f)
-            }
-            res.type(f || path.extname(key))
-            fs.createReadStream(file)
-              .pipe(transform)
-              .pipe(res)
-          } else {
-            res.sendFile(file)
-          }
+          await sharp(file).metadata()
         } catch (error) {
-          // Error: Input buffer contains unsupported image format
-          throw new Error('Input buffer contains unsupported image format')
+          next(error)
+        }
+        // app.debug(`handleRaw ${typeof file}, ${file}`) // string
+        // parse params
+        const w = parseInt(width) || undefined
+        const h = parseInt(height) || undefined
+        const f = supportedImageFormats.has(format) ? format : undefined
+        if (w || h || f) {
+          let transform = sharp()
+          if (w || h) {
+            transform = transform.resize(w, h)
+          }
+          if (f) {
+            transform = transform.toFormat(f)
+          }
+          res.type(f || path.extname(key))
+          fs.createReadStream(file)
+            .pipe(transform)
+            .pipe(res)
+        } else {
+          res.sendFile(file)
         }
       } else {
         next()
