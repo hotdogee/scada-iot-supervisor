@@ -79,28 +79,28 @@ const moduleExports = async function (app) {
         // check if file is a supported image type
         try {
           await sharp(file).metadata()
+          // app.debug(`handleRaw ${typeof file}, ${file}`) // string
+          // parse params
+          const w = parseInt(width) || undefined
+          const h = parseInt(height) || undefined
+          const f = supportedImageFormats.has(format) ? format : undefined
+          if (w || h || f) {
+            let transform = sharp()
+            if (w || h) {
+              transform = transform.resize(w, h)
+            }
+            if (f) {
+              transform = transform.toFormat(f)
+            }
+            res.type(f || path.extname(key))
+            fs.createReadStream(file)
+              .pipe(transform)
+              .pipe(res)
+          } else {
+            res.sendFile(file)
+          }
         } catch (error) {
           next(error)
-        }
-        // app.debug(`handleRaw ${typeof file}, ${file}`) // string
-        // parse params
-        const w = parseInt(width) || undefined
-        const h = parseInt(height) || undefined
-        const f = supportedImageFormats.has(format) ? format : undefined
-        if (w || h || f) {
-          let transform = sharp()
-          if (w || h) {
-            transform = transform.resize(w, h)
-          }
-          if (f) {
-            transform = transform.toFormat(f)
-          }
-          res.type(f || path.extname(key))
-          fs.createReadStream(file)
-            .pipe(transform)
-            .pipe(res)
-        } else {
-          res.sendFile(file)
         }
       } else {
         next()
