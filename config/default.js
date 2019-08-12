@@ -7,7 +7,7 @@ module.exports = {
   public: '../public/',
   paginate: {
     default: 10,
-    max: 50
+    max: 500
   },
   tests: {
     environmentsAllowingSeedData: ['test']
