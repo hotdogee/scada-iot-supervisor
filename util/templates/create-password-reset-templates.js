@@ -1,7 +1,7 @@
 // localhost
-// node ./util/templates/create-email-verification-templates.js --albumId=5d48ead63717e88e0c1207af
+// node ./util/templates/create-password-reset-templates.js --albumId=5d48ead63717e88e0c1207af
 // api2
-// node ./util/templates/create-email-verification-templates.js --albumId=5d506e0edcb7d22aa7057a84
+// node ./util/templates/create-password-reset-templates.js --albumId=5d506e0edcb7d22aa7057a84
 
 /* eslint-disable no-unused-vars */
 const path = require('path')
@@ -17,8 +17,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     service: 'templates',
     method: 'create',
     type: 'email',
-    name: 'email-verification',
-    language: ['en', 'zh-hant'],
+    // language: ['en', 'zh-hant'],
     albumId: '5d506e0edcb7d22aa7057a84'
   }
 })
@@ -33,10 +32,10 @@ const imagesService =
 const templates = [
   {
     type: argv.type,
-    name: argv.name,
+    name: 'password-reset',
     language: 'en',
     content: {
-      subject: `[SCADA/IoT] Email Verification`,
+      subject: `[SCADA/IoT] Password Reset`,
       html: {
         type: 'pug',
         localKeys: ['url', 'complaintEmail']
@@ -52,10 +51,48 @@ const templates = [
   },
   {
     type: argv.type,
-    name: argv.name,
+    name: 'password-reset',
     language: 'zh-hant',
     content: {
-      subject: `[蘭陽地熱] 電子郵件驗證信`,
+      subject: `[蘭陽地熱] 重設密碼`,
+      html: {
+        type: 'pug',
+        localKeys: ['url', 'complaintEmail']
+      },
+      encoding: 'utf-8',
+      attachments: [
+        {
+          imagePath: path.join(__dirname, 'logo-email-256.gif'),
+          cid: 'logo'
+        }
+      ]
+    }
+  },
+  {
+    type: argv.type,
+    name: 'attempted-password-reset',
+    language: 'en',
+    content: {
+      subject: `[SCADA/IoT] Attempted Password Reset`,
+      html: {
+        type: 'pug',
+        localKeys: ['url', 'complaintEmail']
+      },
+      encoding: 'utf-8',
+      attachments: [
+        {
+          imagePath: path.join(__dirname, 'logo-email-256.gif'),
+          cid: 'logo'
+        }
+      ]
+    }
+  },
+  {
+    type: argv.type,
+    name: 'attempted-password-reset',
+    language: 'zh-hant',
+    content: {
+      subject: `[蘭陽地熱] 試圖重設密碼`,
       html: {
         type: 'pug',
         localKeys: ['url', 'complaintEmail']
