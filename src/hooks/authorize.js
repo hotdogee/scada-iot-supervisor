@@ -88,6 +88,7 @@ function defineAbilitiesFor (params, data) {
         )
       ) {
         can(['remove'], ['images'])
+        can(['patch'], ['albums'])
       }
       // const authorization = user.authorizations[user.authorizationSelected]
       // if (authorization.org === 'hanl.in' && authorization.role === 'admin') {
