@@ -24,6 +24,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     const collection = await db.collection(argv.service, {})
     const result = await collection.createIndexes([
       {
+        // src\services\emails\emails.hooks.js sendEmail
         key: { type: 1, name: 1, language: 1 },
         unique: argv.unique,
         background: argv.background

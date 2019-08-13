@@ -348,7 +348,7 @@ function assertAlbumDeduplicate () {
       'assertAlbumDeduplicate'
     )
     const { service, data, params } = context
-    const { album } = params
+    const { album } = params // assigned in assertAlbum
     if (!album) return context
     const { _id: albumId, deduplication } = album
     if (!deduplication) return context
@@ -358,8 +358,8 @@ function assertAlbumDeduplicate () {
       data: [image]
     } = await service.find({
       query: {
-        albumId,
-        key
+        key,
+        albumId
       }
     })
     if (total > 0) {
