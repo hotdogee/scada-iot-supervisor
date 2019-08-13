@@ -8,7 +8,8 @@ const argv = require('minimist')(process.argv.slice(2), {
   default: {
     service: 'albums',
     method: 'patch',
-    albumNames: 'cam1,cam2,cam3,cam4'
+    albumNames: 'cam1,cam2,cam3,cam4',
+    keep: 6 * 60 * 24 * 100 // approximately 100 days of photos
   }
 })
 
@@ -26,7 +27,7 @@ socket.on('connect', async (connection) => {
       // logger.info(`${argv.service}.find(${name}) = ${total}`, data)
       const { _id } = data[0]
       const result = await api.service(argv.service)[argv.method](_id, {
-        keep: 6 * 60 * 24 * 100 // approximately 100 days of photos
+        keep: argv.keep
       })
       // { name: 'cam1', _id: '5d405c30cafd4e6cb87a3e92' }
       logger.info(`${argv.service}.${argv.method}(${name})`, result)
