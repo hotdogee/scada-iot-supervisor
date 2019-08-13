@@ -22,7 +22,7 @@ function defineAbilitiesFor (params, data) {
   // eslint-disable-next-line no-unused-vars
   const { rules, can, cannot } = AbilityBuilder.extract()
   const { user, authentication = {} } = params
-  const { payload = {} } = authentication || {}
+  // const { payload = {} } = authentication || {}
   // const payload = {
   //   iat: 1561828929,
   //   exp: 1561830729,
@@ -40,28 +40,12 @@ function defineAbilitiesFor (params, data) {
   // can('patch', 'email-verifications', { token: { $exists: false } })
 
   if (user) {
-    can(['create'], ['logs', 'blob', 'images', 'albums'])
-    can(['find', 'create'], ['templates'])
     can(['find', 'get', 'create', 'remove'], ['api-keys'], {
       userId: user._id
     })
-    if (payload.aud === 'public-keys') {
-      can('create', ['public-keys'], {
-        userId: user._id
-      })
-    }
-    can('create', ['email-verifications'], {
-      userId: user._id
-    })
-    can(['get', 'update', 'patch'], 'users', { _id: user._id })
-    can(['find'], 'user-authorizations') // todo: auth should limited to admin
-    can(['find'], 'notification-subscriptions') // todo: auth should limited to admin
-    can(['get', 'create', 'patch', 'remove'], ['notification-subscriptions'], {
-      userId: user._id
-    })
-    can(['create', 'patch', 'find'], ['notifications'])
+    can(['get', 'patch'], 'users', { _id: user._id })
     cannot(
-      ['update', 'patch'],
+      ['patch'],
       'users',
       [
         '_id',
@@ -72,14 +56,6 @@ function defineAbilitiesFor (params, data) {
       ],
       { _id: user._id }
     )
-    can('create', 'authorization-applications')
-    can(['update', 'patch', 'get', 'find'], 'authorization-applications', {
-      userId: user._id
-    })
-    can('manage', 'user-authorizations') // for test
-    can('manage', 'authorization-applications') // for test
-    can('manage', 'orgs') // for test
-    can('manage', 'roles') // for test
     if (Array.isArray(user.authorizations)) {
       // if role === 'admin
       if (
@@ -87,8 +63,23 @@ function defineAbilitiesFor (params, data) {
           (a) => a.org === 'hanl.in' && a.role === 'admin'
         )
       ) {
+        can(['create'], ['logs', 'blob', 'images', 'albums'])
+        can(['find', 'create'], ['templates'])
         can(['remove'], ['images'])
         can(['patch'], ['albums'])
+        can(['find'], ['users'])
+        // can(['get', 'create', 'patch', 'remove'], ['notification-subscriptions'], {
+        //   userId: user._id
+        // })
+        // can(['create', 'patch', 'find'], ['notifications'])
+        // can('create', 'authorization-applications')
+        // can(['update', 'patch', 'get', 'find'], 'authorization-applications', {
+        //   userId: user._id
+        // })
+        // can('manage', 'user-authorizations') // for test
+        // can('manage', 'authorization-applications') // for test
+        // can('manage', 'orgs') // for test
+        // can('manage', 'roles') // for test
       }
       // const authorization = user.authorizations[user.authorizationSelected]
       // if (authorization.org === 'hanl.in' && authorization.role === 'admin') {

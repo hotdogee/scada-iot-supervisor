@@ -102,7 +102,7 @@ const moduleExports = {
     find: [authenticate('jwt'), mongoKeys(ObjectID, foreignKeys)],
     get: [authenticate('jwt')],
     create: [
-      // create local, create oauth,
+      // create local, create oauth, resetpassword
       validateCreate(),
       paramsFromClient('recaptchaToken', 'signature', 'document'),
       verifyRecaptcha(),
