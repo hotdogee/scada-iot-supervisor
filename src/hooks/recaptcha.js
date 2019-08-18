@@ -10,7 +10,7 @@ exports.verifyRecaptcha = function () {
     // check type === before
     checkContext(context, 'before')
     const { params } = context
-    const { provider, recaptchaToken } = params
+    const { provider, recaptcha } = params
     // check provider
     if (!provider) {
       debug(`SKIP verifyRecaptcha (server call)`)
@@ -24,7 +24,7 @@ exports.verifyRecaptcha = function () {
       debug(`RECAPTCHA_SECRET = ${process.env.RECAPTCHA_SECRET}`)
       const params = new URLSearchParams()
       params.append('secret', process.env.RECAPTCHA_SECRET)
-      params.append('response', recaptchaToken)
+      params.append('response', recaptcha)
       const response = await fetch(
         'https://www.google.com/recaptcha/api/siteverify',
         {

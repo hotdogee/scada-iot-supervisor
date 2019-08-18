@@ -126,7 +126,7 @@ function sendEmail () {
       //   language,
       //   token
       // }
-      const { templateName: name, email, language, token } = data
+      const { templateName: name, email, language, locals } = data
       // get template
       const params = {
         query: {
@@ -163,9 +163,9 @@ function sendEmail () {
       // if we haven't setup templates yet, log token for initial account creation
       if (total === 0) {
         app.error(`${name}.${language} email template not found`)
-        app.error(`token = '${token}'`)
+        app.error(`locals = '${locals}'`)
         context.result = {
-          token
+          locals
         }
         return context
       }
@@ -174,11 +174,7 @@ function sendEmail () {
       content.to = email
       // render html
       if (html && html.type === 'pug') {
-        content.html = pug.render(html.content, {
-          url: `${process.env.UI_URL}/auth/verify-email?token=${token}`,
-          complaintEmail: process.env.COMPLAINT_EMAIL,
-          logo: 'cid:logo'
-        })
+        content.html = pug.render(html.content, locals)
       }
       // render images to attachments
       content.attachments = await Promise.all(

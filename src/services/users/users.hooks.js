@@ -102,14 +102,23 @@ const moduleExports = {
     find: [authenticate('jwt'), mongoKeys(ObjectID, foreignKeys)],
     get: [authenticate('jwt')],
     create: [
-      // create local, create oauth, resetpassword
+      // create local, create oauth, password-reset
       validateCreate(),
-      paramsFromClient('recaptchaToken', 'signature', 'document'),
-      verifyRecaptcha(),
-      verifyECDSA(),
-      rejectDuplicateAccount(),
-      rejectCommonPassword('password'),
-      hashPassword('password'),
+      paramsFromClient('recaptcha', 'signature', 'document', 'action'),
+      // action = 'request-password-reset'
+      // recaptcha required
+      //
+      // create-user
+      // recaptcha required
+      verifyRecaptcha(), // create-user, password-reset
+      sendPasswordReset(),
+      iff(
+        (c) => !c.result,
+        verifyECDSA(),
+        rejectDuplicateAccount(),
+        rejectCommonPassword('password'),
+        hashPassword('password')
+      ),
       // iff(
       //   isProvider('external'),
       //   keep(...Object.keys(createUserSchema.properties))
@@ -133,21 +142,32 @@ const moduleExports = {
       timestamp('updated')
     ],
     patch: [
-      paramsFromClient('signature', 'document', 'token'),
+      paramsFromClient('signature', 'document', 'token', 'action'),
+      // action = 'resend-email-verification'
+      // id required to check authorization
+      // typ: access token required
+      resendEmailVerification(),
+      // validation
+      rejectDuplicateAccount(),
+      rejectCommonPassword('password'),
+      hashPassword('password'),
       // patch account verified
+      // id null to skip authorization
       // typ: verifyEmail token required
-      // typ: access Token not required
+      // typ: access token not required
+      //
+      // patch password
+      // id null to skip authorization
+      // typ: resetPassword token required
+      // typ: access token not required
       verifyToken(),
       // patch info, , patch password (required elevated access)
       // iff(isProvider('external'), )
       // ...restrict,
       // verifyECDSA(),
-      iff(
-        (c) => !c.result,
-        rejectDuplicateAccount(),
-        rejectCommonPassword('password'),
-        hashPassword('password')
-      ),
+      // iff(
+      //   (c) => !c.result,
+      // ),
       timestamp('updated')
       // iff(
       //   isProvider('external'),
@@ -185,7 +205,7 @@ const moduleExports = {
     ],
     find: [],
     get: [],
-    create: [savePublicKey(), createEmailVerification()],
+    create: [savePublicKey(), sendEmailVerification()],
     update: [],
     patch: [],
     remove: []
@@ -211,6 +231,101 @@ const moduleExports = {
 module.exports = moduleExports
 
 // !code: funcs
+function sendPasswordReset (
+  expiresIn = '30m',
+  error = new BadRequest({
+    message: `invalid account`,
+    errors: {
+      account: `Invalid account`
+    }
+  })
+) {
+  return async (context) => {
+    // check type === before
+    checkContext(context, 'before', ['create'], 'sendPasswordReset')
+    const { app, data, params, service } = context
+    const { action } = params
+    if (action !== 'request-password-reset') return context
+    // user data instead of result because we want to check the submitted data
+    const { accounts, language = 'en' } = data
+    if (!Array.isArray(accounts)) throw error
+    const [{ type, value } = {}] = accounts
+    if (!(type === 'email' && value)) throw error
+    // find account in users service
+    const {
+      total,
+      data: [user]
+    } = await service.find({
+      query: {
+        'accounts.value': value
+      }
+    })
+    let email
+    if (total === 0) {
+      // send attempted email reset
+      email = {
+        templateName: 'attempted-password-reset',
+        email: value,
+        language,
+        locals: {
+          url: `${process.env.UI_URL}/auth/sign-up`,
+          logo: 'cid:logo'
+        }
+      }
+    } else {
+      // > console.dir(id)
+      // ObjectID {
+      //   _bsontype: 'ObjectID',
+      //   id:
+      //     Buffer[Uint8Array][
+      //       (93, 76, 117, 103, 42, 88, 174, 57, 28, 108, 50, 212)
+      //     ]
+      // }
+      // > id.getTimestamp()
+      // 2019-08-08T19:17:59.000Z
+      // > id.toHexString()
+      // '5d4c75672a58ae391c6c32d4'
+      // sign jwt
+      const { _id: userId } = user
+      const payload = {}
+      const { secret, jwtOptions } = app.get('authentication')
+      const options = merge({}, jwtOptions, {
+        header: { typ: 'resetPassword' },
+        audience: value,
+        subject: userId.toHexString(),
+        expiresIn
+      })
+      app.debug('jwt.sign', payload, options)
+      const token = jwt.sign(payload, secret, options)
+      // eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyODkyNzQsImV4cCI6MTU2NTI5MTA3NCwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjEyMzEyMzEyMyJ9.P5mq4J2VR-RJsdPC9lrGnAZXd8u2azeF_DyWXYHIXDQ
+      // jwt.verify(token, secret, options)
+      // const payload = {
+      //   iat: 1565289274,
+      //   exp: 1565291074,
+      //   aud: 'hotdogee@gmail.com',
+      //   iss: 'hanl.in',
+      //   sub: '123123123'
+      // }
+      app.debug('token', token)
+      email = {
+        templateName: 'password-reset',
+        email: value,
+        language: user.language || 'en',
+        locals: {
+          url: `${process.env.UI_URL}/auth/reset-password?token=${token}`,
+          logo: 'cid:logo'
+        }
+      }
+    }
+    app.debug(`app.service('emails').create`, email)
+    await app.service('emails').create(email)
+    context.result = {
+      result: 'success'
+    }
+    return context
+  }
+}
+
 function rejectCommonPassword (
   fieldName = 'password',
   error = new BadRequest({
@@ -268,67 +383,101 @@ function rejectDuplicateAccount (
   }
 }
 
-function createEmailVerification (expiresIn = '30m') {
+function sendEmailVerification (expiresIn = '30m') {
   return async (context) => {
     // check type === after
     checkContext(context, 'after', ['create'], 'createEmailVerification')
     const { app, data, result } = context
-    // user data instead of result because we want to check the submitted data
+    // use data instead of result because we want to check the submitted data
     const { accounts } = data
     if (!Array.isArray(accounts)) return context
     const [{ type, value } = {}] = accounts
     if (!(type === 'email' && value)) return context
     const { _id: userId, language } = result
-    // > console.dir(id)
-    // ObjectID {
-    //   _bsontype: 'ObjectID',
-    //   id:
-    //     Buffer[Uint8Array][
-    //       (93, 76, 117, 103, 42, 88, 174, 57, 28, 108, 50, 212)
-    //     ]
-    // }
-    // > id.getTimestamp()
-    // 2019-08-08T19:17:59.000Z
-    // > id.toHexString()
-    // '5d4c75672a58ae391c6c32d4'
-    // sign jwt
-    const payload = {}
-    const { secret, jwtOptions } = app.get('authentication')
-    const options = merge({}, jwtOptions, {
-      header: { typ: 'verifyEmail' },
-      audience: value,
-      subject: userId.toHexString(),
-      expiresIn
-    })
-    app.debug('jwt.sign', payload, options)
-    const token = jwt.sign(payload, secret, options)
-    // eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyODkyNzQsImV4cCI6MTU2NTI5MTA3NCwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjEyMzEyMzEyMyJ9.P5mq4J2VR-RJsdPC9lrGnAZXd8u2azeF_DyWXYHIXDQ
-    // jwt.verify(token, secret, options)
-    // const payload = {
-    //   iat: 1565289274,
-    //   exp: 1565291074,
-    //   aud: 'hotdogee@gmail.com',
-    //   iss: 'hanl.in',
-    //   sub: '123123123'
-    // }
-    app.debug('token', token)
-    const email = {
-      templateName: 'email-verification',
-      email: value,
-      language,
-      token
-    }
-    app.debug(`app.service('emails').create`, email)
-    app.service('emails').create(email)
+    createEmailVerification(app, value, userId, expiresIn, language)
     return context
   }
+}
+
+function resendEmailVerification (
+  expiresIn = '30m',
+  error = new BadRequest({
+    message: `invalid account`,
+    errors: {
+      account: `Invalid account`
+    }
+  })
+) {
+  return async (context) => {
+    // check type === before
+    checkContext(context, 'before', ['patch'], 'resendEmailVerification')
+    const { app, data, params, subject } = context
+    const { action } = params
+    if (action !== 'resend-email-verification') return context
+    // use data instead of result because we want to check the submitted data
+    const { accounts } = data
+    if (!Array.isArray(accounts)) throw error
+    const [{ type, value } = {}] = accounts
+    if (!(type === 'email' && value)) throw error
+    const { _id: userId, language = 'en' } = subject
+    createEmailVerification(app, value, userId, expiresIn, language)
+    return context
+  }
+}
+
+function createEmailVerification (app, value, userId, expiresIn, language) {
+  // > console.dir(id)
+  // ObjectID {
+  //   _bsontype: 'ObjectID',
+  //   id:
+  //     Buffer[Uint8Array][
+  //       (93, 76, 117, 103, 42, 88, 174, 57, 28, 108, 50, 212)
+  //     ]
+  // }
+  // > id.getTimestamp()
+  // 2019-08-08T19:17:59.000Z
+  // > id.toHexString()
+  // '5d4c75672a58ae391c6c32d4'
+  // sign jwt
+  const payload = {}
+  const { secret, jwtOptions } = app.get('authentication')
+  const options = merge({}, jwtOptions, {
+    header: { typ: 'verifyEmail' },
+    audience: value,
+    subject: userId.toHexString(),
+    expiresIn
+  })
+  app.debug('jwt.sign', payload, options)
+  const token = jwt.sign(payload, secret, options)
+  // eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyODkyNzQsImV4cCI6MTU2NTI5MTA3NCwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjEyMzEyMzEyMyJ9.P5mq4J2VR-RJsdPC9lrGnAZXd8u2azeF_DyWXYHIXDQ
+  // jwt.verify(token, secret, options)
+  // const payload = {
+  //   iat: 1565289274,
+  //   exp: 1565291074,
+  //   aud: 'hotdogee@gmail.com',
+  //   iss: 'hanl.in',
+  //   sub: '123123123'
+  // }
+  app.debug('token', token)
+  const email = {
+    templateName: 'email-verification',
+    email: value,
+    language,
+    locals: {
+      url: `${process.env.UI_URL}/auth/verify-email?token=${token}`,
+      complaintEmail: process.env.COMPLAINT_EMAIL,
+      logo: 'cid:logo'
+    }
+  }
+  app.debug(`app.service('emails').create`, email)
+  app.service('emails').create(email)
 }
 
 function verifyToken () {
   return async (context) => {
     // check type === before
     checkContext(context, 'before', ['patch'], 'verifyToken')
-    const { app, params, service } = context
+    const { app, params, service, data } = context
     const { token } = params
     if (!token) return context
     const { secret, jwtOptions } = app.get('authentication')
@@ -362,6 +511,15 @@ function verifyToken () {
           }
         }
       )
+      context.result = {
+        result: 'success'
+      }
+    } else if (typ === 'resetPassword') {
+      const { password } = data
+      // set id, data and result
+      await service._patch(payload.sub, {
+        password
+      })
       context.result = {
         result: 'success'
       }

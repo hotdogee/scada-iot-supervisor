@@ -25,12 +25,19 @@ const moduleExports = {
           `/${path}` !== app.get('authentication').path &&
           Object.prototype.hasOwnProperty.call(params, 'authentication') &&
           params.authentication,
+        log(`authenticate('jwt')`),
         authenticate('jwt')
-      ),
+      ).else(log(`SKIP authenticate('jwt')`)),
       // authorize() grants permissions accordingly for anonymous and authenticated users, throws 403: Forbidden
-      iff(({ params, path, app }) => {
-        return params.provider && `/${path}` !== app.get('authentication').path
-      }, authorize())
+      iff(
+        ({ params, path, app }) => {
+          return (
+            params.provider && `/${path}` !== app.get('authentication').path
+          )
+        },
+        log(`authorize()`),
+        authorize()
+      ).else(log(`SKIP authorize()`))
     ],
     find: [],
     get: [],

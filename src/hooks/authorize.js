@@ -21,7 +21,8 @@ Ability.addAlias('write', ['create', 'remove', 'update', 'patch'])
 function defineAbilitiesFor (params, data) {
   // eslint-disable-next-line no-unused-vars
   const { rules, can, cannot } = AbilityBuilder.extract()
-  const { user, authentication = {} } = params
+  // const { user, authentication = {} } = params
+  const { user } = params
   // const { payload = {} } = authentication || {}
   // const payload = {
   //   iat: 1561828929,
@@ -100,6 +101,106 @@ function defineAbilitiesFor (params, data) {
     }
   })
 }
+// const anonymousContext = {
+//   params: {
+//     query: {
+//       $client: {
+//         token:
+//           'eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjYxNDM0NTMsImV4cCI6MTU2NjE0NTI1MywiYXVkIjoiYW5keW1ldHplbkBnbWFpbC5jb20iLCJpc3MiOiJoYW5sLmluIiwic3ViIjoiNWQ1OTczZGQzOGFjMzQxZDE0OTlkMDRhIn0.XVcpUHxKWdzcA1x1vB24bzVo3K7MGpSFbnVOqf_sYCo'
+//       }
+//     },
+//     route: {},
+//     connection: {
+//       provider: 'socketio',
+//       headers: {
+//         'user-agent': 'node-XMLHttpRequest',
+//         accept: '*/*',
+//         host: 'localhost:8086',
+//         connection: 'close'
+//       },
+//       clientIp: '::ffff:127.0.0.1'
+//     },
+//     provider: 'socketio',
+//     headers: {
+//       'user-agent': 'node-XMLHttpRequest',
+//       accept: '*/*',
+//       host: 'localhost:8086',
+//       connection: 'close'
+//     },
+//     clientIp: '::ffff:127.0.0.1'
+//   },
+//   id: null,
+//   data: {}
+// }
+// const userContext = {
+//   params: {
+//     query: {
+//       $client: {
+//         token:
+//           'eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjYxNDM0NTMsImV4cCI6MTU2NjE0NTI1MywiYXVkIjoiYW5keW1ldHplbkBnbWFpbC5jb20iLCJpc3MiOiJoYW5sLmluIiwic3ViIjoiNWQ1OTczZGQzOGFjMzQxZDE0OTlkMDRhIn0.XVcpUHxKWdzcA1x1vB24bzVo3K7MGpSFbnVOqf_sYCo'
+//       }
+//     },
+//     route: {},
+//     connection: {
+//       provider: 'socketio',
+//       headers: {
+//         'user-agent': 'node-XMLHttpRequest',
+//         accept: '*/*',
+//         host: 'localhost:8086',
+//         connection: 'close'
+//       },
+//       clientIp: '::ffff:127.0.0.1',
+//       authentication: {
+//         strategy: 'jwt',
+//         accessToken:
+//           'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjYxNDU5MzAsImV4cCI6MTU2NjE0NjUzMCwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNTk3M2RkMzhhYzM0MWQxNDk5ZDA0YSIsImp0aSI6IjhhY2M3MzViLTM4YmMtNDYzZi05NDhiLTJjMzdmZGUzNTNmNyJ9.sY2H1CYCECfJvRZodN4dB5Sh1NX0JlJLAtWU4vqNHxc'
+//       },
+//       user: {
+//         _id: '5d5973dd38ac341d1499d04a',
+//         accounts: [
+//           {
+//             type: 'email',
+//             value: 'andymetzen@gmail.com',
+//             verified: '2019-08-18T16:18:12.950Z'
+//           }
+//         ],
+//         language: 'en',
+//         country: 'tw',
+//         created: '2019-08-18T15:50:53.389Z',
+//         updated: '2019-08-18T16:18:12.952Z'
+//       }
+//     },
+//     provider: 'socketio',
+//     headers: {
+//       'user-agent': 'node-XMLHttpRequest',
+//       accept: '*/*',
+//       host: 'localhost:8086',
+//       connection: 'close'
+//     },
+//     clientIp: '::ffff:127.0.0.1',
+//     authentication: {
+//       strategy: 'jwt',
+//       accessToken:
+//         'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJpYXQiOjE1NjYxNDU5MzAsImV4cCI6MTU2NjE0NjUzMCwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNTk3M2RkMzhhYzM0MWQxNDk5ZDA0YSIsImp0aSI6IjhhY2M3MzViLTM4YmMtNDYzZi05NDhiLTJjMzdmZGUzNTNmNyJ9.sY2H1CYCECfJvRZodN4dB5Sh1NX0JlJLAtWU4vqNHxc'
+//     },
+//     user: {
+//       _id: '5d5973dd38ac341d1499d04a',
+//       accounts: [
+//         {
+//           type: 'email',
+//           value: 'andymetzen@gmail.com',
+//           verified: '2019-08-18T16:18:12.950Z'
+//         }
+//       ],
+//       language: 'en',
+//       country: 'tw',
+//       created: '2019-08-18T15:50:53.389Z',
+//       updated: '2019-08-18T16:18:12.952Z'
+//     }
+//   },
+//   id: null,
+//   data: {}
+// }
 
 // eslint-disable-next-line no-unused-vars
 module.exports = function (options = {}) {
@@ -108,7 +209,7 @@ module.exports = function (options = {}) {
     // Throw if the hook is being called from an unexpected location.
     checkContext(context, 'before', null, 'authorize')
 
-    const { method, service, path, params, data, id } = context
+    const { app, method, service, path, params, data, id } = context
     // context.app.debug(`data in authorize`, context.toJSON())
     const clientIp = params.clientIp || params.restAddress
     const provider = params.provider ? params.provider : 'server'
@@ -135,7 +236,7 @@ module.exports = function (options = {}) {
 
     if (!id) {
       const query = toMongoQuery(ability, path, method)
-      // debug('toMongoQuery = ', query, ability, path, method)
+      // app.debug('toMongoQuery = ', { query, ability, path, method })
       if (query !== null) {
         // context.app.debug({
         //   message: `params.query: ${safeStringify(

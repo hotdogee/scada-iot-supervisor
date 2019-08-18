@@ -41,7 +41,7 @@ function safeError (context) {
   )
 }
 
-module.exports = function () {
+module.exports = function (msg) {
   return (context) => {
     const { method, type, path, params, error } = context
     const provider = params.provider ? params.provider : 'server'
@@ -52,6 +52,12 @@ module.exports = function () {
     const prefix = `${provider}-${type}-${method}-${path}${
       params.provider ? '-' + strategy : ''
     }`.toUpperCase()
+    if (msg) {
+      logger.info(msg, {
+        label: `=== ${prefix} ===`
+      })
+      return context
+    }
     if (type === 'before') {
       context.logger = (label = '') => {
         return Object.keys(logger.levels).reduce((acc, l) => {
