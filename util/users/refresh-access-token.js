@@ -5,7 +5,7 @@
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 const logger = require('../../src/logger')
-const { socket, refreshAccessToken } = require('../lib/api')
+const { socket, refreshAccessToken, storage } = require('../lib/api')
 // parse arguments
 const argv = require('minimist')(process.argv.slice(2), {
   default: {
@@ -19,11 +19,10 @@ const argv = require('minimist')(process.argv.slice(2), {
 /* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
   try {
-    const result = await refreshAccessToken(
-      argv.service,
-      argv.strategy,
-      argv.userId
-    )
+    const userId = argv.userId || storage.getItem('user-id')
+    if (!userId) throw new Error('userId required')
+    logger.info(`using userId =`, { userId })
+    const result = await refreshAccessToken(argv.service, argv.strategy, userId)
     logger.info(`${argv.service} result =`, result)
     // const result = {
     //   accessToken:

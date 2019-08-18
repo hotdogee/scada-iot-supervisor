@@ -18,7 +18,7 @@ const argv = require('minimist')(process.argv.slice(2), {
     method: 'create',
     type: 'email',
     // language: ['en', 'zh-hant'],
-    albumId: '5d506e0edcb7d22aa7057a84'
+    albumId: null
   }
 })
 // logger.debug(`argv`, argv)
@@ -112,6 +112,22 @@ socket.on('connect', async (connection) => {
   try {
     // eslint-disable-next-line no-unused-vars
     const auth = await api.reAuthenticate()
+    // find albumId
+    let albumId = argv.albumId
+    if (!albumId) {
+      const {
+        total,
+        data: [{ _id }]
+      } = await api.service('albums').find({
+        query: {
+          name: 'template'
+        }
+      })
+      if (total === 0) throw new Error('template albumId required')
+      albumId = _id
+    }
+    logger.info(`using albumId =`, { albumId })
+    // process templates
     for (const t of templates) {
       // read pug
       t.content.html.content = await new Promise((resolve, reject) => {
@@ -129,7 +145,7 @@ socket.on('connect', async (connection) => {
           const file = fs.createReadStream(a.imagePath)
           const formData = {
             timestamp: new Date().toJSON(),
-            albumId: argv.albumId,
+            albumId,
             file
           }
           a.imageId = await new Promise((resolve, reject) => {
@@ -159,6 +175,7 @@ socket.on('connect', async (connection) => {
               }
             )
           })
+          if (!a.imageId) throw new Error('image upload failed')
           delete a.imagePath
           return a
         })
