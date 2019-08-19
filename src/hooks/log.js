@@ -22,6 +22,9 @@ function safeContext (context) {
     'result',
     'error'
   )
+  if (c.data && c.data.password) {
+    c.data.password = '****'
+  }
   if (c.error) {
     c.error = safePick(
       context.error,
@@ -55,7 +58,7 @@ module.exports = function (msg) {
       })
       return context
     }
-    if (type === 'before') {
+    if (type === 'before' && !context.logger) {
       context.logger = (label = '') => {
         return Object.keys(logger.levels).reduce((acc, l) => {
           acc[l] = (...args) => {
