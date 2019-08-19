@@ -105,6 +105,9 @@ const moduleExports = {
       // create local, create oauth, password-reset
       validateCreate(),
       paramsFromClient('recaptcha', 'signature', 'document', 'action'),
+      // NOTE: sendPasswordReset is a create hook instead of a patch hook
+      // with resendEmailVerification so we can share verifyRecaptcha here,
+      // instead of having a unclean conditional in patch
       // action = 'request-password-reset'
       // recaptcha required
       //
@@ -243,7 +246,8 @@ function sendPasswordReset (
   return async (context) => {
     // check type === before
     checkContext(context, 'before', ['create'], 'sendPasswordReset')
-    const { app, data, params, service } = context
+    const { app, data, params, service, logger } = context
+    const log = logger('sendPasswordReset')
     const { action } = params
     if (action !== 'request-password-reset') return context
     // user data instead of result because we want to check the submitted data
@@ -295,7 +299,7 @@ function sendPasswordReset (
         subject: userId.toHexString(),
         expiresIn
       })
-      app.debug('jwt.sign', payload, options)
+      log.debug('jwt.sign', { payload, options })
       const token = jwt.sign(payload, secret, options)
       // eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyODkyNzQsImV4cCI6MTU2NTI5MTA3NCwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjEyMzEyMzEyMyJ9.P5mq4J2VR-RJsdPC9lrGnAZXd8u2azeF_DyWXYHIXDQ
       // jwt.verify(token, secret, options)
@@ -306,18 +310,18 @@ function sendPasswordReset (
       //   iss: 'hanl.in',
       //   sub: '123123123'
       // }
-      app.debug('token', token)
+      log.debug('token', { token })
       email = {
         templateName: 'password-reset',
         email: value,
-        language: user.language || 'en',
+        language: user.language || language,
         locals: {
           url: `${process.env.UI_URL}/auth/reset-password?token=${token}`,
           logo: 'cid:logo'
         }
       }
     }
-    app.debug(`app.service('emails').create`, email)
+    log.debug(`app.service('emails').create`, email)
     await app.service('emails').create(email)
     context.result = {
       result: 'success'
@@ -387,14 +391,15 @@ function sendEmailVerification (expiresIn = '30m') {
   return async (context) => {
     // check type === after
     checkContext(context, 'after', ['create'], 'createEmailVerification')
-    const { app, data, result } = context
+    const { app, data, result, logger } = context
+    const log = logger('createEmailVerification')
     // use data instead of result because we want to check the submitted data
     const { accounts } = data
     if (!Array.isArray(accounts)) return context
     const [{ type, value } = {}] = accounts
     if (!(type === 'email' && value)) return context
     const { _id: userId, language } = result
-    createEmailVerification(app, value, userId, expiresIn, language)
+    createEmailVerification(app, value, userId, expiresIn, language, log)
     return context
   }
 }
@@ -411,7 +416,8 @@ function resendEmailVerification (
   return async (context) => {
     // check type === before
     checkContext(context, 'before', ['patch'], 'resendEmailVerification')
-    const { app, data, params, subject } = context
+    const { app, data, params, subject, logger } = context
+    const log = logger('resendEmailVerification')
     const { action } = params
     if (action !== 'resend-email-verification') return context
     // use data instead of result because we want to check the submitted data
@@ -420,12 +426,12 @@ function resendEmailVerification (
     const [{ type, value } = {}] = accounts
     if (!(type === 'email' && value)) throw error
     const { _id: userId, language = 'en' } = subject
-    createEmailVerification(app, value, userId, expiresIn, language)
+    createEmailVerification(app, value, userId, expiresIn, language, log)
     return context
   }
 }
 
-function createEmailVerification (app, value, userId, expiresIn, language) {
+function createEmailVerification (app, value, userId, expiresIn, language, log) {
   // > console.dir(id)
   // ObjectID {
   //   _bsontype: 'ObjectID',
@@ -447,7 +453,7 @@ function createEmailVerification (app, value, userId, expiresIn, language) {
     subject: userId.toHexString(),
     expiresIn
   })
-  app.debug('jwt.sign', payload, options)
+  log.debug('jwt.sign', { payload, options })
   const token = jwt.sign(payload, secret, options)
   // eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUyODkyNzQsImV4cCI6MTU2NTI5MTA3NCwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjEyMzEyMzEyMyJ9.P5mq4J2VR-RJsdPC9lrGnAZXd8u2azeF_DyWXYHIXDQ
   // jwt.verify(token, secret, options)
@@ -458,7 +464,7 @@ function createEmailVerification (app, value, userId, expiresIn, language) {
   //   iss: 'hanl.in',
   //   sub: '123123123'
   // }
-  app.debug('token', token)
+  log.debug('token', { token })
   const email = {
     templateName: 'email-verification',
     email: value,
@@ -469,7 +475,7 @@ function createEmailVerification (app, value, userId, expiresIn, language) {
       logo: 'cid:logo'
     }
   }
-  app.debug(`app.service('emails').create`, email)
+  log.debug(`app.service('emails').create`, email)
   app.service('emails').create(email)
 }
 

@@ -3,7 +3,7 @@
 // about the logger.
 const logger = require('../logger')
 const pick = require('lodash.pick')
-const merge = require('lodash.merge')
+// const merge = require('lodash.merge')
 const safeStringify = require('fast-safe-stringify')
 
 function safePick (o, ...k) {
@@ -11,7 +11,7 @@ function safePick (o, ...k) {
 }
 
 function safeContext (context) {
-  return safePick(
+  const c = safePick(
     context,
     'type',
     'method',
@@ -22,12 +22,8 @@ function safeContext (context) {
     'result',
     'error'
   )
-}
-
-function safeError (context) {
-  return merge(
-    safeContext(context),
-    safePick(
+  if (c.error) {
+    c.error = safePick(
       context.error,
       'message',
       'name',
@@ -38,7 +34,8 @@ function safeError (context) {
       'data',
       'errors'
     )
-  )
+  }
+  return c
 }
 
 module.exports = function (msg) {
@@ -78,10 +75,14 @@ module.exports = function (msg) {
       })
     } else {
       // logger.error(`=== ${prefix} ===`, safeError(context))
-      logger.error('', {
-        label: `=== ${prefix} ===`,
-        [Symbol.for('hook')]: safeError(context)
-      })
+      logger.error(
+        `${context.error && context.error.name}: ${context.error &&
+          context.error.message}`,
+        {
+          label: `=== ${prefix} ===`,
+          [Symbol.for('hook')]: safeContext(context)
+        }
+      )
     }
     return context
   }

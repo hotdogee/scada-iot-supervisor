@@ -209,7 +209,7 @@ module.exports = function (options = {}) {
     // Throw if the hook is being called from an unexpected location.
     checkContext(context, 'before', null, 'authorize')
 
-    const { app, method, service, path, params, data, id } = context
+    const { method, service, path, params, data, id } = context
     // context.app.debug(`data in authorize`, context.toJSON())
     const clientIp = params.clientIp || params.restAddress
     const provider = params.provider ? params.provider : 'server'

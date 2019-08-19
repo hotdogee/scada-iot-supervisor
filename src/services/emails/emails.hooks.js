@@ -116,156 +116,152 @@ module.exports = moduleExports
 
 function sendEmail () {
   return async (context) => {
-    try {
-      const { app, data, result, service } = context
-      const { options } = service
-      const { transporter } = options
-      // const data = {
-      //   templateName: 'email-verification',
-      //   email: value,
-      //   language,
-      //   token
-      // }
-      const { templateName: name, email, language, locals } = data
-      // get template
-      const params = {
-        query: {
-          type: 'email',
-          name,
-          language
-        }
+    const { app, data, service, logger } = context
+    const log = logger('sendEmail')
+    const { options } = service
+    const { transporter } = options
+    // const data = {
+    //   templateName: 'email-verification',
+    //   email: value,
+    //   language,
+    //   token
+    // }
+    const { templateName: name, email, language, locals } = data
+    // get template
+    const params = {
+      query: {
+        type: 'email',
+        name,
+        language
       }
-      const {
-        total,
-        data: [template]
-      } = await app.service('templates').find(params)
-      // const template = {
-      //   type: argv.type,
-      //   name: argv.name,
-      //   language: 'zh-hant',
-      //   content: {
-      //     subject: `[蘭陽地熱] 電子郵件驗證信`,
-      //     html: {
-      //       type: 'pug',
-      //       localKeys: ['url', 'complaintEmail'],
-      //       content: ''
-      //     },
-      //     encoding: 'utf-8',
-      //     attachments: [
-      //       {
-      //         // filename: 'logo.gif',
-      //         imageId: path.join(__dirname, 'logo-email-256.gif'),
-      //         cid: 'logo'
-      //       }
-      //     ]
-      //   }
-      // }
-      // if we haven't setup templates yet, log token for initial account creation
-      if (total === 0) {
-        app.error(`${name}.${language} email template not found`)
-        app.error(`locals = '${locals}'`)
-        context.result = {
-          locals
-        }
-        return context
-      }
-      const { content } = template
-      const { html, attachments } = content
-      content.to = email
-      // render html
-      if (html && html.type === 'pug') {
-        content.html = pug.render(html.content, locals)
-      }
-      // render images to attachments
-      content.attachments = await Promise.all(
-        attachments.map(async (a) => {
-          if (a.imageId) {
-            // generate filename
-            const image = await app.service('images').get(a.imageId)
-            a.filename = `${a.cid}${path.extname(image.key)}`
-            // convert imageId to stream
-            await new Promise((resolve, reject) => {
-              request.get(
-                {
-                  uri: `${process.env.API_URL}/images/${a.imageId}?$client[raw]=1`,
-                  encoding: null
-                },
-                (error, response, body) => {
-                  if (error) reject(error)
-                  a.content = body
-                  resolve()
-                }
-              )
-            })
-            delete a.imageId
-          }
-          return a
-        })
-      )
-      // send mail with defined transport object
-      app.debug('transporter.sendMail:', content)
-      const info = await transporter.sendMail(content)
-      data.info = info
-
-      app.debug('Message sent:', info)
-
-      // const i18n = context.app.get('i18n')
-      // // debug(i18n.getLocale())
-      // const locale = context.data.locale
-      // const lang = Object.prototype.hasOwnProperty.call(localeToLang, locale)
-      //   ? localeToLang[locale]
-      //   : locale
-      // debug(lang)
-      // i18n.setLocale(lang)
-      // //       const data = JSON.parse(
-      // //         i18n.__(
-      // //           safeStringify({
-      // //             to: `{{email}}`,
-      // //             subject: `[{{site}}] Email verification`,
-      // //             html: `Someone, perhaps you, has added this email address ({{email}}) to their {{site}} account.
-      // // If you wish to proceed with this request, <a href="{{verifyUrl}}">click this link to verify your email address</a>: {{verifyUrl}}
-      // // This link will expire in 30 minutes.
-      // // If you did not make this request, you can safely ignore this email.`
-      // //           }),
-      // //           {
-      // //             email: context.data.email,
-      // //             site: `SCADA/IoT - ${i18n.getLocale()} - ${locale}`,
-      // //             verifyUrl: `${process.env.UI_URL}/user/verify-email?token=${verifyToken}`
-      // //           }
-      // //         )
-      // //       )
-      // const locals = {
-      //   email: context.data.email,
-      //   site: `SCADA/IoT`,
-      //   verifyUrl: `${process.env.UI_URL}/auth/verify-email-app?token=${verifyToken}`,
-      //   // verifyUrl: `${
-      //   //   process.env.UI_URL
-      //   // }/user/verify-email?token=${verifyToken}`,
-      //   complaintEmail: 'scada@hanl.in',
-      //   logo: 'cid:logo'
-      // }
-      // const data = {
-      //   to: context.data.email,
-      //   subject: i18n.__(`[{{site}}] Email verification`, {
-      //     site: `SCADA/IoT`
-      //   }),
-      //   html: verifyEmailTemplate(locals),
-      //   encoding: 'utf-8',
-      //   attachments: [
-      //     {
-      //       filename: 'logo.png',
-      //       path: path.join(__dirname, 'templates', 'logo-256.png'),
-      //       cid: 'logo'
-      //     }
-      //   ]
-      // }
-      // debug(data)
-      // await context.app.service('emails').create(data)
-      return context
-    } catch (error) {
-      debug(error)
-      throw error
     }
+    const {
+      total,
+      data: [template]
+    } = await app.service('templates').find(params)
+    // const template = {
+    //   type: argv.type,
+    //   name: argv.name,
+    //   language: 'zh-hant',
+    //   content: {
+    //     subject: `[蘭陽地熱] 電子郵件驗證信`,
+    //     html: {
+    //       type: 'pug',
+    //       localKeys: ['url', 'complaintEmail'],
+    //       content: ''
+    //     },
+    //     encoding: 'utf-8',
+    //     attachments: [
+    //       {
+    //         // filename: 'logo.gif',
+    //         imageId: path.join(__dirname, 'logo-email-256.gif'),
+    //         cid: 'logo'
+    //       }
+    //     ]
+    //   }
+    // }
+    // if we haven't setup templates yet, log token for initial account creation
+    if (total === 0) {
+      log.error(`${name}.${language} email template not found`)
+      log.error(`locals = '${locals}'`)
+      context.result = {
+        locals
+      }
+      return context
+    }
+    const { content } = template
+    const { html, attachments } = content
+    content.to = email
+    // render html
+    if (html && html.type === 'pug') {
+      content.html = pug.render(html.content, locals)
+    }
+    // render images to attachments
+    content.attachments = await Promise.all(
+      attachments.map(async (a) => {
+        if (a.imageId) {
+          // generate filename
+          const image = await app.service('images').get(a.imageId)
+          a.filename = `${a.cid}${path.extname(image.key)}`
+          // convert imageId to stream
+          await new Promise((resolve, reject) => {
+            request.get(
+              {
+                uri: `${process.env.API_URL}/images/${a.imageId}?$client[raw]=1`,
+                encoding: null
+              },
+              (error, response, body) => {
+                if (error) reject(error)
+                a.content = body
+                resolve()
+              }
+            )
+          })
+          delete a.imageId
+        }
+        return a
+      })
+    )
+    // send mail with defined transport object
+    log.debug('transporter.sendMail:', content)
+    const info = await transporter.sendMail(content)
+    data.info = info
+
+    log.debug('Message sent:', info)
+
+    // const i18n = context.app.get('i18n')
+    // // debug(i18n.getLocale())
+    // const locale = context.data.locale
+    // const lang = Object.prototype.hasOwnProperty.call(localeToLang, locale)
+    //   ? localeToLang[locale]
+    //   : locale
+    // debug(lang)
+    // i18n.setLocale(lang)
+    // //       const data = JSON.parse(
+    // //         i18n.__(
+    // //           safeStringify({
+    // //             to: `{{email}}`,
+    // //             subject: `[{{site}}] Email verification`,
+    // //             html: `Someone, perhaps you, has added this email address ({{email}}) to their {{site}} account.
+    // // If you wish to proceed with this request, <a href="{{verifyUrl}}">click this link to verify your email address</a>: {{verifyUrl}}
+    // // This link will expire in 30 minutes.
+    // // If you did not make this request, you can safely ignore this email.`
+    // //           }),
+    // //           {
+    // //             email: context.data.email,
+    // //             site: `SCADA/IoT - ${i18n.getLocale()} - ${locale}`,
+    // //             verifyUrl: `${process.env.UI_URL}/user/verify-email?token=${verifyToken}`
+    // //           }
+    // //         )
+    // //       )
+    // const locals = {
+    //   email: context.data.email,
+    //   site: `SCADA/IoT`,
+    //   verifyUrl: `${process.env.UI_URL}/auth/verify-email-app?token=${verifyToken}`,
+    //   // verifyUrl: `${
+    //   //   process.env.UI_URL
+    //   // }/user/verify-email?token=${verifyToken}`,
+    //   complaintEmail: 'scada@hanl.in',
+    //   logo: 'cid:logo'
+    // }
+    // const data = {
+    //   to: context.data.email,
+    //   subject: i18n.__(`[{{site}}] Email verification`, {
+    //     site: `SCADA/IoT`
+    //   }),
+    //   html: verifyEmailTemplate(locals),
+    //   encoding: 'utf-8',
+    //   attachments: [
+    //     {
+    //       filename: 'logo.png',
+    //       path: path.join(__dirname, 'templates', 'logo-256.png'),
+    //       cid: 'logo'
+    //     }
+    //   ]
+    // }
+    // debug(data)
+    // await context.app.service('emails').create(data)
+    return context
   }
 }
 // !end
