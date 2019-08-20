@@ -15,6 +15,7 @@ const {
 // const safeStringify = require('fast-safe-stringify')
 const commonPassword = require('common-password')
 const merge = require('lodash.merge')
+const { find } = require('lodash')
 const jwt = require('jsonwebtoken')
 const path = require('path')
 const debug = require('debug')(
@@ -445,6 +446,16 @@ function resendEmailVerification (
     const [{ type, value } = {}] = accounts
     if (!(type === 'email' && value)) throw error
     const { _id: userId, language = 'en' } = subject
+    // check if data.accounts[0] can be found in subject.accounts
+    const account = find(subject.accounts, { type, value })
+    if (!account) throw error
+    if (account.verified) {
+      context.result = {
+        action,
+        status: 'verified'
+      }
+      return context
+    }
     createEmailVerification(app, value, userId, expiresIn, language, log)
     context.result = {
       action,
