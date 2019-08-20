@@ -64,6 +64,7 @@ function handleNotAuthenticated () {
     // logger.debug(`context error`, error)
     // logger.debug(`handleNotAuthenticated`, a1, a2, a3)
     if (error.name !== 'NotAuthenticated') return context
+    if (error.message === 'Invalid login') return context
     logger.warn(`${error.message}: trying to refresh access token`)
     let result
     try {

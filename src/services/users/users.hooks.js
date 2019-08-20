@@ -151,7 +151,7 @@ const moduleExports = {
       // typ: access token required
       resendEmailVerification(),
       // validation
-      rejectDuplicateAccount(),
+      iff((c) => !c.result, rejectDuplicateAccount()),
       rejectCommonPassword('password'),
       hashPassword('password'),
       // patch account verified
@@ -186,8 +186,8 @@ const moduleExports = {
     //   all   : protect('password') // Must always be the last hook
     // !code: after
     all: [
-      when(
-        (hook) => hook.params.provider, // Will be undefined for internal calls from the server
+      iff(
+        (c) => c.params.provider, // Will be undefined for internal calls from the server
         protect('password') /* Must always be the last hook */
       )
       // populate({
@@ -208,7 +208,14 @@ const moduleExports = {
     ],
     find: [],
     get: [],
-    create: [savePublicKey(), sendEmailVerification()],
+    create: [
+      iff(
+        (c) =>
+          c.params.provider && c.params.action !== 'request-password-reset',
+        savePublicKey(),
+        sendEmailVerification()
+      )
+    ],
     update: [],
     patch: [],
     remove: []
@@ -324,7 +331,8 @@ function sendPasswordReset (
     log.debug(`app.service('emails').create`, email)
     await app.service('emails').create(email)
     context.result = {
-      result: 'success'
+      action,
+      status: 'success'
     }
     return context
   }
@@ -391,8 +399,19 @@ function sendEmailVerification (expiresIn = '30m') {
   return async (context) => {
     // check type === after
     checkContext(context, 'after', ['create'], 'createEmailVerification')
-    const { app, data, result, logger } = context
+    const { app, data, params, result, logger } = context
     const log = logger('createEmailVerification')
+    const { provider, action } = params
+    // check provider
+    if (!provider) {
+      log.debug(`SKIP (server call)`)
+      return context
+    }
+    // check action
+    if (action === 'request-password-reset') {
+      log.debug(`SKIP (${action})`)
+      return context
+    }
     // use data instead of result because we want to check the submitted data
     const { accounts } = data
     if (!Array.isArray(accounts)) return context
@@ -427,6 +446,10 @@ function resendEmailVerification (
     if (!(type === 'email' && value)) throw error
     const { _id: userId, language = 'en' } = subject
     createEmailVerification(app, value, userId, expiresIn, language, log)
+    context.result = {
+      action,
+      status: 'success'
+    }
     return context
   }
 }
@@ -518,7 +541,8 @@ function verifyToken () {
         }
       )
       context.result = {
-        result: 'success'
+        typ,
+        status: 'success'
       }
     } else if (typ === 'resetPassword') {
       const { password } = data
@@ -527,7 +551,8 @@ function verifyToken () {
         password
       })
       context.result = {
-        result: 'success'
+        typ,
+        status: 'success'
       }
     }
     return context

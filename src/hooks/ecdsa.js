@@ -109,11 +109,17 @@ exports.savePublicKey = function () {
   return (context) => {
     // check type === after
     checkContext(context, 'after')
-    const { app, params, result } = context
-    const { user, provider, signature, document } = params
+    const { app, params, result, logger } = context
+    const log = logger('savePublicKey')
+    const { user, provider, signature, document, action } = params
     // check provider
     if (!provider) {
-      debug(`SKIP verifyECDSA (server call)`)
+      log.debug(`SKIP (server call)`)
+      return context
+    }
+    // check action
+    if (action === 'request-password-reset') {
+      log.debug(`SKIP (${action})`)
       return context
     }
     const data = {

@@ -16,7 +16,7 @@ const argv = require('minimist')(process.argv.slice(2), {
 /* eslint-enables no-unused-vars */
 socket.on('connect', async (connection) => {
   try {
-    const auth = await api.reAuthenticate()
+    // const auth = await api.reAuthenticate()
     if (!argv.token) throw new Error('token required')
     const result = await api.service(argv.service)[argv.method](
       null,
