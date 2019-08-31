@@ -275,8 +275,7 @@ function handleChart (options = {}) {
       if (bucket) {
         const collection = db.collection(`logs.sanitized.${bucket}`)
         const result = {}
-        const total = (await db
-          .collection('logs.sanitized.1d')
+        const total = (await collection
           .aggregate([
             { $match: query },
             {
