@@ -41,7 +41,7 @@ function safeContext (context) {
   return c
 }
 
-module.exports = function (msg) {
+module.exports = function (msg, level = 'info') {
   return (context) => {
     const { method, type, path, params, error } = context
     const provider = params.provider ? params.provider : 'server'
@@ -53,7 +53,7 @@ module.exports = function (msg) {
       params.provider ? '-' + strategy : ''
     }`.toUpperCase()
     if (msg) {
-      logger.info(msg, {
+      logger[level](msg, {
         label: `=== ${prefix} ===`
       })
       return context
