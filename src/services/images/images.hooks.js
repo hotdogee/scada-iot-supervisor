@@ -69,7 +69,7 @@ const moduleExports = {
       paramsFromClient('raw', 'width', 'height', 'format')
       // authenticate('jwt')
     ],
-    find: [mongoKeys(ObjectID, foreignKeys)],
+    find: [mongoKeys(ObjectID, foreignKeys), convertDate()],
     get: [
       // handleRaw()
     ],
@@ -462,6 +462,21 @@ function addImageToAlbum () {
     )
     app.debug('addImageToAlbum album', album)
     return context
+  }
+}
+
+function convertDate (options = {}) {
+  return (context) => {
+    const params = context.params
+    const fieldName = 'timestamp'
+    if (params && params.query && params.query[fieldName]) {
+      if (params.query[fieldName].$gt) {
+        params.query[fieldName].$gt = new Date(params.query[fieldName].$gt)
+      }
+      if (params.query[fieldName].$lt) {
+        params.query[fieldName].$lt = new Date(params.query[fieldName].$lt)
+      }
+    }
   }
 }
 // !end

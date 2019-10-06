@@ -116,7 +116,7 @@ module.exports = moduleExports
 function patchImages () {
   // add image to album
   return async (context) => {
-    // check type === before, method === 'patch'
+    // check type === 'before', method === 'patch'
     checkContext(context, 'before', ['patch'], 'patchImages')
     const { app, service, subject, data, params, id: albumId } = context
     const { image } = params
