@@ -21,7 +21,7 @@ const logger = createLogger({
 
 // cross-env MONGODB=mongodb://localhost:27017/scada-iot-20171105 node .\util\export-csv-sanitized.js
 // node ./util/scada-v1/export-csv-sanitized.js
-const outdir = 'csv'
+const outdir = '/home/hotdogee/csv'
 mkdirp.sync(path.resolve(outdir))
 // output to csv dir one file each day
 const mongodb = process.env.MONGODB || config.get('mongodb')
@@ -130,6 +130,10 @@ const headerRe = /^M(\d+)-/
         .find({ $and: [{ logTime: { $gte: from } }, { logTime: { $lt: to } }] })
         .sort({ logTime: 1 })
         .toArray()
+      // empty?
+      if (data.length === 0) {
+        continue
+      }
       // flatten data
       const flatdata = data.map(flattenLog)
       // sort fields
@@ -165,7 +169,7 @@ const headerRe = /^M(\d+)-/
   } catch (error) {
     logger.error(error)
   } finally {
-    // process.exit()
+    process.exit()
   }
 })()
 
@@ -195,7 +199,8 @@ const headerRe = /^M(\d+)-/
 //     // 2017-08-07T20:39:30.088Z
 //     // 2020-03-24T02:07:56.033Z
 //     // loop through logs
-//     const start = new Date(firstLogTime.toDateString()).getTime()
+//     // const start = new Date(firstLogTime.toDateString()).getTime()
+//     const start = new Date('Tue Aug 12 2017').getTime()
 //     // const start = new Date(lastLogTime.toDateString()).getTime()
 //     // 1502121600000 2017-08-07T16:00:00.000Z 'Tue Aug 08 2017'
 //     // for (let fromTime = start; fromTime < lastLogTime; fromTime += interval) {
