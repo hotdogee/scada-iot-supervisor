@@ -1,7 +1,8 @@
 const safeStringify = require('fast-safe-stringify')
 const debug = require('debug')('lib.ecdsa')
-const WebCrypto = require('node-webcrypto-ossl')
-const webcrypto = new WebCrypto()
+// const WebCrypto = require('node-webcrypto-ossl')
+// const webcrypto = new WebCrypto()
+const { subtle } = globalThis.crypto
 
 const {
   /* eslint-disable no-unused-vars */
@@ -50,7 +51,7 @@ const {
 // }
 
 // requried data: signed, signature
-exports.verify = async function (
+exports.verify = async function(
   signature,
   document,
   msAge = 30000, // needs to have been signed within 30 secs
@@ -93,7 +94,7 @@ exports.verify = async function (
   if (new Date() - new Date(document.timestamp) > msAge) {
     throw expiredError
   }
-  const publicKey = await webcrypto.subtle.importKey(
+  const publicKey = await subtle.importKey(
     format, // can be 'jwk' (public or private), 'spki' (public only), or 'pkcs8' (private only)
     JSON.parse(document.publicKey),
     importParams,
@@ -109,7 +110,7 @@ exports.verify = async function (
   )
   const docBuffer = Buffer.from(safeStringify(document), 'utf8')
   debug(`verifyECDSA docBuffer = ${docBuffer}`)
-  const valid = await webcrypto.subtle.verify(
+  const valid = await subtle.verify(
     verifyParams,
     publicKey, // from generateKey or importKey above
     sigBuffer, // ArrayBuffer of the signature
