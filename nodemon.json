@@ -3,7 +3,7 @@
     "NODE_ENV": "development"
   },
   "events": {
-    "start": "eslint src/. test/. --config .eslintrc.js",
-    "restart": "eslint src/. test/. --config .eslintrc.js"
+    "start": "eslint src/. test/. --config eslint.config.js",
+    "restart": "eslint src/. test/. --config eslint.config.js"
   }
 }

@@ -25,7 +25,7 @@
     "test": "npm run eslint && npm run mocha",
     "test:all": "npm run eslint && cross-env NODE_ENV=test npm run mocha",
     "precommit": "lint-staged",
-    "eslint": "eslint src/. test/. --config .eslintrc.js",
+    "eslint": "eslint src/. test/. --config eslint.config.js",
     "dev": "cross-env NODE_ENV=test DEBUG=*,-babel*,-engine*,-socket*,-eslint:*,-snapdragon*,-nodemon*,-express*,-@feathersjs/transport-commons nodemon src/",
     "dev:seed": "nodemon src/ --seed",
     "start": "cross-env NODE_ENV=production node -r dotenv/config src/ dotenv_config_path=.env.prod",
@@ -90,8 +90,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "eslint": "^5.16.0",
-    "eslint-config-standard": "^13.0.1",
+    "eslint": "^9.24.0",
+    "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
