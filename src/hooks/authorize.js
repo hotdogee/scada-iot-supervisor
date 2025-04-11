@@ -19,7 +19,6 @@ Ability.addAlias('read', ['get', 'find'])
 Ability.addAlias('write', ['create', 'remove', 'update', 'patch'])
 
 function defineAbilitiesFor (params, data) {
-  // eslint-disable-next-line no-unused-vars
   const { rules, can, cannot } = AbilityBuilder.extract()
   // const { user, authentication = {} } = params
   const { user } = params
@@ -202,7 +201,6 @@ function defineAbilitiesFor (params, data) {
 //   data: {}
 // }
 
-// eslint-disable-next-line no-unused-vars
 module.exports = function (options = {}) {
   // Return the actual hook.
   return async (context) => {

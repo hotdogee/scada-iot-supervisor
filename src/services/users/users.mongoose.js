@@ -1,7 +1,7 @@
 /* eslint quotes: 0 */
 // Defines Mongoose model for service `users`. (Can be re-generated.)
 const merge = require('lodash.merge')
-// eslint-disable-next-line no-unused-vars
+
 const mongoose = require('mongoose')
 // !code: imports // !end
 // !code: init // !end

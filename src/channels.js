@@ -54,7 +54,6 @@ module.exports = function (app) {
       })
   })
 
-  // eslint-disable-next-line no-unused-vars
   // app.publish((data, context) => {
   //   // Here you can add event publishers to channels set up in `channels.js`
   //   // To publish only for a specific event use `app.publish(eventname, () => {})`

@@ -2,7 +2,6 @@
 // !code: imports // !end
 // !code: init // !end
 
-// eslint-disable-next-line no-unused-vars
 const moduleExports = function (app) {
   // !code: func_init // !end
   // Add your custom middleware here. Remember that

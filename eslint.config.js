@@ -1,8 +1,10 @@
-import standardConfig from 'eslint-config-standard'
+import { FlatCompat } from '@eslint/eslintrc'
 import globals from 'globals'
 
+const compat = new FlatCompat()
+
 export default [
-  ...standardConfig,
+  ...compat.extends('eslint-config-standard'),
   {
     languageOptions: {
       ecmaVersion: 2022,
@@ -18,7 +20,8 @@ export default [
     },
     rules: {
       'quote-props': ['error', 'as-needed'],
-      'space-before-function-paren': ['error', 'always']
+      'space-before-function-paren': ['off', 'always'],
+      quotes: ['off', 'single', { allowTemplateLiterals: true }]
     }
   }
 ]

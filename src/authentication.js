@@ -325,7 +325,7 @@ const {
 // }
 
 class APIKeyJWTStrategy extends JWTStrategy {
-  async authenticate (authentication, params) {
+  async authenticate(authentication, params) {
     // this.app.debug(`super.authenticate (authentication, params) = `, {
     //   authentication,
     //   params
@@ -496,7 +496,7 @@ class APIKeyJWTStrategy extends JWTStrategy {
 }
 
 class ECDSAStrategy extends AuthenticationBaseStrategy {
-  get configuration () {
+  get configuration() {
     const authConfig = this.authentication.configuration
     const config = super.configuration || {}
 
@@ -509,7 +509,7 @@ class ECDSAStrategy extends AuthenticationBaseStrategy {
     }
   }
 
-  async getEntity (id, params) {
+  async getEntity(id, params) {
     const { entity } = this.authentication.configuration
     const entityService = this.entityService
     if (entityService === null) {
@@ -522,7 +522,7 @@ class ECDSAStrategy extends AuthenticationBaseStrategy {
     return entityService.get(id, { ...params, [entity]: result })
   }
 
-  async authenticate (authentication, params) {
+  async authenticate(authentication, params) {
     // const authentication = {
     //   strategy: 'ecdsa',
     //   signature: btoa(String.fromCharCode(...new Uint8Array(signature))),
@@ -598,7 +598,7 @@ class ECDSAStrategy extends AuthenticationBaseStrategy {
 // }
 
 class MultiAccountLocalStrategy extends LocalStrategy {
-  async findEntity (username, params) {
+  async findEntity(username, params) {
     const { entityUsernameField, service, errorMessage } = this.configuration
     const query = await this.getEntityQuery(
       {
@@ -619,7 +619,7 @@ class MultiAccountLocalStrategy extends LocalStrategy {
     return entity
   }
 
-  async authenticate (authentication, params) {
+  async authenticate(authentication, params) {
     // const authentication = {
     //   strategy: 'local',
     //   'accounts.value': credentials.email,
@@ -690,7 +690,7 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
   //   document
   // }
 
-  async getRedirect (data) {
+  async getRedirect(data) {
     const { redirect } = this.authentication.configuration.oauth
 
     if (!redirect) {
@@ -701,23 +701,23 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
     const authResult = data
     const query = authResult.accessToken
       ? {
-        access_token: authResult.accessToken
-      }
+          access_token: authResult.accessToken
+        }
       : {
-        error: data.message || 'OAuth Authentication not successful'
-      }
+          error: data.message || 'OAuth Authentication not successful'
+        }
 
     return redirect + separator + querystring.stringify(query)
   }
 
-  async getEntityQuery (profile, params) {
+  async getEntityQuery(profile, params) {
     return {
       'accounts.type': this.name,
       'accounts.value': profile.sub || profile.id
     }
   }
 
-  async findEntity (profile, params) {
+  async findEntity(profile, params) {
     // add
     const query = await this.getEntityQuery(profile, params)
 
@@ -734,7 +734,7 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
     return entity
   }
 
-  async getCurrentEntity (params) {
+  async getCurrentEntity(params) {
     // if /oauth/google?token=JWT
     // get entity using jwt strategy
     const { authentication } = params
@@ -756,7 +756,7 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
     return null
   }
 
-  async getEntityData (profile, entity, params) {
+  async getEntityData(profile, entity, params) {
     const account = {
       type: this.name,
       value: profile.sub || profile.id,
@@ -787,7 +787,7 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
     }
   }
 
-  async createEntity (profile, params) {
+  async createEntity(profile, params) {
     const data = await this.getEntityData(profile, null, params)
 
     debug('createEntity with data', data)
@@ -795,7 +795,7 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
     return this.entityService.create(data, params)
   }
 
-  async updateEntity (entity, profile, params) {
+  async updateEntity(entity, profile, params) {
     const id = entity[this.entityId]
     const data = await this.getEntityData(profile, entity, params)
 
@@ -804,14 +804,13 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
     return this.entityService.patch(id, data, params)
   }
 
-  async getProfile (data, params) {
+  async getProfile(data, params) {
     const config = this.app.get('grant')
     const provider = config[data.strategy]
 
     debug('get oAuth profile with', data, provider)
 
     if (provider.name === 'line') {
-      // eslint-disable-next-line camelcase
       const { id_token: idToken = {} } = data
       const { payload = {} } = idToken
       return {
@@ -842,7 +841,7 @@ class MultiAccountOAuthStrategy extends OAuthStrategy {
     }
   }
 
-  async authenticate (authentication, params) {
+  async authenticate(authentication, params) {
     const entityField = this.configuration.entity // user
     const profile = await this.getProfile(authentication, params)
     const tokenEntity = await this.getCurrentEntity(params)
@@ -904,7 +903,7 @@ class ECDSAAuthenticationService extends AuthenticationService {
    * @param _authResult The current authentication result
    * @param params The service call parameters
    */
-  async getPayload (_authResult, params) {
+  async getPayload(_authResult, params) {
     // Uses `params.payload` or returns an empty payload
     const { payload = {} } = params
 
@@ -917,7 +916,7 @@ class ECDSAAuthenticationService extends AuthenticationService {
    * @param authResult The authentication result
    * @param params Service call parameters
    */
-  async getTokenOptions (authResult, params) {
+  async getTokenOptions(authResult, params) {
     const { service, entity, entityId } = this.configuration
     const jwtOptions = merge({}, params.jwtOptions, params.jwt)
     const hasEntity = service && entity && authResult[entity]
@@ -949,7 +948,7 @@ class ECDSAAuthenticationService extends AuthenticationService {
    * @param data The authentication request (should include `strategy` key)
    * @param params Service call parameters
    */
-  async create (data, params) {
+  async create(data, params) {
     const authStrategies =
       params.authStrategies || this.configuration.authStrategies
 
@@ -1064,9 +1063,9 @@ const setupExpress = (options) => {
           authStrategies: [name],
           authentication: accessToken
             ? {
-              strategy: linkStrategy,
-              accessToken
-            }
+                strategy: linkStrategy,
+                accessToken
+              }
             : null
         }
 
@@ -1103,7 +1102,7 @@ const grantOauth = (options = {}) => (app) => {
 }
 // !end
 
-const moduleExports = function (app) {
+const moduleExports = function(app) {
   const authentication = new ECDSAAuthenticationService(app)
   // !code: func_init // !end
 

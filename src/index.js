@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // Start the server. (Can be re-generated.)
 // !code: preface // !end
 const logger = require('./logger')
