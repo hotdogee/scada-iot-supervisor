@@ -124,6 +124,7 @@ data/*
 .env
 .env.prod
 .env.api2
+.env.localhost
 .node-persist
 .keystore
 .storage
