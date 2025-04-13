@@ -18,7 +18,6 @@ const users = require('./users/users.service')
 // !code: imports // !end
 // !code: init // !end
 
-// eslint-disable-next-line no-unused-vars
 const moduleExports = function (app) {
   app.set(
     'serviceSetup',

@@ -1,5 +1,5 @@
 // Logger. (Can be re-generated.)
-/* eslint-disable no-unused-vars */
+
 const { omit, pick } = require('lodash')
 const { createLogger, format, transports } = require('winston')
 // const { inspect } = require('util')
@@ -198,7 +198,7 @@ const formatConsole = format((info, opts = {}) => {
   // console.log('stringifiedRest', stringifiedRest)
 
   const label = info.label
-  let color = colors['white']
+  let color = colors.white
   if (info.level && levelColors[info.level]) {
     color = colors[levelColors[info.level]]
   }

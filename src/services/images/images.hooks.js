@@ -7,7 +7,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 /* eslint-enables no-unused-vars */
 // !end
 // !code: imports
-/* eslint-disable no-unused-vars */
+
 const sharp = require('sharp')
 const dauria = require('dauria')
 const { omit } = require('lodash')
@@ -54,7 +54,7 @@ const {
 /* eslint-enables no-unused-vars */
 // !end
 // !<DEFAULT> code: foreign_keys
-// eslint-disable-next-line no-unused-vars
+
 const foreignKeys = ['_id', 'albumId']
 // !end
 // !code: init // !end
@@ -122,7 +122,7 @@ const moduleExports = {
 module.exports = moduleExports
 
 // !code: funcs
-function attemptRemoveBlob () {
+function attemptRemoveBlob() {
   return async (context) => {
     // check type === after, method === remove
     checkContext(context, 'after', ['remove'], 'attemptRemoveBlob')
@@ -138,7 +138,7 @@ function attemptRemoveBlob () {
   }
 }
 
-function debugLogger () {
+function debugLogger() {
   // add imageId to album
   return async (context) => {
     const { app } = context
@@ -239,7 +239,7 @@ function debugLogger () {
   }
 }
 
-function handleRaw () {
+function handleRaw() {
   return async (context) => {
     // check type === before, method === create
     checkContext(context, 'before', ['get'], 'handleRaw')
@@ -252,7 +252,7 @@ function handleRaw () {
   }
 }
 
-function saveToBlobStore () {
+function saveToBlobStore() {
   // there are three ways of receiving blob data
   // 1. multipart/form-data.file: single file upload
   // 2. data.uri: data URI of the blob
@@ -295,7 +295,7 @@ function saveToBlobStore () {
   }
 }
 
-function assertAlbum () {
+function assertAlbum() {
   // if data.albumId is given
   // throw error if album not found
   // set params.album if album exists for downstream hooks to use
@@ -335,7 +335,7 @@ function assertAlbum () {
   }
 }
 
-function assertAlbumDeduplicate () {
+function assertAlbumDeduplicate() {
   // if params.album.deduplication
   // if image with the same albumId and key exists
   // set context.result = image
@@ -369,7 +369,7 @@ function assertAlbumDeduplicate () {
   }
 }
 
-function assertAlbumLimit () {
+function assertAlbumLimit() {
   // if params.album.keep
   // get album images sorted by ascending timestamp
   // remove old images over keep limit
@@ -409,7 +409,7 @@ function assertAlbumLimit () {
     if (total > keep) {
       total -= (await Promise.all(
         images.slice(0, total - keep).map(({ _id: imageId }) => {
-          service.remove(imageId)
+          return service.remove(imageId)
         })
       )).length
     }
@@ -427,7 +427,7 @@ function assertAlbumLimit () {
       images = result.data
       total -= (await Promise.all(
         images.slice(0, total - keep).map(({ _id: imageId }) => {
-          service.remove(imageId)
+          return service.remove(imageId)
         })
       )).length
     }
@@ -435,7 +435,7 @@ function assertAlbumLimit () {
   }
 }
 
-function addImageToAlbum () {
+function addImageToAlbum() {
   // add imageId to album
   return async (context) => {
     // check type === after, method === 'create', 'update', 'patch'
@@ -465,7 +465,7 @@ function addImageToAlbum () {
   }
 }
 
-function convertDate (options = {}) {
+function convertDate(options = {}) {
   return (context) => {
     const params = context.params
     const fieldName = 'timestamp'

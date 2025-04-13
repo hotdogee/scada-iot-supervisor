@@ -2,7 +2,7 @@
 const commonHooks = require('feathers-hooks-common')
 const { ObjectID } = require('mongodb')
 // !<DEFAULT> code: auth_imports
-/* eslint-disable no-unused-vars */
+
 const { authenticate } = require('@feathersjs/authentication').hooks
 /* eslint-enables no-unused-vars */
 // !end
@@ -55,7 +55,7 @@ const {
 /* eslint-enables no-unused-vars */
 // !end
 // !<DEFAULT> code: foreign_keys
-// eslint-disable-next-line no-unused-vars
+
 const foreignKeys = []
 // !end
 // !code: init // !end
@@ -194,7 +194,7 @@ function upsertRollup (options = {}) {
     })
     for (const b in buckets) {
       const logTime = new Date(data.logTime - (data.logTime % buckets[b]))
-      const query = { name: data.name, logTime: logTime }
+      const query = { name: data.name, logTime }
       const bupdate = Object.assign({}, update)
       bupdate.$set = query
       db.collection(`logs.sanitized.${b}`).updateOne(query, bupdate, options)
@@ -298,7 +298,7 @@ function handleChart (options = {}) {
             }
             stat.avg = stat.total / stat.count
             const point = {
-              x: x,
+              x,
               y: stat.avg,
               low: stat.min,
               high: stat.max
@@ -356,7 +356,7 @@ function handleChart (options = {}) {
               result[key] = []
             }
             const point = {
-              x: x,
+              x,
               y: m63kW.avg / Math.pow(m13bar.avg - m14bar.avg, 2),
               low: m63kW.min / Math.pow(m13bar.min - m14bar.min, 2),
               high: m63kW.max / Math.pow(m13bar.max - m14bar.max, 2)
@@ -386,7 +386,7 @@ function handleChart (options = {}) {
               result[key] = []
             }
             const point = {
-              x: x,
+              x,
               y: m25tph.avg / Math.pow(m13bar.avg - m14bar.avg, 0.5),
               low: m25tph.min / Math.pow(m13bar.min - m14bar.min, 0.5),
               high: m25tph.max / Math.pow(m13bar.max - m14bar.max, 0.5)
@@ -400,7 +400,7 @@ function handleChart (options = {}) {
               result[key] = []
             }
             const point = {
-              x: x,
+              x,
               y: formulas[key]('avg'),
               low: formulas[key]('min'),
               high: formulas[key]('max')
@@ -413,7 +413,7 @@ function handleChart (options = {}) {
                 result[key] = []
               }
               const point = {
-                x: x,
+                x,
                 y:
                   formulas['M104-出噴嘴速度-計算(m/s)']('avg') /
                   Math.pow(m13bar.avg - m14bar.avg, 0.5),
@@ -492,7 +492,7 @@ function handleChart (options = {}) {
                   result[key] = []
                 }
                 const point = {
-                  x: x,
+                  x,
                   y: reg.value,
                   low: reg.value,
                   high: reg.value

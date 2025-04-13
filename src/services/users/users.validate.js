@@ -18,7 +18,7 @@ ajv.addKeyword('coerce', {
 // !end
 
 // !<DEFAULT> code: set_id_type
-// eslint-disable-next-line no-unused-vars
+
 const ID = 'string'
 // !end
 

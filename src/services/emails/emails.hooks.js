@@ -61,7 +61,7 @@ const {
 /* eslint-enables no-unused-vars */
 // !end
 // !<DEFAULT> code: foreign_keys
-// eslint-disable-next-line no-unused-vars
+
 const foreignKeys = []
 // !end
 // !code: init // !end

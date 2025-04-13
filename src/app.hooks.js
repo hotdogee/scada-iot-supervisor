@@ -3,12 +3,12 @@ const commonHooks = require('feathers-hooks-common')
 // !code: imports
 const log = require('./hooks/log')
 const authorize = require('./hooks/authorize')
-/* eslint-disable no-unused-vars */
+
 const { authenticate } = require('@feathersjs/authentication').hooks
 // !end
 
 // !<DEFAULT> code: used
-// eslint-disable-next-line no-unused-vars
+
 const { iff } = commonHooks
 // !end
 // !code: init // !end

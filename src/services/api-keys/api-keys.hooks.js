@@ -2,7 +2,7 @@
 const commonHooks = require('feathers-hooks-common')
 const { ObjectID } = require('mongodb')
 // !<DEFAULT> code: auth_imports
-/* eslint-disable no-unused-vars */
+
 const { authenticate } = require('@feathersjs/authentication').hooks
 /* eslint-enables no-unused-vars */
 // !end
@@ -59,7 +59,7 @@ const {
 /* eslint-enables no-unused-vars */
 // !end
 // !<DEFAULT> code: foreign_keys
-// eslint-disable-next-line no-unused-vars
+
 const foreignKeys = []
 // !end
 // !code: init // !end
