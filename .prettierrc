@@ -1,14 +1,6 @@
 {
-  "tabWidth": 2,
-  "useTabs": false,
-  "printWidth": 110,
+  "$schema": "https://json.schemastore.org/prettierrc",
   "semi": false,
-  "trailingComma": "none",
   "singleQuote": true,
-  "arrowParens": "avoid",
-  "bracketSpacing": true,
-  "endOfLine": "auto",
-  "jsxSingleQuote": false,
-  "quoteProps": "as-needed",
-  "parser": "typescript"
+  "printWidth": 100
 }
