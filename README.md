@@ -1,257 +1,175 @@
-# scada-iot-supervisor
+# SCADA/IoT Supervisor System
 
-> SCADA/IoT Supervisor System
+> A modern, scalable SCADA/IoT Supervisor System for industrial monitoring and control, designed for research-grade and pilot-scale geothermal power generation deployments, leveraging open-source technologies and Industry 4.0 principles.
 
-## Endpoints
+## Table of Contents
 
-- https://scada.hanl.in - localhost:8083 - vue frontend
-- https://scada.hanl.in/api - localhost:8081 - feathers backend - deprecated
-- https://scada.hanl.in/api2 - localhost:8086 - feathers 4.0 backend
-- https://scada.hanl.in/mongo-express - localhost:8084 - mongo-express running on docker
-- https://scada.hanl.in/media - localhost:8085 - node-media-server
-- https://line.scada.hanl.in - localhost:8082 - line webhook
+- [SCADA/IoT Supervisor System](#scadaiot-supervisor-system)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Architecture](#architecture)
+  - [Technology Stack](#technology-stack)
+    - [Hardware](#hardware)
+    - [Software](#software)
+    - [Communication Protocols](#communication-protocols)
+  - [Case Study: Geothermal Power Monitoring (Yilan Qingshui Well No. 9)](#case-study-geothermal-power-monitoring-yilan-qingshui-well-no-9)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Setup Steps](#setup-steps)
+  - [License](#license)
+  - [Contact](#contact)
 
-## Setup server pm2
+## Overview
 
-```bash
-$ cd scada-iot-supervisor
-$ NODE_ENV=production sudo pm2 start npm --name scada-iot-supervisor -- run start
+SCADA-IoT Supervisor integrates real-time data acquisition, remote monitoring, control, and data logging capabilities for industrial applications. It leverages open-source technologies and Industry 4.0 principles (Interoperability, Transparency, Assistance, Decentralization) to provide a flexible and cost-effective alternative to traditional Distributed Control Systems (DCS) and Supervisory Control and Data Acquisition (SCADA) systems.
 
-$ cd /opt/scada-iot/scada-iot-supervisor
-$ NODE_ENV=production sudo pm2 start npm --name scada-iot-supervisor2 -- run start
+Originally developed and proven in the context of monitoring and controlling a Total Flow Geothermal Power Generation system in Taiwan, the system is designed to be adaptable to various industrial monitoring and control scenarios requiring robust data handling and remote accessibility.
 
-$ cd ../scada-iot-hmi
-$ NODE_ENV=production sudo pm2 start npm --name scada-iot-hmi -- run start
-$ NODE_ENV=production sudo pm2 start /usr/bin/http-server --name scada-iot-hmi -- ./dist --push-state -c 60 -p 8303 -d false
+## Features
 
-$ pm2 save
-```
+- **Cost-Effectiveness:**
 
-## adding first admin user
+  - Aims to reduce engineering time and hardware costs compared to traditional proprietary DCS/SCADA solutions.
+  - Unified JavaScript language across the stack enables flexible placement of logic on the edge, server or client, and simplifies hiring.
+  - Leverages open-source software components, minimizing licensing fees.
+  - Utilizes readily available and cost-effective hardware as PLCs (Raspberry Pi, Arduino).
 
-```bash
-$ cd scada-iot-supervisor
-# creates a new user and sends a verification email to the given email address
-$ node ./util/users/create-user.js --email=admin@example.com --password=random1password --language=en
-2019-08-09T22:41:15.844 info      users.create result = { accounts: [ { type: 'email', value: 'admin@example.com' } ], language: 'en', country: 'tw', created: '2019-08-09T14:41:15.799Z', updated: '2019-08-09T14:41:15.799Z', _id: '5d4d860b09b9d13afc6d23ee' } +266ms
-# obtain the verification token from the link in the email
-$ node ./util/users/patch-verify-email.js --token=eyJhbGciOiJIUzI1NiIsInR5cCI6InZlcmlmeUVtYWlsIn0.eyJpYXQiOjE1NjUzNjE2NzUsImV4cCI6MTU2NTM2MzQ3NSwiYXVkIjoiaG90ZG9nZWVAZ21haWwuY29tIiwiaXNzIjoiaGFubC5pbiIsInN1YiI6IjVkNGQ4NjBiMDliOWQxM2FmYzZkMjNlZSJ9.jJvKuky9XBNnhTengesrZvxij9xBH9tk4RlFxHoK9Xo
-2019-08-09T22:52:41.778 info      users.patch { result: 'success' } +0ms
-# patch admin authorizations
-$ node ./util/users/patch-admin-authorization.js --userId=5d4d860b09b9d13afc6d23ee --org=example.com --role=admin
-# refresh access token
-$ node ./util/users/refresh-access-token.js --userId=5d4d860b09b9d13afc6d23ee
-```
+- **Real-time Monitoring & Control:**
 
-# Scaffolding
+  - Web and mobile dashboards for real-time data visualization.
+  - Interactive charts for historical data discovery and analysis.
 
-```bash
-# Generate a new service with its model
-node ..\..\feathers-plus-cli g service
-```
+- **Modular & Scalable Architecture:**
 
-# Services
+  - Supports a diverse range of sensors (Temperature: PT100; Pressure: Absolute/Gauge; Flow: Magnetic, Coriolis, Vortex; Power: V, I, Freq, PF; Speed: Optical, Hall; pH; Environmental, etc.).
+  - Interfaces with various actuators and alarms.
+  - Horizontally scalable using containerized systems.
 
-- blob
-  - general storage of files of all types
-  - handles interfacing with different file services
-  - de-duplication of files with the same hash and mime
-  - \_id is the concatenation of its hash and mime, `${hash}.${ext}`
-  - immutable as a result, folders, metadata, tags should be handled by other services
-  - there are three ways of receiving blob data
-    1. multipart/form-data.file: single file upload
-    2. data.uri: data URI of the blob
-    3. data.buffer: raw data buffer of the blob
-       data.contentType: MIME type, string: 'image/jpeg'
-       data.originalName: string
-- images
-  - storage of image file types
-  - one to one relationship with blob
-  - provides image specific functions
-    - can specify custom width, height and/or format as GET query params
-  - an image can belong to zero or one album
-  - an image can have multiple tags
-  - an image can have a metadata object
-- albums
+- **Data Acquisition & Management:**
 
-# API
+  - Time-series database (MongoDB) optimized for high-frequency sensor data logging.
+  - Comprehensive logging with filtering capabilities.
+  - Data export for offline analysis (e.g., CSV, JSON).
+  - Historical trend analysis and reporting tools.
+  - No data loss even when working with a unreliable 4G connection.
 
-## blob
+- **Remote Access & Security:**
 
-POST /blob
-{
-type: 'image',
-timestamp: new Date(),
-metadata: {
-name: 'cam1'
-},
-file: stream
-}
+  - JWT based authentication and authorization for users and plc.
 
-## images
+- **Open Standards & Protocols:**
 
-POST /images
-body {
-type: 'camera'
+  - Modbus-RTU (RS-485) for robust industrial device communication.
+  - REST/WebSocket APIs for seamless frontend/backend integration and third-party access.
 
-}
+- **Cross-Platform Compatibility:**
 
-# MongoDB
+  - Web interfaces compatible with modern browsers (Chrome, Firefox, Safari, Edge).
+  - Progressive Web Apps (PWA) for Android and iOS devices.
+  - Backend runs on standard server environments (Linux, Windows, macOS).
 
-```js
-$ mongo
-use scada-iot
-db.logs.getIndexes()
-[
-        {
-                "v" : 2,
-                "key" : {
-                        "_id" : 1
-                },
-                "name" : "_id_",
-                "ns" : "scada-iot.logs"
-        },
-        {
-                "v" : 2,
-                "key" : {
-                        "logTime" : -1
-                },
-                "name" : "logTime_-1",
-                "background" : true,
-                "ns" : "scada-iot.logs"
-        },
-        {
-                "v" : 2,
-                "key" : {
-                        "name" : 1,
-                        "logTime" : -1
-                },
-                "name" : "name_1_logTime_-1",
-                "ns" : "scada-iot.logs",
-                "background" : true
-        }
-]
-db.logs.totalIndexSize()
-// scan, slow
-db.logs.countDocuments({})
-db.logs.explain("executionStats").countDocuments({
-  logTime: {
-    $gt: new Date('2017-08-07T20:39:30.088Z'),
-    $lt: new Date('2019-07-30T23:48:15.223Z')
-  }
-})
-// metadata, fast
-db.logs.estimatedDocumentCount({})
-db.logs.find({logTime:{$gt:new Date("2017-08-08T20:39:30.088Z")}}).limit(10).count()
-db.logs.explain("executionStats").find({logTime:{$gt:new Date("2017-08-08T20:39:30.088Z")}}).hint("logTime_-1").limit(10).count()
-```
+## Architecture
 
-```js
-const app = require('./src/app')
-query = {
-  logTime: {
-    $gt: new Date('2017-08-07T20:39:30.088Z'),
-    $lt: new Date('2019-07-30T23:48:15.223Z')
-  }
-}(
-  // this runs 10s
-  async () => {
-    const start = new Date()
-    console.log(await app.service('logs').Model.countDocuments(query))
-    console.log(`runtime: ${new Date() - start}ms`)
-  }
-)()(
-  // this runs 7s
-  // > 20691179
-  // runtime: 6937ms
-  async () => {
-    const start = new Date()
-    console.log(
-      await app
-        .service('logs')
-        .Model.find(query)
-        .count()
-    )
-    console.log(`runtime: ${new Date() - start}ms`)
-  }
-)()(
-  // this runs 10s
-  async () => {
-    const start = new Date()
-    console.log(
-      await app
-        .service('logs')
-        .Model.aggregate([{ $match: query }, { $count: 'total' }])
-        .toArray()
-    )
-    console.log(`runtime: ${new Date() - start}ms`)
-  }
-)()(
-  // this runs 10s
-  async () => {
-    const start = new Date()
-    console.log(
-      await app
-        .service('logs')
-        .Model.aggregate([
-          { $match: query },
-          {
-            $group: {
-              _id: null,
-              count: { $sum: 1 }
-            }
-          }
-        ])
-        .toArray()
-    )
-    console.log(`runtime: ${new Date() - start}ms`)
-  }
-)()(
-  // this runs 5ms
-  // > [ { _id: null, count: 20712866 } ]
-  // runtime: 5ms
-  async () => {
-    const start = new Date()
-    const db = await app.get('mongoClient')
-    const count = (await db
-      .collection('logs.sanitized.1d')
-      .aggregate([
-        { $match: query },
-        {
-          $group: {
-            _id: null,
-            count: { $sum: '$count' }
-          }
-        }
-      ])
-      .toArray())[0].count
-    console.log(count)
-    console.log(`runtime: ${new Date() - start}ms`)
-  }
-)()
-```
+The core supervisor system backend is built using:
 
-# Keys
+- **Runtime:** Node.js
+- **Framework:** FeathersJS (Real-time API and application framework)
+- **Database:** MongoDB (Time-series data, configuration, logs)
+- **Process Management:** PM2 (Ensures the Node.js application is kept alive, manages logs)
+- **Web Server / Proxy:** nginx
 
-- [mailjet](https://app.mailjet.com/transactional)
-- [reCAPTCHA](https://www.google.com/recaptcha/admin/site/343640963/settings)
-- [VAPID](https://developers.google.com/web/fundamentals/push-notifications/subscribing-a-user)
-  ```bash
-  $ npm install -g web-push
-  $ web-push generate-vapid-keys
-  ```
-- [Google OAuth2](https://console.developers.google.com/apis/credentials?project=scada-248614)
-- [Facebook OAuth2](https://developers.facebook.com/apps/335907437318058/fb-login/settings/)
-- [Twitter OAuth](https://developer.twitter.com/en/apps/16613455)
-- [LINE OAuth2](https://developers.line.biz/console/channel/1605624008/basic/)
+**Capabilities:**
 
-# References
+- Real-time data acquisition from edge plcs.
+- Data processing and transformation (thermal efficiency, well enthalpy, turbine torque).
+- Persistent data logging to MongoDB with bucketing and statistics calculations.
+- Real-time data streaming to clients via WebSockets.
+- REST API for configuration and historical data retrieval.
+- User authentication and authorization.
+- System monitoring and process management using PM2.
 
-- [Why do some developers at strong companies like Google consider Agile development to be nonsense?](https://www.quora.com/Why-do-some-developers-at-strong-companies-like-Google-consider-Agile-development-to-be-nonsense/answer/David-Jeske?fbclid=IwAR0PPamL4Ce4JrRHVdWkTUgmI4W8mxH54S143vndeVid8ctZFja-arkxJeE)
+## Technology Stack
 
-## About
+### Hardware
 
-This project uses a custom modification of @feathers-plus/cli to support:
+- **Edge Controller:** Raspberry Pi serves as the main processing unit.
+- **Remote Terminal Units (RTUs):** Industrial controllers interfacing with field devices.
+- **Sensors:** Temperature (RTD PT100), Pressure (Danfoss MBS 3000), Electromagnetic Flowmeters (BMS, LDG), Coriolis Flowmeters (E+H, Micro Motion), Vortex Flowmeters (MIK-LUGB), pH Meters, Optical/Hall Effect RPM Sensors, Electrical (Voltage, Current, Frequency, Power), etc.
+- **Actuators:** Valves, Alarms, and Inverters (ABB PVI-12.5-TL-OUTD).
+- **Networking:** Ethernet Switches, WiFi Access Points, 4G/LTE Routers, USB-to-RS485/232 Converters.
+- **Cameras:** IP Cameras with on-site NAS recording.
+- **Power:** Mean Well Power Supplies (24VDC, 12VDC, 5VDC).
+- **Analysis Tools:** Hioki Power Analyzers, FLIR Thermal Cameras, High-Speed Cameras.
 
-- StandardJS
-- js config files
+### Software
+
+- **Backend / PLC:** Node.js, FeathersJS (Supervisor)
+- **Frontend:** VueJS, Quasar Framework, Highcharts
+- **Database:** MongoDB
+- **Message Queue:** RabbitMQ (AMQP)
+- **Real-time Communication:** WebSockets (TCP/IP)
+- **Industrial Communication:** MODBUS RTU (RS-485)
+- **Hardware Platform (Edge):** Raspberry Pi OS / Linux
+- **Process Management:** PM2
+- **Web Server/Proxy:** Nginx
+
+### Communication Protocols
+
+- **MODBUS-RTU:** Used for robust communication with RTUs and other industrial devices connected to the custom I/O modules or directly.
+- **WebSockets:** Enables real-time, bidirectional communication between the Node.js backend, the supervisory control system, and the user interface (UI).
+
+## Case Study: Geothermal Power Monitoring (Yilan Qingshui Well No. 9)
+
+This system was instrumental in the development and testing of a Total Flow geothermal power generation unit:
+
+- **Monitored Parameters:** Wellhead pressure/temperature, flow rates (total, steam, brine), turbine inlet/outlet conditions, generator output (Voltage, Current, Frequency, Power Factor, kW, kVA), vibration, cooling system parameters, pH, ambient conditions.
+- **Control:** Valve positioning for flow regulation, generator load control (via load banks or grid-tie inverters), emergency shutdown sequences.
+- **Data Logging:** Captured high-frequency data during various test phases (load bank testing, grid synchronization trials) for performance analysis (e.g., Power vs. Pressure Drop curves, efficiency calculations).
+- **Remote Operation:** Enabled remote monitoring of the unmanned test site via web dashboards and live camera feeds.
+
+## Installation
+
+### Prerequisites
+
+- Node.js (v16.x or higher recommended)
+- npm (v8.x or higher) or yarn
+- MongoDB (v5.x or higher recommended)
+- Git
+- (Optional) Docker and Docker Compose for containerized deployment
+- (Optional) Nginx for production reverse proxy
+
+### Setup Steps
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/hotdogee/scada-iot-supervisor.git # Replace with actual repo URL
+    cd scada-iot-supervisor
+    ```
+
+2.  **Install dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Configure variables:**
+
+    - Edit the `default.json` files in `config/` directories to set database connection strings, API endpoints, secret keys, communication port settings, etc.
+
+4.  **Start development server:**
+
+    - Ensure MongoDB is running.
+      ```bash
+      npm run dev
+      ```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+- **Lanyang Geothermal Corp.**
+- **Lead Developer:** Han Lin <hotdogee@gmail.com> (https://github.com/hotdogee)
