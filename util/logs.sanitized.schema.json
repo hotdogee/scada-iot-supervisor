@@ -1,0 +1,1498 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["_id", "count", "logTime", "name", "reads"],
+    "properties": {
+      "_id": {
+        "bsonType": "objectId"
+      },
+      "count": {
+        "bsonType": "int"
+      },
+      "logTime": {
+        "bsonType": "date"
+      },
+      "name": {
+        "bsonType": "string"
+      },
+      "reads": {
+        "bsonType": "object",
+        "properties": {
+          "M1-九號井口-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M1-九號井口-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M10-上貨櫃前-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M10-上貨櫃前-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M11-三桶前-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M11-三桶前-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M13-渦輪1前-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M13-渦輪1前-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M14-渦輪1後-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M14-渦輪1後-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M2-手動閘閥前-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M2-手動閘閥前-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M21-尾水箱-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M21-尾水箱-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M22-主排水管-流量(m3/h)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M25-主排水管-密度(g/cm3)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M25-主排水管-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M25-主排水管-質量流率(t/h)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M25-大桶後-密度(g/cm3)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M25-大桶後-溫度()": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M25-大桶後-累積質量(kg)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M25-大桶後-累積體積(m3)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "int"
+              },
+              "min": {
+                "bsonType": "int"
+              },
+              "total": {
+                "bsonType": "long"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M26-排水管2-流量(m3/h)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M5-渦輪2前-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M5-渦輪2前-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M50-軸心2-入水測溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M51-軸心2-發電機測溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M52-變速齒輪箱2-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M6-渦輪2後-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M6-渦輪2後-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M60-軸心1-入水測溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M61-軸心1-發電機測溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M62-軸心1-轉速(Hz)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-A相電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-A相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-B相電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-B相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-C相電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-C相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-三相功因()": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-三相功率(kW)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M63-發電機1-發電量(kWh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M64-發電機1-頻率(Hz)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["int", "double"]
+              },
+              "total": {
+                "bsonType": ["int", "double"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M7-大穩壓桶1-壓力(bar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M7-大穩壓桶1-溫度(℃)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M71-發電機300kVA-頻率(Hz)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-AB線電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-A相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-BC線電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-B相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-CA線電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-C相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-功率因數(%)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-有功功率(kW)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-有功電量(kWh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-正有功電量(kWh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-正無功電量(kvarh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-無功功率(kvar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["int", "double"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-無功電量(kvarh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-視在功率(kVA)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-視在電量(kVAh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-負有功電量(kWh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-負無功電量(kvarh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M72-併接點-頻率(Hz)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-AB線電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-A相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-BC線電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-B相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-CA線電壓(V)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-C相電流(A)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-功率因數(%)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-有功功率(kW)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-有功電量(kWh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-正有功電量(kWh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-正無功電量(kvarh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-無功功率(kvar)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": ["double", "int"]
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-無功電量(kvarh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-視在功率(kVA)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-視在電量(kVAh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-負有功電量(kWh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": "double"
+              },
+              "min": {
+                "bsonType": "double"
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          },
+          "M73-發電機300kVA-負無功電量(kvarh)": {
+            "bsonType": "object",
+            "properties": {
+              "count": {
+                "bsonType": "int"
+              },
+              "max": {
+                "bsonType": ["double", "int"]
+              },
+              "min": {
+                "bsonType": ["double", "int"]
+              },
+              "total": {
+                "bsonType": "double"
+              }
+            },
+            "required": ["count", "max", "min", "total"]
+          }
+        },
+        "required": [
+          "M14-渦輪1後-壓力(bar)",
+          "M2-手動閘閥前-壓力(bar)",
+          "M2-手動閘閥前-溫度(℃)",
+          "M61-軸心1-發電機測溫度(℃)",
+          "M63-發電機1-A相電壓(V)",
+          "M63-發電機1-A相電流(A)",
+          "M63-發電機1-B相電壓(V)",
+          "M63-發電機1-B相電流(A)",
+          "M63-發電機1-C相電壓(V)",
+          "M63-發電機1-C相電流(A)",
+          "M63-發電機1-三相功率(kW)",
+          "M63-發電機1-發電量(kWh)",
+          "M64-發電機1-頻率(Hz)"
+        ]
+      }
+    }
+  }
+}

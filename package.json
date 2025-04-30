@@ -54,7 +54,7 @@
     "@feathersjs/transport-commons": "^5.0.33",
     "@feathersjs/typebox": "^5.0.33",
     "lodash": "^4.17.21",
-    "mongodb": "^6.13.1",
+    "mongodb": "^6.16.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {

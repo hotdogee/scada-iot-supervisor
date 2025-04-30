@@ -1,0 +1,66 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["_id", "logTime", "name", "reads"],
+    "properties": {
+      "_id": {
+        "bsonType": "objectId"
+      },
+      "logTime": {
+        "bsonType": "date"
+      },
+      "name": {
+        "bsonType": "string"
+      },
+      "reads": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "addr": {
+              "bsonType": "int"
+            },
+            "name": {
+              "bsonType": "string"
+            },
+            "reads": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "properties": {
+                  "name": {
+                    "bsonType": "string"
+                  },
+                  "time": {
+                    "bsonType": "date"
+                  },
+                  "unit": {
+                    "bsonType": "string"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "bsonType": "double"
+                      },
+                      {
+                        "bsonType": "int"
+                      },
+                      {
+                        "bsonType": "array",
+                        "items": {
+                          "bsonType": ["double", "int"]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "required": ["name", "time", "unit", "value"]
+              }
+            }
+          },
+          "required": ["addr", "name", "reads"]
+        }
+      }
+    }
+  }
+}
