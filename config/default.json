@@ -2,7 +2,7 @@
   "host": "localhost",
   "port": 8086,
   "public": "./public/",
-  "origins": ["http://localhost:9000", "https://scada.hanl.in"],
+  "origins": ["http://localhost:9000", "https://scada.hanl.in", "https://scada-iot-hmi.pages.dev"],
   "paginate": {
     "default": 10,
     "max": 500
