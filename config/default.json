@@ -2,9 +2,7 @@
   "host": "localhost",
   "port": 8086,
   "public": "./public/",
-  "origins": [
-    "http://localhost:9000"
-  ],
+  "origins": ["http://localhost:9000", "https://scada.hanl.in"],
   "paginate": {
     "default": 10,
     "max": 500
