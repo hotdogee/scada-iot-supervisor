@@ -4,9 +4,6 @@
   "version": "3.0.0",
   "homepage": "",
   "private": true,
-  "keywords": [
-    "feathers"
-  ],
   "author": "Han Lin <hotdogee@gmail.com> (https://github.com/hotdogee)",
   "engines": {
     "node": ">= 22.14.0"
@@ -32,6 +29,20 @@
     "lib/**/*.shared.js"
   ],
   "main": "lib/client",
+  "keywords": [
+    "node",
+    "nodejs",
+    "scada",
+    "iot",
+    "geothermal",
+    "industrial",
+    "monitoring",
+    "control",
+    "automation",
+    "feathers",
+    "supervisor",
+    "mongodb"
+  ],
   "scripts": {
     "dev": "nodemon -x ts-node src/index.ts",
     "compile": "shx rm -rf lib/ && tsc",
